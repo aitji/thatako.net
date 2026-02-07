@@ -1,0 +1,6 @@
+# big folders
+/public
+/node_modules
+
+# secrets and config files
+.env
