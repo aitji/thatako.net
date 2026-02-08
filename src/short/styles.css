@@ -116,3 +116,10 @@ header {
     white-space: nowrap;
   }
 }
+
+@media print {
+  .help {
+    color: white;
+    border-color: black;
+  }
+}
