@@ -28,7 +28,7 @@ const bannerText = `
    )  |  \\  \`.___________|/
    \`--'   \`--'
 
-    ©aitji™ 2024-${YEAR}
+    ©thatako.net™ 2026-${YEAR}
     Proprietary software. All rights reserved.
     No redistribution, modification, or reuse without permission.
 
