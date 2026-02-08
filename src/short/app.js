@@ -5,6 +5,9 @@ const TOAST_DELAY = 2500
 
 let editing = null
 let busy = false
+let qr = null
+let qrUrl = ''
+
 const $ = id => document.getElementById(id)
 
 /** @param {string} slug */
@@ -64,7 +67,8 @@ const renderList = links => {
                 </td>
                 <td>${truncate(l.to)}</td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-secondary mt-2" data-edit="${l.slug}" data-to="${l.to}">แก้ไข</button>
+                    <button class="btn btn-sm btn-primary mt-2" data-edit="${l.slug}" data-to="${l.to}">แก้ไข</button>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" data-qr="${l.slug}">สร้าง QR</button>
                     <button class="btn btn-sm btn-outline-danger mt-2" data-revoke="${l.slug}">ลบ</button>
                 </td>
             </tr>`)
@@ -207,6 +211,15 @@ const initKey = () => {
 }
 
 const initEvents = () => {
+    $("downloadQR").onclick = e => {
+        e.preventDefault()
+        downloadQR()
+    }
+    $("copyQR").onclick = async e => {
+        e.preventDefault()
+        await copyQR()
+    }
+
     $("create").onclick = e => {
         e.preventDefault()
         createLink()
@@ -237,6 +250,7 @@ const initEvents = () => {
         }
     }
 
+    $("qrcodeText").onchange = () => updateQR($("qrcodeText").value)
     $("list").onclick = async e => {
         e.preventDefault()
         const b = e.target.closest("button")
@@ -247,6 +261,7 @@ const initEvents = () => {
             console.log(a)
             await copyLink(a.href)
         } else if (b) {
+            if (b.dataset.qr) openQR(b.dataset.qr)
             if (b.dataset.edit) openEdit(b.dataset)
             if (b.dataset.revoke) await revoke(b.dataset.revoke)
         }
@@ -258,6 +273,63 @@ const initEvents = () => {
 
     $("to").onkeydown = e => {
         if (e.key === "Enter") createLink()
+    }
+}
+
+const updateQR = qrUrl => {
+    qr = new QRCodeStyling({
+        width: 240,
+        height: 240,
+        type: "canvas",
+        data: qrUrl,
+        margin: 12,
+        dotsOptions: {
+            type: "square",
+            color: "#000000"
+        },
+        cornersSquareOptions: {
+            type: "square",
+            color: "#000000"
+        },
+        cornersDotOptions: {
+            type: "square",
+            color: "#000000"
+        },
+        backgroundOptions: {
+            color: "#ffffff"
+        }
+    })
+
+    $("qrPreview").innerHTML = ""
+    qr.append($("qrPreview"))
+}
+
+// qr code
+/** @param {string} slug */
+const openQR = slug => {
+    qrUrl = `https://go.thatako.net/${slug}`
+
+    updateQR(qrUrl)
+    $("qrcodeText").value = qrUrl
+
+    new bootstrap.Modal($("qrModal")).show()
+}
+
+const downloadQR = () => {
+    if (!qr) return
+    qr.download({ name: "qr", extension: "png" })
+}
+
+const copyQR = async () => {
+    if (!qr) return
+    try {
+        const blob = await qr.getRawData("png")
+        await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob })
+        ])
+        toast("คัดลอกแล้ว")
+    } catch {
+        toast("ไม่สามารถคัดลอกได้", false)
     }
 }
 

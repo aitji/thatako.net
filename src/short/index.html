@@ -30,6 +30,8 @@
     <!-- styles -->
     <link href="../styles/index.css" rel="stylesheet">
     <link href="../short/styles.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 </head>
 
 <body data-bs-theme="dark">
@@ -75,7 +77,8 @@
                     </label>
                     <div class="input-group">
                         <span class="input-group-text">go.thatako.net/</span>
-                        <input type="text" id="slug" class="form-control" placeholder="openhouse2026" required maxlength="1024" aria-describedby="slugHelp">
+                        <input type="text" id="slug" class="form-control" placeholder="openhouse2026" required
+                            maxlength="1024" aria-describedby="slugHelp">
                     </div>
                     <div class="invalid-feedback">กรุณากรอกลิงก์ย่อที่ถูกต้อง</div>
                 </div>
@@ -163,6 +166,27 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrModalLabel">สร้าง QR Code</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body text-center">
+                        <div id="qrPreview" class="mb-3 p-3" style="background: radial-gradient(circle at top, #0f1115, #0b0d12 60%); border-radius: 16px;"></div>
+                        <input type="url" id="qrcodeText" class="form-control" value="" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" id="copyQR">คัดลอก</button>
+                        <button class="btn btn-primary" id="downloadQR">ดาวน์โหลด</button>
+                    </div>
                 </div>
             </div>
         </div>
