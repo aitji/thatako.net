@@ -70,7 +70,7 @@ const minifyHTMLFile = async file => {
         keepClosingSlash: true,
         html5: true
     })
-    fs.writeFileSync(file, banner.html + out)
+    fs.writeFileSync(file, banner.html.trimEnd() + out)
 }
 
 const minifyJSFile = async (src, out) => {
