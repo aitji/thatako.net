@@ -128,9 +128,9 @@ const walk = async dir => {
     }
 }
 
-const copyRoot = name => {
+const copyRoot = (name, output = OUT) => {
     if (!fs.existsSync(name)) return
-    fs.cpSync(name, path.join(OUT, name), { recursive: true })
+    fs.cpSync(name, path.join(output, name), { recursive: true })
 }
 
 (async () => {
@@ -143,7 +143,7 @@ const copyRoot = name => {
     //     'api/addondata.js'
     // )
 
-    // copyRoot('img')
+    copyRoot('img')
     // copyRoot('ads.txt')
     // copyRoot('sitemap.xml')
 })()
