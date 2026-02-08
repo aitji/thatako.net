@@ -125,7 +125,7 @@ const createLink = async () => {
 /** @param {string} slug */
 const copyLink = async slug => {
     try {
-        await navigator.clipboard.writeText(`${location.origin}/${slug}`)
+        await navigator.clipboard.writeText(slug)
         toast("คัดลอกลิงก์แล้ว")
     } catch { toast("ไม่สามารถคัดลอกได้", false) }
 }
