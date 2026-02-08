@@ -60,7 +60,7 @@ const banner = {
 
 const minifyHTMLFile = async file => {
     const src = fs.readFileSync(file, 'utf8')
-    let out = await minifyHTML(src, {
+    const out = await minifyHTML(src, {
         collapseWhitespace: true,
         removeComments: true,
         removeRedundantAttributes: true,
@@ -70,8 +70,6 @@ const minifyHTMLFile = async file => {
         keepClosingSlash: true,
         html5: true
     })
-    const end = "\n</body></html>"
-    if (out.endsWith(end)) out = out.slice(0, -end.length) + "</body></html>"
     fs.writeFileSync(file, banner.html + out)
 }
 
