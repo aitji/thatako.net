@@ -1,0 +1,60 @@
+@import url("./root.css");
+
+body {
+  margin: 24px auto;
+  padding: 0 16px;
+  max-width: 920px;
+  background: radial-gradient(circle at top, #0f1115, #0b0d12 60%);
+  color: #e6e6e6;
+  font-family: Prompt, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.card {
+  background: #12141a;
+  border: 1px solid #232734;
+}
+
+a {
+  color: #9ecbff;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.importance::before {
+  content: "*";
+}
+
+.importance {
+  color: #d21c1c;
+  text-decoration: underline;
+}
+
+.table td {
+  vertical-align: middle;
+  word-break: break-all;
+}
+
+.input-group-text {
+  background: #1a1f2b;
+  color: #9ecbff;
+  border-color: #2a2f3a;
+}
+
+.btn-primary {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+}
+
+.btn-primary:hover {
+  background: #3b82f6;
+}
+
+.help {
+  cursor: pointer;
+  color: #9ecbff;
+  margin-left: 6px;
+}
+
+.toast-container {
+  z-index: 2000;
+}

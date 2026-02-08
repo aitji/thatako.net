@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ย่อลิ้งก์ go.thatako.net</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- icon -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/img/icon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/img/icon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/img/icon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/img/icon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/img/icon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/img/icon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/img/icon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/img/icon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/icon/favicon-16x16.png">
+    <link rel="manifest" href="/img/icon/manifest.json">
+    <meta name="msapplication-TileColor" content="#202036">
+    <meta name="msapplication-TileImage" content="/img/icon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#202036">
+
+    <!-- styles -->
+    <link href="../short/styles.css" rel="stylesheet">
+</head>
+
+<body data-bs-theme="dark">
+    <div class="container">
+        <!-- Header -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 m-0">ย่อลิ้งก์ go.thatako.net/*</h1>
+            <button id="refresh" class="btn btn-sm btn-outline-light" aria-label="รีเฟรชข้อมูล">
+                <span class="refresh-icon">⟳</span> รีเฟรช
+            </button>
+        </header>
+
+        <!-- Create Form -->
+        <section class="card p-4 mb-4" aria-labelledby="create-heading">
+            <h2 id="create-heading" class="visually-hidden">สร้างลิงก์ย่อใหม่</h2>
+
+            <form id="createForm" novalidate>
+                <!-- API Key Input -->
+                <div class="mb-3">
+                    <label for="key" class="form-label">
+                        รหัสลับ
+                        <span class="importance" role="alert">ห้ามแชร์กับคนอื่น</span>
+                        <button type="button" class="help" data-bs-toggle="tooltip"
+                            title="รหัสสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว"
+                            aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับรหัสลับ">
+                            ?
+                        </button>
+                    </label>
+                    <div class="input-group">
+                        <input type="text" id="key" class="form-control" autocomplete="off" aria-describedby="keyHelp">
+                        <button class="input-group-button btn btn-primary" id="random">สุ่ม</button>
+                    </div>
+                </div>
+
+                <!-- Slug Input -->
+                <div class="mb-3">
+                    <label for="slug" class="form-label">
+                        ลิงก์ย่อ
+                        <button type="button" class="help" data-bs-toggle="tooltip"
+                            title="ตั้งชื่อที่ต้องการ เช่น openhouse2026" aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับลิงก์ย่อ">
+                            ?
+                        </button>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">go.thatako.net/</span>
+                        <input type="text" id="slug" class="form-control" placeholder="openhouse2026" required
+                            pattern="^(?!/)(?!api/).*" maxlength="1024" aria-describedby="slugHelp">
+                    </div>
+                    <div class="invalid-feedback">กรุณากรอกลิงก์ย่อที่ถูกต้อง</div>
+                </div>
+
+                <!-- Target URL Input -->
+                <div class="mb-3">
+                    <label for="to" class="form-label">
+                        ลิงก์เต็ม
+                        <button type="button" class="help" data-bs-toggle="tooltip"
+                            title="ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com"
+                            aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับลิงก์เต็ม">
+                            ?
+                        </button>
+                    </label>
+                    <input type="url" id="to" class="form-control" placeholder="https://example.com" required
+                        aria-describedby="toHelp">
+                    <div class="invalid-feedback">กรุณากรอก URL ที่ถูกต้อง</div>
+                </div>
+
+                <button type="submit" id="create" class="btn btn-primary w-100">
+                    สร้างลิ้งก์ย่อ
+                </button>
+            </form>
+        </section>
+
+        <!-- Links List -->
+        <section aria-labelledby="list-heading">
+            <h2 id="list-heading" class="h3 mb-3">ลิ้งก์ที่ถืออยู่</h2>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">ลิงก์ย่อ</th>
+                            <th scope="col">ลิงก์เต็ม</th>
+                            <th scope="col" class="text-end">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list">
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                <div class="spinner-border spinner-border-sm me-2" role="status" id="loading">
+                                    <span class="visually-hidden">กำลังโหลด...</span>
+                                </div>
+                                <p id="loading-text">กำลังโหลดข้อมูล...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">แก้ไขลิงก์</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="ปิด"></button>
+                    </div>
+                    <form id="editForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="newSlug" class="form-label">
+                                    ลิงก์ย่อใหม่ <span class="text-muted">(ไม่จำเป็น)</span>
+                                </label>
+                                <input type="text" id="newSlug" class="form-control"
+                                    placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newTo" class="form-label">
+                                    ลิงก์เต็มใหม่ <span class="text-muted">(ไม่จำเป็น)</span>
+                                </label>
+                                <input type="url" id="newTo" class="form-control"
+                                    placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                ยกเลิก
+                            </button>
+                            <button type="submit" id="saveEdit" class="btn btn-primary">
+                                บันทึก
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts" aria-live="polite" aria-atomic="true"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../short/app.js" type="module"></script>
+</body>
+
+</html>
