@@ -1,4 +1,4 @@
-const API_URL = "http://go.thatako.net/api"
+const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
 const TOAST_DELAY = 2500
