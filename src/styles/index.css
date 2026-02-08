@@ -4,6 +4,7 @@ body {
   margin: 24px auto;
   padding: 0 16px;
   max-width: 920px;
+  background-color: #0f1115;
   background: radial-gradient(circle at top, #0f1115, #0b0d12 60%);
   color: #e6e6e6;
   font-family: Prompt, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;

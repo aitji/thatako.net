@@ -31,11 +31,6 @@ body {
   margin: var(--spacing-lg) auto;
   padding: 0 var(--spacing-md);
   max-width: var(--container-max-width);
-  background: radial-gradient(
-    circle at top,
-    var(--color-bg-gradient-start),
-    var(--color-bg-gradient-end) 60%
-  );
   color: var(--color-text-primary);
   font-family: var(--font-family);
   min-height: 100vh;
