@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="/img/icon/apple-icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/img/icon/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/icon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/img/icon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/icon/favicon-16x16.png">
@@ -32,7 +32,7 @@
             color: #a0a0a0
         }
 
-        .todo input:checked + span {
+        .todo input:checked+span {
             text-decoration: line-through;
             opacity: .6
         }
@@ -45,7 +45,7 @@
 
     <h2>infra</h2>
     <p>frontend: vercel with cloudflare (orange cloud)<br>
-    backend: dragonhispeed, cloudflare worker, vercel serverless function</p>
+        backend: dragonhispeed, cloudflare worker, vercel serverless function</p>
 
     <h2>link</h2>
     <ul>
@@ -56,6 +56,15 @@
 
     <h2>plan</h2>
     <ul class="todo">
+        <span>working on:</span>
+        <li>
+            <label>
+                <input type="checkbox" disabled>
+                <span>short/qrcode url service e.g. go.thatako.net/something for students/teachers to use, currently
+                    working on <a href="./short/">here</a></span>
+            </label>
+        </li>
+        <br><span>plan:</span>
         <li>
             <label>
                 <input type="checkbox" disabled>
@@ -75,12 +84,7 @@
                 <span>create status.thatako.net so no panic</span>
             </label>
         </li>
-        <li>
-            <label>
-                <input type="checkbox" disabled>
-                <span>short/qrcode url service e.g. go.thatako.net/something for students/teachers to use</span>
-            </label>
-        </li>
+        <br><span>done:</span>
         <li>
             <label>
                 <input type="checkbox" checked disabled>
@@ -104,11 +108,12 @@
 
     <h2>contact</h2>
     <p>email: <a href="mailto:aitji@duck.com">aitji@duck.com</a><br>
-    discord: <a href="https://aitji.is-a.dev/discord">aitji</a><br>
-    github: <a href="https://github.com/aitji">aitji</a></p>
+        discord: <a href="https://aitji.is-a.dev/discord">aitji</a><br>
+        github: <a href="https://github.com/aitji">aitji</a></p>
 
     <footer>
-        &copy;thatako.net&trade; ; this website is not (currently) for thatako school (yet), but there is a plan for it *wink*
+        &copy;thatako.net&trade; ; this website is not (currently) for thatako school (yet), but there is a plan for it
+        *wink*
     </footer>
 </body>
 
