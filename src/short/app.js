@@ -61,12 +61,11 @@ const renderList = links => {
             <tr>
                 <td>
                     <a href="https://go.thatako.net/${l.slug}" target="_blank">${l.slug}</a>
-                    <button class="btn btn-sm btn-outline ms-2" data-copy="https://go.thatako.net/${l.slug}">คัดลอก</button>
                 </td>
                 <td>${truncate(l.to)}</td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-secondary" data-edit="${l.slug}">แก้ไข</button>
-                    <button class="btn btn-sm btn-danger" data-revoke="${l.slug}">ลบ</button>
+                    <button class="btn btn-sm btn-secondary mt-2" data-edit="${l.slug}" data-to="${l.to}">แก้ไข</button>
+                    <button class="btn btn-sm btn-outline-danger mt-2" data-revoke="${l.slug}">ลบ</button>
                 </td>
             </tr>`)
             .join("")
@@ -109,7 +108,7 @@ const createLink = async () => {
     setBusy(true)
     try {
         const r = await api("/create", { slug, to, key })
-        if (!r.ok) return toast(r.msg || "เกิดข้อผิดพลาด", false)
+        if (!r.ok) return toast(errText(r.msg), false)
 
         toast("สร้างลิ้งก์สำเร็จ")
         $("slug").value = ""
@@ -128,11 +127,26 @@ const copyLink = async slug => {
 }
 
 /** @param {string} slug */
-const openEdit = slug => {
-    editing = slug
-    $("newSlug").value = ""
-    $("newTo").value = ""
+const openEdit = dataset => {
+    editing = dataset
+    $("newSlug").placeholder = dataset.edit
+    $("newTo").placeholder = dataset.to
+    $("newSlug").value = ''
+    $("newTo").value = ''
     new bootstrap.Modal($("editModal")).show()
+}
+
+/** @param {string} m */
+const errText = m => {
+    if (!m) return "เกิดข้อผิดพลาด"
+    setBusy(false)
+    switch (m) {
+        case "duplicate": return "ชื่อนี้ถูกใช้แล้ว ท่านสามารถเพิ่ม '/' ได้เช่น go.thatako.net/tree/apple"
+        case "bad slug": return "ชื่อลิงก์ย่อไม่ถูกต้อง"
+        case "bad url": return "URL ไม่ถูกต้อง"
+        case "missing slug, to, key": return "ข้อมูลไม่ครบ"
+        default: return "เกิดข้อผิดพลาดที่ไม่สามารถหาข้อสรุปได้ กรุณาลองใหม่"
+    }
 }
 
 const saveEdit = async () => {
@@ -148,19 +162,20 @@ const saveEdit = async () => {
     setBusy(true)
     try {
         const r = await api("/edit", {
-            slug: editing,
+            slug: editing.edit,
             newSlug: newSlug || undefined,
             to: newTo || undefined,
             key
         })
 
-        toast(r.ok ? "บันทึกสำเร็จ" : "บันทึกล้มเหลว", r.ok)
+        if (!r.ok) return toast(errText(r.msg), false)
 
-        if (r.ok) {
-            bootstrap.Modal.getInstance($("editModal")).hide()
-            await loadLinks()
-        }
-    } catch { toast("การบันทึกล้มเหลว", false) }
+        toast("บันทึกสำเร็จแล้ว")
+        bootstrap.Modal.getInstance($("editModal")).hide()
+        await loadLinks()
+    } catch (e) {
+        toast(`การบันทึกล้มเหลว`, false)
+    }
     setBusy(false)
 }
 
@@ -171,7 +186,9 @@ const revoke = async slug => {
     setBusy(true)
     try {
         const r = await api("/revoke", { slug, key: $("key").value.trim() })
-        toast(r.ok, r.ok)
+        if (!r.ok) return toast(errText(r.msg), false)
+
+        toast("ลบสำเร็จ")
         await loadLinks()
     } catch { toast("การลบล้มเหลว", false) }
     setBusy(false)
@@ -223,10 +240,16 @@ const initEvents = () => {
     $("list").onclick = async e => {
         e.preventDefault()
         const b = e.target.closest("button")
-        if (!b || busy) return
-        if (b.dataset.copy) await copyLink(b.dataset.copy)
-        if (b.dataset.edit) openEdit(b.dataset.edit)
-        if (b.dataset.revoke) await revoke(b.dataset.revoke)
+        const a = e.target.closest("a")
+        if (busy) return
+
+        if (a) {
+            console.log(a)
+            await copyLink(a.href)
+        } else if (b) {
+            if (b.dataset.edit) openEdit(b.dataset)
+            if (b.dataset.revoke) await revoke(b.dataset.revoke)
+        }
     }
 
     $("slug").onkeydown = e => {

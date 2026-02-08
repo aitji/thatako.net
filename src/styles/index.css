@@ -58,3 +58,23 @@ a {
 .toast-container {
   z-index: 2000;
 }
+
+
+
+.mobile-hidden {
+  display: block;
+}
+
+.pc-hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+
+  .pc-hidden {
+    display: block;
+  }
+}
