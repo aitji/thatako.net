@@ -60,8 +60,8 @@ const renderList = links => {
             .map(l => `
             <tr>
                 <td>
-                    <a href="/${l.slug}" target="_blank">${l.slug}</a>
-                    <button class="btn btn-sm btn-outline ms-2" data-copy="${l.slug}">คัดลอก</button>
+                    <a href="https://go.thatako.net/${l.slug}" target="_blank">${l.slug}</a>
+                    <button class="btn btn-sm btn-outline ms-2" data-copy="https://go.thatako.net/${l.slug}">คัดลอก</button>
                 </td>
                 <td>${truncate(l.to)}</td>
                 <td class="text-end">
