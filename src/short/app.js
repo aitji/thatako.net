@@ -10,7 +10,7 @@ const $ = id => document.getElementById(id)
 /** @param {string} slug */
 const validSlug = slug =>
     slug &&
-    slug.length < MAX_SLUG_LENGTH &&
+    slug.length <= MAX_SLUG_LENGTH &&
     !slug.startsWith("/") &&
     !slug.startsWith("api/")
 
@@ -229,8 +229,13 @@ const initEvents = () => {
         if (b.dataset.revoke) await revoke(b.dataset.revoke)
     }
 
-    $("slug").onkeypress = e => e.key === "Enter" && createLink()
-    $("to").onkeypress = e => e.key === "Enter" && createLink()
+    $("slug").onkeydown = e => {
+        if (e.key === "Enter") createLink()
+    }
+
+    $("to").onkeydown = e => {
+        if (e.key === "Enter") createLink()
+    }
 }
 
 const init = () => {
