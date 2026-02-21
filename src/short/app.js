@@ -1,4 +1,4 @@
-import "./boostrap.js"
+import "../short/boostrap.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
