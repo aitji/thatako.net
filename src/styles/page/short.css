@@ -402,7 +402,7 @@
 
 /* responsive */
 /* mobile fix */
-@media (max-width: 720px) {
+@media (max-width: 970px) {
   .page-grid {
     grid-template-columns: 1fr;
     gap: 16px;
