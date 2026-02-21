@@ -1,7 +1,8 @@
+import "./boostrap.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
-const TOAST_DELAY = 2500
+const TOAST_DELAY = 3000
 
 let editing = null
 let busy = false
@@ -39,10 +40,15 @@ const toast = (msg, ok = true) => {
     const el = document.createElement("div")
     el.className = `toast align-items-center text-bg-${ok ? "success" : "danger"} border-0`
     el.innerHTML = `
-    <div class="d-flex">
-        <div class="toast-body">${msg}</div>
-        <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>`
+        <i class="fa-solid ${!ok ? 'fa-triangle-exclamation' : 'fa-check'}"
+            aria-hidden="true"
+            style="color:${!ok ? 'var(--color-text-danger)' : 'var(--color-badge-green-text)'}"></i>
+        <span>${msg || 'ไม่มีข้อความ'}</span>
+        <button class="toast-close" aria-label="ปิด">
+            <i class="fa-solid fa-xmark"></i>
+        </button>`
+    el.querySelector(".toast-close").onclick = () => el.dispatchEvent(new Event('hidden.bs.toast'))
+
     $("toasts").appendChild(el)
     new bootstrap.Toast(el, { delay: TOAST_DELAY }).show()
     el.addEventListener("hidden.bs.toast", () => el.remove())

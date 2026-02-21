@@ -132,7 +132,7 @@
           </a>
           <a href="#about" class="sb-link" data-page="about">
             <i class="fa-solid fa-circle-info" aria-hidden="true"></i> เกี่ยวกับ
-            <span class="sb-badge green">new</span>
+            <span class="sb-badge orange">wip</span>
           </a>
         </div>
 
@@ -151,9 +151,9 @@
               Public API
               <i class="fa-solid fa-chevron-right sb-chevron" id="api-section-chevron" aria-hidden="true"></i>
             </button>
-            <div class="sb-section-body" id="api-section" role="group">
-              <div class="callout">
-                <i class="fa-solid fa-circle-info" style="color: #3b82f6"></i>
+            <div class="sb-section-warn" id="api-section" role="group">
+              <div class="callout warn">
+                <i class="fa-solid fa-triangle-exclamation"></i>
                 <p>กำลังพัฒนา ข้อมูลด้านล่างเป็นเพียงตัวอย่าง</p>
               </div>
               <a href="#api-overview" class="sb-link">
@@ -275,7 +275,7 @@
             <h3>URL Shortener (go.thatako.net)</h3>
             <p>บริการย่อลิ้งก์สำหรับนักเรียนและครู สร้าง slug ที่จำง่ายและ QR code สำหรับแจกในห้องเรียน</p>
             <div class="callout">
-              <i class="fa-solid fa-circle-info" style="color: #3b82f6"></i>
+              <i class="fa-solid fa-circle-info"></i>
               <p>กำลังพัฒนา - ใช้งานได้บางส่วนแล้วที่ <a href="./short">thatako.net/short</a></p>
             </div>
 
@@ -289,7 +289,7 @@
               สามารถขอ subdomain ของเราได้ฟรี เช่น <code>[name].id.thatako.net</code></p>
 
             <div class="callout warn">
-              <i class="fa-solid fa-triangle-exclamation" style="color: #fb923c"></i>
+              <i class="fa-solid fa-triangle-exclamation"></i>
               <p>ยังอยู่ในขั้นตอนการวางแผน ยังไม่เปิดให้สมัคร</p>
             </div>
           </div>
@@ -353,11 +353,11 @@
             </li>
             <li class="todo-item done">
               <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
-              <span>Apply orange cloud ที่ root domain</span>
+              <span>เปลี่ยน dns จาก dragonhispeed เป็น cloudflare แล้ว orange cloud ที่ root domain</span>
             </li>
             <li class="todo-item done">
               <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
-              <span>Migrate website พร้อม self-minified code</span>
+              <span>อัพเกรด website พร้อมทำให้ย่อโค๊ดตัวเอง</span>
             </li>
           </ul>
         </div>
