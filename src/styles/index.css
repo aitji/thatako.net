@@ -309,8 +309,16 @@
 .content {
   flex: 1;
   padding: var(--space-xl) 48px;
-  /* max-width: var(--content-max-width); */
   min-width: 0;
+}
+
+.page-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  margin-bottom: 32px;
 }
 
 .content h1 {
@@ -604,6 +612,8 @@ input::placeholder {
   font-size: 13px;
   margin-bottom: 12px;
 }
+
+.page-meta  .dot { opacity: .4; }
 
 /* responsive (@.@) */
 
