@@ -613,9 +613,22 @@ input::placeholder {
   margin-bottom: 12px;
 }
 
-.page-meta  .dot { opacity: .4; }
+.page-meta .dot { opacity: .4; }
+.mobile-hidden { display: block; }
+.pc-hidden { display: none; }
 
 /* responsive (@.@) */
+
+
+@media (max-width: 400px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .pc-hidden {
+    display: block;
+  }
+}
 
 /* tablet: hide right TOC */
 @media (max-width: 1024px) {

@@ -26,7 +26,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 24px;
-  height: var(--topbar-height);
+  min-height: var(--topbar-height);
   gap: 16px;
   z-index: var(--z-topbar);
 }
