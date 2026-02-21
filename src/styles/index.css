@@ -554,11 +554,11 @@ input::placeholder {
 }
 
 #key {
-  -webkit-text-security: disc;
+  -webkit-text-security: none;
 }
 
 #show-pass:checked ~ #key {
-  -webkit-text-security: none;
+  -webkit-text-security: disc;
 }
 
 .toggle-pass .eye-slash {
