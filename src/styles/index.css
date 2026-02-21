@@ -30,6 +30,8 @@
 
 .logo-dot {
   background-image: url(/img/icon/apple-icon-120x120.png);
+  background-size: cover;
+  opacity: .8;
   width: 32px;
   height: 32px;
   display: inline-block;
