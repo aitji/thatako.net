@@ -99,7 +99,7 @@ function injectFooter(opts = {}) {
   footer.setAttribute('role', 'contentinfo')
 
   footer.innerHTML = `
-    <span>&copy${year} <a href="https://thatako.net">thatako.net</a>&trade</span>
+    <span>&copy${year} <a href="https://thatako.net">thatako.net</a>&trade;</span>
     <span class="footer-dot">·</span>
     <span>not (currently) official - but there's a plan for it <em>*wink*</em></span>
     <div class="footer-right">
