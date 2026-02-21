@@ -1,122 +1,385 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>thatako.net</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ศูนย์รวมข้อมูลท่าตะโกพิทยาคม</title>
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#4f5d97">
 
-    <meta name="color-scheme" content="dark">
+  <!-- icon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
+  <link rel="manifest" href="/img/icon/manifest.json">
 
-    <!-- icon -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/icon/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/icon/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/icon/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/icon/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/icon/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/icon/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/icon/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/icon/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/icon/favicon-16x16.png">
-    <link rel="manifest" href="/img/icon/manifest.json">
-    <meta name="msapplication-TileColor" content="#202036">
-    <meta name="msapplication-TileImage" content="/img/icon/ms-icon-144x144.png">
-    <meta name="theme-color" content="#202036">
-    <link rel="stylesheet" href="./styles/index.css">
-    <style>
-        footer {
-            margin-top: 40px;
-            font-size: .9em;
-            color: #a0a0a0
-        }
+  <!-- open graph meta tags -->
+  <meta property="og:site_name" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+  <meta property="og:title" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+  <meta property="og:description"
+    content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก">
+  <meta property="og:image" content="https://thatako.net/img/banner.png">
+  <meta property="og:image:type" content="image/png">
 
-        .todo input:checked+span {
-            text-decoration: line-through;
-            opacity: .6
-        }
-    </style>
+  <meta property="og:url" content="https://thatako.net">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"
+    content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+  <!-- twitter cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://thatako.net/img/banner.png">
+  <meta name="twitter:image:alt"
+    content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+  <!-- SEO tags -->
+  <meta name="description"
+    content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก" />
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="aitji">
+
+  <!-- Website maintained by @aitji -->
+  <link rel="canonical" href="https://thatako.net">
+  <link rel="preload" as="image" href="/img/icon/favicon-32x32.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "ศูนย์รวมข้อมูลท่าตะโกพิทยาคม",
+    "alternateName": "thatako.net",
+    "inLanguage": "th",
+    "url": "https://thatako.net",
+    "logo": "https://thatako.net/img/icon/favicon-180x180.png",
+    "sameAs": [
+      "https://pr.thatako.net",
+      "https://thatako-council.com",
+      "https://thatako.ac.th"
+    ],
+    "founder": {
+      "@type": "Person",
+      "name": "aitji",
+      "url": "https://aitji.is-a.dev",
+      "sameAs": [
+        "https://github.com/aitji",
+        "https://www.youtube.com/@aitji.",
+
+        "https://pr.thatako.net",
+        "https://thatako-council.com"
+      ],
+      "image": "https://aitji.is-a.dev/img/favicon-180x180.png",
+      "description": "Curious council student, full-stack developer, and code optimizer who loves building cool things.",
+      "jobTitle": "Student Developer",
+      "affiliation": {
+        "@type": "EducationalOrganization",
+        "name": "Thatakophittayakom School"
+      }
+    }
+  }
+  </script>
+
+  <!-- styles -->
+  <link rel="stylesheet" href="./styles/index.css">
+  <link rel="stylesheet" href="./styles/home.css">
 </head>
 
 <body>
-    <h2>hi this is <a>thatako.net</a></h2>
-    <p>this website does not have any function (yet)</p>
 
-    <h2>infra</h2>
-    <p>frontend: vercel with cloudflare (orange cloud)<br>
-        backend: dragonhispeed, cloudflare worker, vercel serverless function</p>
+  <header class="topbar" role="banner">
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="sidebar">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
 
-    <h2>link</h2>
-    <ul>
-        <li><a href="https://aitji.is-a.dev">aitji.is-a.dev</a> - my web :p</li>
-        <li><a href="https://thatako-council.com">thatako-council.com</a> - thatako school council website</li>
-        <li><a href="https://pr.thatako.net">pr.thatako.net</a> - thatako school public relation website</li>
-    </ul>
+    <a href="/" class="topbar-title" aria-label="thatako.net home">
+      <span class="logo-dot" aria-hidden="true"></span>
+      thatako.net
+      <span class="sb-badge orange">wip</span>
+    </a>
 
-    <h2>plan</h2>
-    <ul class="todo">
-        <span>working on:</span>
-        <li>
-            <label>
-                <input type="checkbox" disabled>
-                <span>short/qrcode url service e.g. go.thatako.net/something for students/teachers to use, currently
-                    working on <a href="./short/">here</a></span>
-            </label>
-        </li>
-        <br><span>plan:</span>
-        <li>
-            <label>
-                <input type="checkbox" disabled>
-                <span>give talent students a subdomain maybe like [aitji].id.thatako.net or
-                    [aitji].student.thatako.net</span>
-            </label>
-        </li>
-        <li>
-            <label>
-                <input type="checkbox" disabled>
-                <span>some sort of public api for students/teachers to use</span>
-            </label>
-        </li>
-        <li>
-            <label>
-                <input type="checkbox" disabled>
-                <span>create status.thatako.net so no panic</span>
-            </label>
-        </li>
-        <br><span>done:</span>
-        <li>
-            <label>
-                <input type="checkbox" checked disabled>
-                <span>give council and pr a subdomain of thatako.net e.g. council.thatako.net, pr.thatako.net</span>
-            </label>
-        </li>
-        <li>
-            <label>
-                <input type="checkbox" checked disabled>
-                <span>apply orange cloud to root</span>
-            </label>
-        </li>
-        <li>
-            <label>
-                <input type="checkbox" checked disabled>
-                <span>migrate website with self-minified code</span>
-            </label>
-        </li>
-    </ul>
+    <div class="topbar-search" role="search">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" placeholder="ค้นหา..." aria-label="ค้นหาในเว็บไซต์">
+      <div class="topbar-kbd" aria-hidden="true">
+        <kbd>ctrl</kbd><kbd>k</kbd>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <a href="https://github.com/aitji/thatako.net" class="topbar-btn" target="_blank" rel="noopener"
+        aria-label="GitHub">
+        <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
+      </a>
+      <a href="/short/" class="topbar-btn">
+        <i class="fa-solid fa-link" aria-hidden="true"></i> go.thatako.net
+      </a>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+  <div class="layout">
+    <!-- sidebar <!!!!! this will got auto create by javascript later...> -->
+    <nav class="sidebar" id="sidebar" aria-label="เมนูหลัก">
+      <div class="sidebar-inner">
+
+        <div class="sb-group">
+          <div class="sb-group-label">หน้าหลัก</div>
+          <a href="/" class="sb-link active" data-page="home">
+            <i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก
+          </a>
+          <a href="#about" class="sb-link" data-page="about">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i> เกี่ยวกับ
+            <span class="sb-badge green">new</span>
+          </a>
+        </div>
+
+        <div class="sb-group">
+          <div class="sb-group-label">บริการ</div>
+          <a href="/short/" class="sb-link">
+            <i class="fa-solid fa-link" aria-hidden="true"></i> URL Shortener
+          </a>
+          <a href="/short/" class="sb-link">
+            <i class="fa-solid fa-qrcode" aria-hidden="true"></i> QR Generator
+          </a>
+
+          <div class="sb-section">
+            <button class="sb-section-toggle" data-target="api-section" aria-expanded="false">
+              <i class="fa-solid fa-code" aria-hidden="true"></i>
+              Public API
+              <i class="fa-solid fa-chevron-right sb-chevron" id="api-section-chevron" aria-hidden="true"></i>
+            </button>
+            <div class="sb-section-body" id="api-section" role="group">
+              <div class="callout">
+                <i class="fa-solid fa-circle-info" style="color: #3b82f6"></i>
+                <p>กำลังพัฒนา ข้อมูลด้านล่างเป็นเพียงตัวอย่าง</p>
+              </div>
+              <a href="#api-overview" class="sb-link">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> Overview
+              </a>
+              <a href="#api-auth" class="sb-link">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> Authentication
+              </a>
+              <a href="#api-endpoints" class="sb-link">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> Endpoints
+              </a>
+              <a href="#api-limits" class="sb-link">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> Rate Limits
+              </a>
+            </div>
+          </div>
+
+          <a href="#status" class="sb-link">
+            <i class="fa-solid fa-server" aria-hidden="true"></i> Status
+            <span class="sb-badge orange">wip</span>
+          </a>
+        </div>
+
+        <div class="sb-group">
+          <div class="sb-group-label">โรงเรียน</div>
+          <a href="https://thatako-council.com" class="sb-link" target="_blank" rel="noopener">
+            <i class="fa-solid fa-users" aria-hidden="true"></i> สภานักเรียน
+            <i class="fa-solid fa-arrow-up-right-from-square sb-ext" aria-label="(opens in new tab)"></i>
+          </a>
+          <a href="https://pr.thatako.net" class="sb-link" target="_blank" rel="noopener">
+            <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> ประชาสัมพันธ์
+            <i class="fa-solid fa-arrow-up-right-from-square sb-ext" aria-label="(opens in new tab)"></i>
+          </a>
+
+          <div class="sb-section">
+            <button class="sb-section-toggle" data-target="subdomain-section" aria-expanded="false">
+              <i class="fa-solid fa-earth-asia" aria-hidden="true"></i>
+              Subdomains
+              <i class="fa-solid fa-chevron-right sb-chevron" id="subdomain-section-chevron" aria-hidden="true"></i>
+            </button>
+            <div class="sb-section-body" id="subdomain-section" role="group">
+              <a href="https://thatako-council.com" class="sb-link" target="_blank" rel="noopener">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> council.thatako.net
+              </a>
+              <a href="https://pr.thatako.net" class="sb-link" target="_blank" rel="noopener">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> pr.thatako.net
+              </a>
+              <a href="https://go.thatako.net" class="sb-link" target="_blank" rel="noopener">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> go.thatako.net
+              </a>
+              <a href="#" class="sb-link">
+                <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> *.id.thatako.net
+                <span class="sb-badge muted">plan</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="sb-group">
+          <div class="sb-group-label">Infrastructure</div>
+          <a href="https://www.cloudflare.com" target="_blank" class="sb-link">
+            <i class="fa-solid fa-cloud" aria-hidden="true"></i> Cloudflare
+          </a>
+          <a href="https://vercel.com" target="_blank" class="sb-link">
+            <i class="fa-brands fa-node-js" aria-hidden="true"></i> Vercel
+          </a>
+          <a href="https://www.dragonhispeed.com" target="_blank" class="sb-link">
+            <i class="fa-solid fa-dragon" aria-hidden="true"></i> Dragonhispeed
+          </a>
+        </div>
+
+        <div class="sb-group">
+          <div class="sb-group-label">ติดต่อ</div>
+          <a href="mailto:aitji@duck.com" class="sb-link">
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i> aitji@duck.com
+          </a>
+          <a href="https://aitji.is-a.dev/discord" class="sb-link" target="_blank" rel="noopener">
+            <i class="fa-brands fa-discord" aria-hidden="true"></i> Discord
+            <i class="fa-solid fa-arrow-up-right-from-square sb-ext" aria-hidden="true"></i>
+          </a>
+          <a href="https://github.com/aitji" class="sb-link" target="_blank" rel="noopener">
+            <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
+            <i class="fa-solid fa-arrow-up-right-from-square sb-ext" aria-hidden="true"></i>
+          </a>
+        </div>
+
+      </div><!-- /sidebar-inner -->
+
+      <div class="sidebar-footer">
+        <span class="sf-dot pulse" aria-hidden="true"></span>
+        <a href="#blogs" class="unnoticed-link">all systems up &nbsp;·&nbsp; thatako.net</a>
+        <!-- maybe some small blogs from me like something go wrongs -->
+      </div>
+    </nav>
 
 
-    <h2>contact</h2>
-    <p>email: <a href="mailto:aitji@duck.com">aitji@duck.com</a><br>
-        discord: <a href="https://aitji.is-a.dev/discord">aitji</a><br>
-        github: <a href="https://github.com/aitji">aitji</a></p>
+    <!-- MAIN CONTENT -->
+    <div class="main">
+      <article class="content" id="page-content">
 
-    <footer>
-        &copy;thatako.net&trade; ; this website is not (currently) for thatako school (yet), but there is a plan for it
-        *wink*
-    </footer>
+        <div class="hero">
+          <div class="hero-eyebrow">thatako.net</div>
+          <h1>hi this is thatako.net</h1>
+          <p>Infrastructure สำหรับโรงเรียน thatako - URL shortener, QR codes, subdomains และ public API
+            สำหรับนักเรียนและครู</p>
+          <div class="hero-actions">
+            <a href="/short/" class="btn btn-primary">
+              <i class="fa-solid fa-link" aria-hidden="true"></i> ย่อลิ้งก์
+            </a>
+            <a href="https://github.com/aitji/thatako.net" class="btn btn-ghost" target="_blank" rel="noopener">
+              <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
+            </a>
+          </div>
+        </div>
+
+        <div id="services">
+          <h2>บริการ</h2>
+          <div id="services.go">
+            <h3>URL Shortener (go.thatako.net)</h3>
+            <p>บริการย่อลิ้งก์สำหรับนักเรียนและครู สร้าง slug ที่จำง่ายและ QR code สำหรับแจกในห้องเรียน</p>
+            <div class="callout">
+              <i class="fa-solid fa-circle-info" style="color: #3b82f6"></i>
+              <p>กำลังพัฒนา - ใช้งานได้บางส่วนแล้วที่ <a href="./short">thatako.net/short</a></p>
+            </div>
+
+            <pre><code>GET https://go.thatako.net/{slug}
+→ 302 redirect to target URL</code></pre>
+          </div>
+
+          <div id="services.subdomains">
+            <h3>Subdomains สำหรับนักเรียน</h3>
+            <p>แผนในอนาคตจะมีการให้ subdomain แก่นักเรียนที่มีความสามารถแล้วอยากเขียน website ของตัวเองแต่ไม่มีโดเมนใช้
+              สามารถขอ subdomain ของเราได้ฟรี เช่น <code>[name].id.thatako.net</code></p>
+
+            <div class="callout warn">
+              <i class="fa-solid fa-triangle-exclamation" style="color: #fb923c"></i>
+              <p>ยังอยู่ในขั้นตอนการวางแผน ยังไม่เปิดให้สมัคร</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="infra">
+          <h2>Infrastructure</h2>
+
+          <div class="infra-item">
+            <div class="infra-label">Frontend</div>
+            <div class="infra-value">Vercel</div>
+            <div class="infra-role">Static + Edge Functions</div>
+          </div>
+          <div class="infra-item">
+            <div class="infra-label">CDN / Proxy</div>
+            <div class="infra-value">Cloudflare</div>
+            <div class="infra-role">Orange cloud, WAF, DNS</div>
+          </div>
+          <div class="infra-item">
+            <div class="infra-label">Backend</div>
+            <div class="infra-value">Dragonhispeed</div>
+            <div class="infra-role">Primary API server</div>
+          </div>
+          <div class="infra-item">
+            <div class="infra-label">Serverless</div>
+            <div class="infra-value">CF Workers</div>
+            <div class="infra-role">Edge logic, redirects</div>
+          </div>
+        </div>
+
+        <div id="plan">
+          <h2>แผนงาน</h2>
+          <ul class="todo-list" aria-label="รายการแผนงาน">
+            <li class="todo-section-label">กำลังทำ</li>
+
+            <li class="todo-item wip">
+              <div class="todo-icon"><i class="fa-solid fa-spinner spinning" aria-hidden="true"></i></div>
+              <span>short/qrcode url service - <a href="/short/">go.thatako.net/...</a></span>
+            </li>
+
+            <li class="todo-section-label">แผน</li>
+
+            <li class="todo-item">
+              <div class="todo-icon"></div>
+              <span>ให้ subdomain แก่นักเรียน เช่น [name].id.thatako.net</span>
+            </li>
+            <li class="todo-item">
+              <div class="todo-icon"></div>
+              <span>Public API สำหรับนักเรียนและครู</span>
+            </li>
+            <li class="todo-item">
+              <div class="todo-icon"></div>
+              <span>status.thatako.net เพื่อตรวจสอบบริการ</span>
+            </li>
+
+            <li class="todo-section-label">เสร็จแล้ว</li>
+
+            <li class="todo-item done">
+              <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              <span>ให้ council และ pr ได้ subdomain - council.thatako.net, pr.thatako.net</span>
+            </li>
+            <li class="todo-item done">
+              <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              <span>Apply orange cloud ที่ root domain</span>
+            </li>
+            <li class="todo-item done">
+              <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              <span>Migrate website พร้อม self-minified code</span>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- TOC -->
+      <aside class="toc">
+        <div class="toc-label">on this page</div>
+
+        <a href="#services" class="toc-link">บริการ</a>
+        <div class="toc-sub">
+          <a href="#services.go" class="toc-link sub">go.thatako.net</a>
+          <a href="#services.subdomains" class="toc-link sub">[name].id.thatako.net</a>
+        </div>
+
+        <a href="#plan" class="toc-link">แผนงาน</a>
+      </aside>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+
+  <script type="module" src="./instructions.js"></script>
 </body>
 
 </html>
