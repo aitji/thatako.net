@@ -1,5 +1,3 @@
-import "./zLib/sidebar.js"
-
 function injectFooter(opts = {}) {
   const year = opts.year || new Date().getFullYear()
   const version = opts.version || ''
@@ -127,7 +125,7 @@ const _opts = {
   toc: true,
   search: true,
   footerOpts: {
-    version: 'v0.3-alpha',
+    version: 'v0.4-alpha',
   }
 }
 

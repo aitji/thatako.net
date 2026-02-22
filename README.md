@@ -201,7 +201,7 @@ npx serve public --ssl-cert cert.pem --ssl-key key.pem
 ```
 ©2026 thatako.net™ Proprietary software. All rights reserved. No redistribution, modification, or reuse without permission.
 
-Infra version : v0.3-alpha
+Infra version : v0.4-alpha
 Last updated  : Jan 2026
 Author        : aitji
 ```
