@@ -10,6 +10,7 @@ if (fs.existsSync('.gitignore')) ig.add(fs.readFileSync('.gitignore', 'utf8'))
 
 const SRC = 'src'
 const OUT = 'public'
+const WATCH = process.argv.includes('--watch')
 
 const ensure = p => fs.mkdirSync(p, { recursive: true })
 
@@ -86,13 +87,58 @@ const minifyJSFile = async (src, out) => {
     fs.writeFileSync(out, banner.js + r.code)
 }
 
+const esbuildContexts = new Map() // esbuild context cache for CSS watch mode
+const processFile = async (src, out) => {
+    ensure(path.dirname(out))
+
+    if (src.endsWith('.html')) {
+        fs.copyFileSync(src, out)
+        await minifyHTMLFile(out)
+        return
+    }
+
+    if (src.endsWith('.js')) {
+        await minifyJSFile(src, out)
+        return
+    }
+
+    if (src.endsWith('.css')) {
+        if (WATCH) {
+            // dispose old context if re-processing
+            if (esbuildContexts.has(src)) {
+                await esbuildContexts.get(src).dispose()
+                esbuildContexts.delete(src)
+            }
+            const ctx = await build({
+                entryPoints: [src],
+                outfile: out,
+                minify: true,
+                banner: { css: banner.css }
+            })
+
+            // esbuild in watch mode returns context with "watch"
+            // but using "fs.watch", just build normally
+        }
+        await build({
+            entryPoints: [src],
+            outfile: out,
+            minify: true,
+            banner: { css: banner.css }
+        })
+        return
+    }
+
+    fs.copyFileSync(src, out)
+}
+
+const srcToOut = src => path.join(OUT, path.relative(SRC, src).replace(/\\/g, '/'))
 const walk = async dir => {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         const src = path.join(dir, e.name)
         const rel = path.relative(SRC, src).replace(/\\/g, '/')
         if (ig.ignores(rel)) continue
 
-        const out = path.join(OUT, rel)
+        const out = srcToOut(src)
 
         if (e.isDirectory()) {
             ensure(out)
@@ -100,30 +146,7 @@ const walk = async dir => {
             continue
         }
 
-        ensure(path.dirname(out))
-
-        if (src.endsWith('.html')) {
-            fs.copyFileSync(src, out)
-            await minifyHTMLFile(out)
-            continue
-        }
-
-        if (src.endsWith('.js')) {
-            await minifyJSFile(src, out)
-            continue
-        }
-
-        if (src.endsWith('.css')) {
-            await build({
-                entryPoints: [src],
-                outfile: out,
-                minify: true,
-                banner: { css: banner.css }
-            })
-            continue
-        }
-
-        fs.copyFileSync(src, out)
+        await processFile(src, out)
     }
 }
 
@@ -132,9 +155,56 @@ const copyRoot = (name, output = OUT) => {
     fs.cpSync(name, path.join(output, name), { recursive: true })
 }
 
+const startWatch = () => {
+    console.log(`[watch] Watching ${SRC}/ for changes...`)
+
+    fs.watch(SRC, { recursive: true }, async (event, filename) => {
+        if (!filename) return
+
+        const rel = filename.replace(/\\/g, '/')
+        if (ig.ignores(rel)) return
+
+        const src = path.join(SRC, rel)
+        const out = path.join(OUT, rel)
+
+        // small debounce per file ti avoid duplicate events
+        const key = src
+        if (startWatch._timers?.has(key)) return
+        if (!startWatch._timers) startWatch._timers = new Map()
+        startWatch._timers.set(key, true)
+        setTimeout(() => startWatch._timers.delete(key), 100)
+
+        if (!fs.existsSync(src)) { // file del
+            if (fs.existsSync(out)) {
+                try {
+                    fs.rmSync(out, { recursive: true, force: true })
+                    console.log(`[watch] deleted: ${out}`)
+                } catch (e) {
+                    console.error(`[watch] failed to delete ${out}:`, e.message)
+                }
+            }
+            return
+        }
+
+        const stat = fs.statSync(src)
+        if (stat.isDirectory()) { // new dir created
+            ensure(out)
+            console.log(`[watch] dir created: ${out}`)
+            return
+        }
+
+        try {
+            await processFile(src, out)
+            console.log(`[watch] ${event === 'rename' ? 'Created' : 'Updated'}: ${src} → ${out}`)
+        } catch (e) { console.error(`[watch] Error processing ${src}:`, e.message) }
+    })
+}
+
 (async () => {
-    fs.rmSync(OUT, { recursive: true, force: true })
-    ensure(OUT)
+    if (!WATCH) { // clean build
+        fs.rmSync(OUT, { recursive: true, force: true })
+        ensure(OUT)
+    } else ensure(OUT) // watch: ensure output exists, don't wipe it 
 
     await walk(SRC)
     // await minifyJSFile(
@@ -145,4 +215,7 @@ const copyRoot = (name, output = OUT) => {
     copyRoot('img')
     // copyRoot('ads.txt')
     // copyRoot('sitemap.xml')
+
+    if (WATCH) startWatch()
+    else console.log('Build complete.')
 })()
