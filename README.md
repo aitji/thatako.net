@@ -159,11 +159,10 @@ npm install
 ### เปิดเว็บไซต์บนเครื่องแบบ HTTP
 
 ```
-npm run build
-npm run dev:http
+npm run dev:http_live
 ```
 
-<small>เว็บไซต์จะถูกเปิดใน http://localhost:3000</small>
+<small>เว็บไซต์จะถูกเปิดใน http://localhost:3000 พร้อม live reload อัตโนมัติเมื่อมีการแก้ไขไฟล์</small>
 
 ### เปิดเว็บไซต์บนเครื่องแบบ HTTPS
 
@@ -173,23 +172,16 @@ npm run dev:http
 
 ```
 mkcert -install
-
---ssl-key localhost+2-key.pem
 mkcert localhost 127.0.0.1 ::1
 ```
 
 #### เปิดเว็บไซต์แบบ HTTPS
 
 ```
-npm run build
-
-npx serve public --ssl-cert cert.pem --ssl-key key.pem
-หรือ npx serve public --ssl-cert localhost+2.pem
-
-หรือ npm run dev:https (อย่าแก้ไข package.json ให้เปลี่ยนชื่อไฟล์แทน หากต้องการ PR)
+npm run dev:https_live
 ```
 
-<small>เว็บไซต์จะถูกเปิดใน https://localhost:3000
+<small>เว็บไซต์จะถูกเปิดใน https://localhost:3443 พร้อม live reload อัตโนมัติเมื่อมีการแก้ไขไฟล์
 <br>Browser อาจไม่เชื่อถือการจดทะเบียนเองแบบนี้ แต่สามารถใช้เว็บไซต์แบบ HTTPS ได้ปกติ</small>
 
 ## ติดต่อ
