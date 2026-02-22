@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ย่อลิ้งก์ - ศูนย์รวมข้อมูลท่าตะโกพิทยาคม</title>
+    <title>ย่อลิงก์ - ศูนย์รวมข้อมูลท่าตะโกพิทยาคม</title>
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#4f5d97">
 
@@ -111,7 +111,7 @@
         <div class="page-header">
             <div class="page-header-eyebrow">URL Shortener</div>
             <h1>go.thatako.net/*</h1>
-            <p>ย่อลิ้งก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</p>
+            <p>ย่อลิงก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</p>
         </div>
 
         <div class="page-grid">
@@ -121,7 +121,7 @@
                 <div class="panel">
                     <div class="panel-header">
                         <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                        สร้างลิ้งก์ย่อใหม่
+                        สร้างลิงก์ย่อใหม่
                     </div>
                     <div class="panel-body">
 
@@ -153,7 +153,7 @@
                         <!-- slug -->
                         <div class="field">
                             <div class="field-label">
-                                ลิ้งก์ย่อ
+                                ลิงก์ย่อ
                             </div>
                             <p class="muted">ตั้งชื่อที่ต้องการ เช่น openhouse2026</p>
                             <div class="input-row">
@@ -165,7 +165,7 @@
                         <!-- target URL -->
                         <div class="field">
                             <div class="field-label">
-                                ลิ้งก์เต็ม
+                                ลิงก์เต็ม
                             </div>
                             <p class="muted">ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com</p>
                             <input type="text" type="url" id="to" placeholder="https://example.com" required>
@@ -173,7 +173,7 @@
 
                         <button type="button" class="btn btn-primary btn-full" id="create">
                             <i class="fa-solid fa-link" aria-hidden="true"></i>
-                            สร้างลิ้งก์ย่อ
+                            สร้างลิงก์ย่อ
                         </button>
 
                     </div>
@@ -185,17 +185,17 @@
                 <div class="links-header">
                     <div class="links-title">
                         <i class="fa-solid fa-list" aria-hidden="true"></i>
-                        ลิ้งก์ที่ถืออยู่
+                        ลิงก์ที่ถืออยู่
                     </div>
                     <button class="btn btn-ghost" id="refresh" style="height:28px; padding:0 10px; font-size:11px;">
                         <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
                     </button>
                 </div>
 
-                <table class="links-table" aria-label="ตารางลิ้งก์">
+                <table class="links-table" aria-label="ตารางลิงก์">
                     <thead>
                         <tr>
-                            <th>ลิ้งก์ย่อ</th>
+                            <th>ลิงก์ย่อ</th>
                             <th>ปลายทาง</th>
                             <th style="text-align:right;">จัดการ</th>
                         </tr>
@@ -220,20 +220,20 @@
     <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalLabel">
         <div class="modal-box">
             <div class="modal-header">
-                <span id="editModalLabel">แก้ไขลิ้งก์</span>
+                <span id="editModalLabel">แก้ไขลิงก์</span>
                 <button class="modal-close" id="editModalClose" aria-label="ปิด">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="field">
-                    <div class="field-label">ลิ้งก์ย่อใหม่ <span
+                    <div class="field-label">ลิงก์ย่อใหม่ <span
                             style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
                     </div>
                     <input type="text" id="newSlug" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
                 <div class="field">
-                    <div class="field-label">ลิ้งก์เต็มใหม่ <span
+                    <div class="field-label">ลิงก์เต็มใหม่ <span
                             style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
                     </div>
                     <input type="url" id="newTo" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
