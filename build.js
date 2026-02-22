@@ -46,10 +46,9 @@ const bannerText = `
     Discord: @aitji (aitji.is-a.dev/discord)
       \\ tickets are fastest, DMs may be ignored
     GitHub: github.com/aitji
-      \\ this website is not open source
 
     | LEGAL ------------------------------------------------
-    "thatako.net" This site is not for Thatako School right now, but there is a plan wink-winked.
+    "thatako.net" This site is build for Thatako School, but fully build by @aitji wink-winked.
 `
 
 const banner = {

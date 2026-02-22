@@ -6,7 +6,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "dev:build": "node build.js --watch",
+    "dev:http": "npx serve public",
+    "dev:https": "npx serve public --ssl-cert localhost+2.pem --ssl-key localhost+2-key.pem"
   },
   "imports": {
     "#api/*": "./api/*"

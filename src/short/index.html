@@ -3,200 +3,282 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ย่อลิ้งก์ go.thatako.net</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ย่อลิ้งก์ - ศูนย์รวมข้อมูลท่าตะโกพิทยาคม</title>
     <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#4f5d97">
 
     <!-- icon -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/icon/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/icon/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/icon/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/icon/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/icon/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/icon/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/icon/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/icon/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
     <link rel="manifest" href="/img/icon/manifest.json">
-    <meta name="msapplication-TileColor" content="#202036">
-    <meta name="msapplication-TileImage" content="/img/icon/ms-icon-144x144.png">
-    <meta name="theme-color" content="#202036">
+
+    <!-- open graph meta tags -->
+    <meta property="og:site_name" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+    <meta property="og:title" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+    <meta property="og:description"
+        content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก">
+    <meta property="og:image" content="https://thatako.net/img/banner.png">
+    <meta property="og:image:type" content="image/png">
+
+    <meta property="og:url" content="https://thatako.net">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="th_TH">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"
+        content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+    <!-- twitter cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://thatako.net/img/banner.png">
+    <meta name="twitter:image:alt"
+        content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+    <!-- SEO tags -->
+    <meta name="description"
+        content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก" />
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="aitji">
+
+    <!-- Website maintained by @aitji -->
+    <link rel="canonical" href="https://thatako.net">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "ศูนย์รวมข้อมูลท่าตะโกพิทยาคม",
+      "alternateName": "thatako.net",
+      "inLanguage": "th",
+      "url": "https://thatako.net",
+      "logo": "https://thatako.net/img/icon/favicon-180x180.png",
+      "sameAs": [
+        "https://pr.thatako.net",
+        "https://thatako-council.com",
+        "https://thatako.ac.th"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "aitji",
+        "url": "https://aitji.is-a.dev",
+        "sameAs": [
+          "https://github.com/aitji",
+          "https://www.youtube.com/@aitji.",
+
+          "https://pr.thatako.net",
+          "https://thatako-council.com"
+        ],
+        "image": "https://aitji.is-a.dev/img/favicon-180x180.png",
+        "description": "Curious council student, full-stack developer, and code optimizer who loves building cool things.",
+        "jobTitle": "Student Developer",
+        "affiliation": {
+          "@type": "EducationalOrganization",
+          "name": "Thatakophittayakom School"
+        }
+      }
+    }
+    </script>
 
     <!-- styles -->
-    <link href="../styles/index.css" rel="stylesheet">
-    <link href="../short/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="../zStyles/index.css">
+    <link rel="stylesheet" href="../zStyles/anim.css">
+    <link rel="stylesheet" href="../zStyles/no-sidebar.css">
+    <link rel="stylesheet" href="../zStyles/page/short.css">
 
+    <!-- qr-lib -->
     <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 </head>
 
-<body data-bs-theme="dark">
-    <div class="container">
-        <!-- Header -->
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2 m-0">ย่อลิ้งก์ go.thatako.net/*</h1>
-            <button id="refresh" class="btn btn-sm btn-outline-light" aria-label="รีเฟรชข้อมูล">
-                <span class="refresh-icon">⟳</span> รีเฟรช
-            </button>
-        </header>
+<body>
+    <!-- topbar -->
+    <header class="topbar">
+        <span class="logo-dot"></span>
+        <a href="/" class="mobile-hidden topbar-logo">thatako.net</a>
+        <span class="topbar-sep mobile-hidden">/</span>
+        <span class="topbar-title">go.thatako.net</span>
 
-        <!-- Create Form -->
-        <section class="card p-4 mb-4" aria-labelledby="create-heading">
-            <h2 id="create-heading" class="visually-hidden">สร้างลิงก์ย่อใหม่</h2>
+        <div class="topbar-right">
+            <a href="/" class="btn btn-ghost" style="height:30px; font-size:11px;">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span class="mobile-hidden">กลับหน้าหลัก</span>
+            </a>
+        </div>
+    </header>
 
-            <form id="createForm" novalidate>
-                <!-- API Key Input -->
-                <div class="mb-3">
-                    <label for="key" class="form-label">
-                        รหัสลับ
-                        <span class="importance" role="alert">ห้ามแชร์กับคนอื่น</span>
-                        <button type="button" class="help" data-bs-toggle="tooltip"
-                            title="รหัสสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว"
-                            aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับรหัสลับ">
-                            ?
+    <!-- main content -->
+    <main class="page-wrap">
+
+        <div class="page-header">
+            <div class="page-header-eyebrow">URL Shortener</div>
+            <h1>go.thatako.net/*</h1>
+            <p>ย่อลิ้งก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</p>
+        </div>
+
+        <div class="page-grid">
+
+            <!-- left forms -->
+            <div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        สร้างลิ้งก์ย่อใหม่
+                    </div>
+                    <div class="panel-body">
+
+                        <!-- password -->
+                        <div class="field">
+                            <div class="field-label">
+                                รหัสลับ
+                                <span class="badge-warn">ห้ามแชร์</span>
+                            </div>
+                            <p class="muted">รหัสสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว</p>
+                            <div class="input-row">
+                                <input type="checkbox" id="show-pass" hidden checked>
+
+                                <input type="text" id="key" autocomplete="off" placeholder="รหัสลับของคุณ">
+
+                                <label for="show-pass" class="btn btn-ghost toggle-pass"
+                                    style="border-left:none; flex-shrink:0;">
+                                    <i class="fa-solid fa-eye eye"></i>
+                                    <i class="fa-solid fa-eye-slash eye-slash"></i>
+                                </label>
+
+                                <button type="button" class="btn btn-ghost" id="random"
+                                    style="border-left:none; flex-shrink:0;">
+                                    <i class="fa-solid fa-shuffle" aria-hidden="true"></i> สุ่ม
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- slug -->
+                        <div class="field">
+                            <div class="field-label">
+                                ลิ้งก์ย่อ
+                            </div>
+                            <p class="muted">ตั้งชื่อที่ต้องการ เช่น openhouse2026</p>
+                            <div class="input-row">
+                                <span class="input-prefix">go.thatako.net/</span>
+                                <input type="text" id="slug" placeholder="openhouse2026" maxlength="1024" required>
+                            </div>
+                        </div>
+
+                        <!-- target URL -->
+                        <div class="field">
+                            <div class="field-label">
+                                ลิ้งก์เต็ม
+                            </div>
+                            <p class="muted">ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com</p>
+                            <input type="text" type="url" id="to" placeholder="https://example.com" required>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-full" id="create">
+                            <i class="fa-solid fa-link" aria-hidden="true"></i>
+                            สร้างลิ้งก์ย่อ
                         </button>
-                    </label>
-                    <div class="input-group">
-                        <input type="text" id="key" class="form-control" autocomplete="off" aria-describedby="keyHelp">
-                        <button class="input-group-button btn btn-primary" id="random">สุ่ม</button>
+
                     </div>
                 </div>
+            </div>
 
-                <!-- Slug Input -->
-                <div class="mb-3">
-                    <label for="slug" class="form-label">
-                        ลิงก์ย่อ
-                        <button type="button" class="help" data-bs-toggle="tooltip"
-                            title="ตั้งชื่อที่ต้องการ เช่น openhouse2026" aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับลิงก์ย่อ">
-                            ?
-                        </button>
-                    </label>
-                    <div class="input-group">
-                        <span class="input-group-text">go.thatako.net/</span>
-                        <input type="text" id="slug" class="form-control" placeholder="openhouse2026" required
-                            maxlength="1024" aria-describedby="slugHelp">
+            <!-- right list -->
+            <div>
+                <div class="links-header">
+                    <div class="links-title">
+                        <i class="fa-solid fa-list" aria-hidden="true"></i>
+                        ลิ้งก์ที่ถืออยู่
                     </div>
-                    <div class="invalid-feedback">กรุณากรอกลิงก์ย่อที่ถูกต้อง</div>
+                    <button class="btn btn-ghost" id="refresh" style="height:28px; padding:0 10px; font-size:11px;">
+                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
+                    </button>
                 </div>
 
-                <!-- Target URL Input -->
-                <div class="mb-3">
-                    <label for="to" class="form-label">
-                        ลิงก์เต็ม
-                        <button type="button" class="help" data-bs-toggle="tooltip"
-                            title="ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com"
-                            aria-label="ข้อมูลเพิ่มเติมเกี่ยวกับลิงก์เต็ม">
-                            ?
-                        </button>
-                    </label>
-                    <input type="url" id="to" class="form-control" placeholder="https://example.com" required
-                        aria-describedby="toHelp">
-                    <div class="invalid-feedback">กรุณากรอก URL ที่ถูกต้อง</div>
-                </div>
-
-                <button type="submit" id="create" class="btn btn-primary w-100">
-                    สร้างลิ้งก์ย่อ
-                </button>
-            </form>
-        </section>
-
-        <!-- Links List -->
-        <section aria-labelledby="list-heading">
-            <h2 id="list-heading" class="h3 mb-3">ลิ้งก์ที่ถืออยู่</h2>
-
-            <div class="table-responsive">
-                <table class="table table-dark table-striped">
+                <table class="links-table" aria-label="ตารางลิ้งก์">
                     <thead>
                         <tr>
-                            <th scope="col">ลิงก์ย่อ</th>
-                            <th scope="col">ลิงก์เต็ม</th>
-                            <th scope="col" class="text-end">จัดการ</th>
+                            <th>ลิ้งก์ย่อ</th>
+                            <th>ปลายทาง</th>
+                            <th style="text-align:right;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="list">
                         <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                <div class="spinner-border spinner-border-sm me-2" role="status" id="loading">
-                                    <span class="visually-hidden">กำลังโหลด...</span>
+                            <td colspan="3">
+                                <div class="loading-state" id="loadingState">
+                                    <span class="spinner" id="loading"></span>
+                                    <span id="loading-text">กำลังโหลดข้อมูล...</span>
                                 </div>
-                                <p id="loading-text">กำลังโหลดข้อมูล...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <!-- Edit Modal -->
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content bg-dark text-light">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">แก้ไขลิงก์</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="ปิด"></button>
+        </div>
+    </main>
+
+    <!-- edit modal -->
+    <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalLabel">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="editModalLabel">แก้ไขลิ้งก์</span>
+                <button class="modal-close" id="editModalClose" aria-label="ปิด">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="field">
+                    <div class="field-label">ลิ้งก์ย่อใหม่ <span
+                            style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
                     </div>
-                    <form id="editForm">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="newSlug" class="form-label">
-                                    ลิงก์ย่อใหม่ <span class="text-muted">(ไม่จำเป็น)</span>
-                                </label>
-                                <input type="text" id="newSlug" class="form-control"
-                                    placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newTo" class="form-label">
-                                    ลิงก์เต็มใหม่ <span class="text-muted">(ไม่จำเป็น)</span>
-                                </label>
-                                <input type="url" id="newTo" class="form-control"
-                                    placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                ยกเลิก
-                            </button>
-                            <button type="submit" id="saveEdit" class="btn btn-primary">
-                                บันทึก
-                            </button>
-                        </div>
-                    </form>
+                    <input type="text" id="newSlug" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
+                </div>
+                <div class="field">
+                    <div class="field-label">ลิ้งก์เต็มใหม่ <span
+                            style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
+                    </div>
+                    <input type="url" id="newTo" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
             </div>
-        </div>
-
-        <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content bg-dark text-light">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="qrModalLabel">สร้าง QR Code</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body text-center">
-                        <div id="qrPreview" class="mb-3 p-3" style="background: radial-gradient(circle at top, #0f1115, #0b0d12 60%); border-radius: 16px;"></div>
-                        <input type="url" id="qrcodeText" class="form-control" value="" required>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" id="copyQR">คัดลอก</button>
-                        <button class="btn btn-primary" id="downloadQR">ดาวน์โหลด</button>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="editModalCancel">ยกเลิก</button>
+                <button class="btn btn-primary" id="saveEdit">
+                    <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> บันทึก
+                </button>
             </div>
         </div>
-
-        <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts" aria-live="polite" aria-atomic="true"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- qr-code modal -->
+    <div class="modal-overlay" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrModalLabel">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="qrModalLabel">สร้าง QR Code</span>
+                <button class="modal-close" id="qrModalClose" aria-label="ปิด">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-preview" id="qrPreview"></div>
+                <div class="field">
+                    <div class="field-label">URL</div>
+                    <input type="url" id="qrcodeText" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="copyQR">
+                    <i class="fa-solid fa-copy" aria-hidden="true"></i> คัดลอก
+                </button>
+                <button class="btn btn-primary" id="downloadQR">
+                    <i class="fa-solid fa-download" aria-hidden="true"></i> ดาวน์โหลด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
     <script src="../short/app.js" type="module"></script>
+    <script src="/instructions.js" type="module"></script>
 </body>
 
 </html>
