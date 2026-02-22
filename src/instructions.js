@@ -1,94 +1,4 @@
-// sidebar
-function initSidebar() {
-  document.querySelectorAll('.sb-section-toggle').forEach(btn => {
-    const targetId = btn.dataset.target
-    const body = document.getElementById(targetId)
-    const chevron = document.getElementById(targetId + '-chevron')
-    if (!body) return
-
-    btn.addEventListener('click', () => {
-      const isOpen = body.classList.toggle('open')
-      if (chevron) chevron.style.transform = isOpen ? 'rotate(90deg)' : ''
-    })
-
-    if (body.querySelector('.sb-link.active')) {
-      body.classList.add('open')
-      if (chevron) chevron.style.transform = 'rotate(90deg)'
-    }
-  })
-
-  document.querySelectorAll('.sb-link').forEach(link => {
-    link.addEventListener('click', function () {
-      if (this.getAttribute('target') === '_blank') return
-      setActiveSidebarLink(this)
-    })
-  })
-
-  syncSidebarToUrl()
-
-  const menuToggle = document.getElementById('menuToggle')
-  const sidebar = document.getElementById('sidebar')
-  const overlay = document.getElementById('sidebarOverlay')
-  if (!menuToggle || !sidebar || !overlay) return
-
-  menuToggle.addEventListener('click', () => {
-    if (sidebar.classList.contains('open')) return closeSidebar()
-
-    sidebar.classList.add('open')
-    overlay.classList.add('open')
-    menuToggle.setAttribute('aria-expanded', 'true')
-  })
-
-  const closeSidebar = () => {
-    sidebar.classList.remove('open')
-    overlay.classList.remove('open')
-    menuToggle.setAttribute('aria-expanded', 'false')
-  }
-
-  overlay.addEventListener('click', closeSidebar)
-  sidebar.querySelectorAll('.sb-link').forEach(link =>
-    link.addEventListener('click', () =>
-      (
-        window.innerWidth <= 680 &&
-        link.getAttribute('target') !== '_blank'
-      ) && closeSidebar()
-    )
-  )
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-      closeSidebar()
-      menuToggle.focus()
-    }
-  })
-}
-
-function setActiveSidebarLink(el) {
-  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'))
-  el.classList.add('active')
-
-  const sectionBody = el.closest('.sb-section-body')
-  if (sectionBody && !sectionBody.classList.contains('open')) {
-    sectionBody.classList.add('open')
-    const chevronId = sectionBody.id + '-chevron'
-    const chevron = document.getElementById(chevronId)
-    if (chevron) chevron.style.transform = 'rotate(90deg)'
-  }
-}
-
-function syncSidebarToUrl() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/'
-  const links = document.querySelectorAll('.sb-link[data-page], .sb-link[href]')
-
-  let matched = null
-  links.forEach(link => {
-    const page = link.dataset.page || link.getAttribute('href')
-    if (!page || link.getAttribute('target') === '_blank') return
-    if (page === path || page === window.location.hash) matched = link
-  })
-
-  if (matched) setActiveSidebarLink(matched)
-}
+import "./zLib/sidebar.js"
 
 function injectFooter(opts = {}) {
   const year = opts.year || new Date().getFullYear()
@@ -207,7 +117,6 @@ function _boot(opts) {
     footerOpts = {},
   } = opts
 
-  initSidebar()
   if (search) initSearch()
   if (toc) initToc()
   if (footer) injectFooter(footerOpts)
@@ -225,4 +134,4 @@ const _opts = {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => _boot(_opts))
 else _boot(_opts)
 
-export { initSidebar, injectFooter, initToc, initSearch }
+export { injectFooter, initToc, initSearch }

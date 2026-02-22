@@ -307,7 +307,7 @@
   color: var(--color-text-primary);
 }
 
-/* modal (bs styles) */
+/* modal (bs zStyles) */
 .modal-overlay {
   display: none;
   position: fixed;
