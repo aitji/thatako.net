@@ -2,7 +2,7 @@
 name: Feature request
 about: เสนอฟีเจอร์ใหม่สำหรับ thatako.net
 title: "[FEATURE] "
-labels: enhancement
+labels: Feature ใหม่
 assignees: ""
 ---
 

@@ -2,7 +2,7 @@
 name: Bug report
 about: รายงานปัญหาที่พบในการใช้งาน thatako.net
 title: "[BUG] "
-labels: bug
+labels: บัค
 assignees: "aitji"
 ---
 
