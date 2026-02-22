@@ -64,7 +64,7 @@ const setBusy = v => {
 /** @param {any[]} links */
 const renderList = links => {
     $("list").innerHTML = !links.length
-        ? `<tr><td colspan="3" class="text-center text-muted py-4">ยังไม่มีลิ้งก์</td></tr>`
+        ? `<tr><td colspan="3" class="text-center text-muted py-4">ยังไม่มีลิงก์</td></tr>`
         : links
             .map(l => `
             <tr>
@@ -120,11 +120,11 @@ const createLink = async () => {
         const r = await api("/create", { slug, to, key })
         if (!r.ok) return toast(errText(r.msg), false)
 
-        toast("สร้างลิ้งก์สำเร็จ")
+        toast("สร้างลิงก์สำเร็จ")
         $("slug").value = ""
         $("to").value = ""
         await loadLinks()
-    } catch { toast("การสร้างลิ้งก์ล้มเหลว", false) }
+    } catch { toast("การสร้างลิงก์ล้มเหลว", false) }
     setBusy(false)
 }
 

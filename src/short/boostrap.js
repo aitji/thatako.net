@@ -133,7 +133,7 @@ if (listEl) {
 
                 listDescriptor.set.call(this, newHtml)
             }
-            else if (html.includes('ยังไม่มีลิ้งก์')) {
+            else if (html.includes('ยังไม่มีลิงก์')) {
                 listDescriptor.set.call(this, `
                     <tr>
                         <td colspan="3">
@@ -143,7 +143,7 @@ if (listEl) {
                                        aria-hidden="true"
                                        style="font-size:24px;opacity:0.3"></i>
                                 </div>
-                                ยังไม่มีลิ้งก์ - สร้างลิ้งก์แรกได้เลย
+                                ยังไม่มีลิงก์ - สร้างลิงก์แรกได้เลย
                             </div>
                         </td>
                     </tr>
