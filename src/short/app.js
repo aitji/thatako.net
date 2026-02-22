@@ -26,10 +26,10 @@ const validUrl = url => {
     } catch { return false }
 }
 
-const randomKey = () =>
-    (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))
-        .split("")
-        .map(c => (Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()))
+const randomKey = (extraBytes = 16) =>
+    crypto.randomUUID().replace(/-/g, "") +
+    [...crypto.getRandomValues(new Uint8Array(extraBytes))]
+        .map(b => b.toString(16).padStart(2, "0"))
         .join("")
 
 /** @param {string} t */
