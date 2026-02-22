@@ -60,3 +60,7 @@ body {
 .topbar-right {
   margin-left: auto;
 }
+/* sidebar overriden */
+.site-footer {
+  margin-left: 0;
+}
