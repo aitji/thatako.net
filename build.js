@@ -14,7 +14,15 @@ const WATCH = process.argv.includes('--watch')
 
 const ensure = p => fs.mkdirSync(p, { recursive: true })
 
-const google = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-MB904QRERQ"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-MB904QRERQ");</script>`
+const google = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MB904QRERQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-MB904QRERQ');
+</script>`
 const YEAR = new Date().getFullYear()
 const bannerText = `
                           ,
