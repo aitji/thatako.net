@@ -166,13 +166,13 @@ npm run dev:http_live
 
 ### เปิดเว็บไซต์บนเครื่องแบบ HTTPS
 
-ต้องติดตั้ง [mkcert](https://github.com/FiloSottile/mkcert) ก่อน
+จำเป็นต้องติดตั้ง [mkcert](https://github.com/FiloSottile/mkcert/releases)
 
 ##### ติดตั้ง local CA (ทำครั้งเดียว)
 
 ```
 mkcert -install
-mkcert localhost 127.0.0.1 ::1
+mkcert localhost localhost ::1
 ```
 
 #### เปิดเว็บไซต์แบบ HTTPS
