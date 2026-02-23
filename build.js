@@ -68,9 +68,8 @@ const banner = {
 }
 
 const minifyHTMLFile = async file => {
-    let src = fs.readFileSync(file, 'utf8')
-    if (!WATCH) src = src.replace('</head>', `${google}</head>`)
-    const out = await minifyHTML(src, {
+    const src = fs.readFileSync(file, 'utf8')
+    let out = await minifyHTML(src, {
         collapseWhitespace: true,
         removeComments: true,
         removeRedundantAttributes: true,
@@ -80,6 +79,7 @@ const minifyHTMLFile = async file => {
         keepClosingSlash: true,
         html5: true
     })
+    if (!WATCH) out = out.replace('</head>', `${google}</head>`)
     fs.writeFileSync(file, banner.html + out)
 }
 
