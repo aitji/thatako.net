@@ -11,7 +11,7 @@
                 "cache-control": "public, max-age=2592000, immutable"
             }
         },
-                {
+        {
             "src": "/zStyles/webfonts/(.*)",
             "headers": {
                 "cache-control": "public, max-age=2592000, immutable"
@@ -21,11 +21,6 @@
             "src": "/.well-known/discord",
             "status": 302,
             "dest": "/zDesk/discord.html"
-        },
-        {
-            "src": "/(.*)",
-            "status": 404,
-            "dest": "/404.html"
         }
     ]
 }
