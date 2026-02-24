@@ -322,7 +322,7 @@ const boot_ = () => {
                 label: 'หน้าหลัก',
                 items: [
                     { title: 'หน้าแรก', href: '/', icon: 'fa-solid fa-house', active: true },
-                    { title: 'เกี่ยวกับ', href: '/about', icon: 'fa-solid fa-circle-info', badge: { text: 'wip', color: 'orange' } },
+                    { title: 'เกี่ยวกับ', href: '/about', icon: 'fa-solid fa-circle-info' },
                 ]
             },
             {
