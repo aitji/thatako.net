@@ -1,6 +1,6 @@
 function injectFooter(opts = {}) {
-  const year = opts.year || new Date().getFullYear()
-  const version = opts.version || ''
+  const year = opts.year ?? new Date().getFullYear()
+  const version = opts.version ?? ''
 
   const footer = document.createElement('footer')
   footer.className = 'site-footer'
@@ -67,7 +67,7 @@ function initToc() {
   onScroll()
 }
 
-/** ---------- search ---------- */
+// search
 function initSearch() {
   const input = document.querySelector('.topbar-search input')
   if (!input) return
@@ -75,7 +75,7 @@ function initSearch() {
   document.addEventListener('keydown', e => {
     const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)
 
-    if (!isTyping && (e.key === '/' || (e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'k') || e.key.toLowerCase() === 'f')) {
+    if (!isTyping && (e.key === '/' || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault()
       input.focus()
       input.select()
@@ -110,13 +110,12 @@ function initSearch() {
 function _boot(opts) {
   const {
     footer = true,
-    toc = true,
     search = true,
     footerOpts = {},
   } = opts
 
   if (search) initSearch()
-  if (toc) initToc()
+  // (toc) handled by router
   if (footer) injectFooter(footerOpts)
 }
 
@@ -125,7 +124,7 @@ const _opts = {
   toc: true,
   search: true,
   footerOpts: {
-    version: 'v0.4-alpha',
+    version: 'v0.5-alpha',
   }
 }
 

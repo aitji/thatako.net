@@ -1,5 +1,4 @@
-// ---------- modal manager ----------
-window.ModalManager = {
+window.ModalManager = { // modal manager
     open(id) {
         const el = document.getElementById(id)
         if (el) el.classList.add('open')
@@ -10,8 +9,7 @@ window.ModalManager = {
     }
 }
 
-// ---------- overlay click close ----------
-;['editModal', 'qrModal'].forEach(id => {
+;['editModal', 'qrModal'].forEach(id => { // overlay
     const overlay = document.getElementById(id)
     if (!overlay) return
     overlay.addEventListener('click', e => {
@@ -19,7 +17,9 @@ window.ModalManager = {
     })
 })
 
-// ---------- close buttons ----------
+
+
+// x buttons
 const bindClose = (btnId, modalId) => {
     const btn = document.getElementById(btnId)
     if (btn) btn.onclick = () => ModalManager.close(modalId)
@@ -29,15 +29,20 @@ bindClose('editModalClose', 'editModal')
 bindClose('editModalCancel', 'editModal')
 bindClose('qrModalClose', 'qrModal')
 
-// ---------- escape key ----------
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', e => { // esc
     if (e.key === 'Escape') {
         ModalManager.close('editModal')
         ModalManager.close('qrModal')
     }
 })
 
-// ---------- bootstrap shim ----------
+/**
+ * (boostrap shim)
+
+ * what happened?
+ * in prototype i use boostrap, but in new design i want to remove boostrap dependency (it too big),
+ * so i create this shim to avoid rewrite all js code in prototype
+ */
 window.bootstrap = {
     Modal: class {
         constructor(el) { this._id = el?.id }
@@ -77,7 +82,7 @@ window.bootstrap = {
     Tooltip: class { constructor() {} }
 }
 
-// ---------- list rendering hack ----------
+// list rendering
 const listEl = document.getElementById('list')
 if (listEl) {
     const listDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
