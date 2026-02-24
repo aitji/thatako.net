@@ -115,14 +115,16 @@ const handler = (req, res) => {
 
     let filePath = path.join(OUT, url)
 
-    // validate res-path ; within the root dir --(CodeQL) prevent path traversal
+    // validate res-path ; ensure it stays within the root dir (OUT) to prevent path traversal
     try {
         const rootDir = path.resolve(OUT)
-        const resolvedPath = fs.existsSync(filePath)
-            ? fs.realpathSync(filePath)
-            : path.resolve(filePath)
+        // First resolve the requested path relative to the root directory
+        const candidatePath = path.resolve(rootDir, '.' + path.sep + url.replace(/^\//, ''))
+        const normalizedPath = fs.existsSync(candidatePath)
+            ? fs.realpathSync(candidatePath)
+            : candidatePath
 
-        if (!resolvedPath.startsWith(rootDir + path.sep) && resolvedPath !== rootDir) {
+        if (!normalizedPath.startsWith(rootDir + path.sep) && normalizedPath !== rootDir) {
             // path escapes root dir ; reject it
             const notFound = path.join(OUT, '404.html')
             if (fs.existsSync(notFound)) serveHTML(res, notFound, 404)
@@ -134,7 +136,7 @@ const handler = (req, res) => {
             return
         }
 
-        filePath = resolvedPath
+        filePath = normalizedPath
     } catch (e) {
         // path res fails, reject the request
         const notFound = path.join(OUT, '404.html')
