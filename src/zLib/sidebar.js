@@ -14,6 +14,9 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+let _router = null
+const setRouter = r => { _router = r }
+
 const createDot = (pathname) => {
     var p = pathname || window.location.pathname
     var parts =
@@ -250,9 +253,18 @@ const initEvents = () => {
 
     // link clicks
     document.querySelectorAll('.sb-link').forEach((link) =>
-        link.addEventListener('click', () =>
-            (link.getAttribute('target') !== '_blank')
-            && setActiveSidebarLink(link))
+        link.addEventListener('click', (e) => {
+            if (link.getAttribute('target') === '_blank') return
+            
+            const href = link.getAttribute('href')
+            if (_router && href && !href.startsWith('http') && !href.startsWith('mailto:')) {
+                e.preventDefault()
+                setActiveSidebarLink(link)
+                _router.navigate(href)
+            } else {
+                setActiveSidebarLink(link)
+            }
+        })
     )
 
     // hamburger & overlay
@@ -303,34 +315,21 @@ const initEvents = () => {
 }
 
 const boot_ = () => {
-    const dot = createDot()
+    // spa routes use absolute paths
     const config = {
         groups: [
             {
                 label: 'หน้าหลัก',
                 items: [
-                    { title: 'หน้าแรก', href: dot, icon: 'fa-solid fa-house', active: true },
-                    { title: 'เกี่ยวกับ', href: `${dot}about`, icon: 'fa-solid fa-circle-info', badge: { text: 'wip', color: 'orange' } },
+                    { title: 'หน้าแรก', href: '/', icon: 'fa-solid fa-house', active: true },
+                    { title: 'เกี่ยวกับ', href: '/about', icon: 'fa-solid fa-circle-info' },
                 ]
             },
             {
                 label: 'บริการ',
                 items: [
-                    { title: 'URL Shortener', href: `${dot}short/`, icon: 'fa-solid fa-link', external: false },
-                    { title: 'QR Generator', href: `${dot}short/`, icon: 'fa-solid fa-qrcode', external: false },
-                    {
-                        title: 'Public API',
-                        icon: 'fa-solid fa-code',
-                        section: true,                // collapsible section
-                        items: [
-                            { callout: { type: 'warn', icon: 'fa-solid fa-triangle-exclamation', text: 'กำลังพัฒนา ข้อมูลด้านล่างเป็นเพียงตัวอย่าง' } },
-                            { title: 'Overview', href: `${dot}overview`, icon: 'fa-solid fa-circle-dot' },
-                            { title: 'Authentication', href: `${dot}auth`, icon: 'fa-solid fa-circle-dot' },
-                            { title: 'Endpoints', href: `${dot}endpoints`, icon: 'fa-solid fa-circle-dot' },
-                            { title: 'Rate Limits', href: `${dot}rate-limits`, icon: 'fa-solid fa-circle-dot' },
-                        ]
-                    },
-                    { title: 'Status', href: `${dot}status`, icon: 'fa-solid fa-server', badge: { text: 'wip', color: 'orange' } },
+                    { title: 'URL Shortener', href: '/short/', icon: 'fa-solid fa-link', external: false },
+                    { title: 'QR Generator', href: '/short/', icon: 'fa-solid fa-qrcode', external: false },
                 ]
             },
             {
@@ -346,7 +345,7 @@ const boot_ = () => {
                             { title: 'council.thatako.net', href: 'https://thatako-council.com', icon: 'fa-solid fa-circle-dot', external: true },
                             { title: 'pr.thatako.net', href: 'https://pr.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
                             { title: 'go.thatako.net', href: 'https://go.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
-                            { title: '*.id.thatako.net', href: `${dot}id`, icon: 'fa-solid fa-circle-dot', badge: { text: 'plan', color: 'muted' } },
+                            { title: '*.id.thatako.net', href: '/id', icon: 'fa-solid fa-circle-dot', badge: { text: 'plan', color: 'muted' } },
                         ]
                     },
                 ]
@@ -379,3 +378,5 @@ const boot_ = () => {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot_)
 else boot_()
+
+export { setRouter }

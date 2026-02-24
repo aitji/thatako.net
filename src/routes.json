@@ -1,0 +1,15 @@
+{
+  "routes": [
+    {
+      "id": "home",
+      "path": "/",
+      "file": "docs/home.html"
+    },
+    {
+      "id": "about",
+      "path": "/about",
+      "file": "docs/about.html"
+    }
+  ],
+  "_note": "more routes here with any id (subfolders 'docs/nested/page')"
+}

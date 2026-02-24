@@ -8,6 +8,35 @@ const USE_HTTPS = process.argv.includes('--https')
 const PORT = parseInt(process.argv.find(a => a.startsWith('--port='))?.split('=')[1] ?? (USE_HTTPS ? '3443' : '3000'))
 const OUT = 'public'
 
+let spaRoutes = []
+
+// fetch spa routes from routes.json
+const loadSpaRoutes = () => {
+    try {
+        const routesFile = path.join('src', 'routes.json')
+        if (fs.existsSync(routesFile)) {
+            const data = JSON.parse(fs.readFileSync(routesFile, 'utf8'))
+            spaRoutes = data.routes.map(r => r.path)
+            console.log(`[server] loaded spa routes: ${spaRoutes.join(', ')}`)
+        }
+    } catch (e) {
+        console.error('[server] failed to load routes:', e)
+        spaRoutes = ['/', '/about'] // fallback
+    }
+}
+
+// watch routes.json & reload on change
+let routesWatchTimer = null
+fs.watch(path.join('src', 'routes.json'), () => {
+    clearTimeout(routesWatchTimer)
+    routesWatchTimer = setTimeout(() => {
+        loadSpaRoutes()
+        console.log('[server] routes reloaded')
+    }, 250)
+})
+
+loadSpaRoutes()
+
 const MIME = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'application/javascript',
@@ -87,38 +116,57 @@ const handler = (req, res) => {
     let filePath = path.join(OUT, url)
 
     // directory → index.html
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-        filePath = path.join(filePath, 'index.html')
-    }
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) filePath = path.join(filePath, 'index.html')
 
-    // extensionless → try .html (SPA: do NOT fall back to index.html here)
-    if (!fs.existsSync(filePath) && !path.extname(filePath)) {
+    let fileExists = fs.existsSync(filePath) // check if file exists
+    if (!fileExists && !path.extname(filePath)) { // extension files → try .html
         const withHtml = filePath + '.html'
-        if (fs.existsSync(withHtml)) filePath = withHtml
-        // if neither exists, fall through to 404 handling below
+        if (fs.existsSync(withHtml)) {
+            filePath = withHtml
+            fileExists = true
+        }
     }
 
-    // 404
-    if (!fs.existsSync(filePath)) {
-        const notFound = path.join(OUT, '404.html')
-        if (fs.existsSync(notFound)) {
-            serveHTML(res, notFound, 404)
+    if (fileExists) { // file exists, serve it
+        const ext = path.extname(filePath).toLowerCase()
+        const mime = MIME[ext] ?? 'application/octet-stream'
+
+        if (ext === '.html') {
+            serveHTML(res, filePath, 200)
         } else {
-            res.writeHead(404)
-            res.end('404 Not Found')
+            const data = fs.readFileSync(filePath)
+            res.writeHead(200, { 'Content-Type': mime })
+            res.end(data)
         }
         return
     }
 
+    // file not found - check spa routes
     const ext = path.extname(filePath).toLowerCase()
-    const mime = MIME[ext] ?? 'application/octet-stream'
+    const isAsset = ext && ['.js', '.css', '.json', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.eot', '.webp', '.mp4', '.webm', '.pdf'].includes(ext)
 
-    if (ext === '.html') {
-        serveHTML(res, filePath, 200)
+    // check spa routes
+    const normPath = url.replace(/\/$/, '') || '/'
+    const isSpaRoute = spaRoutes.some(route => {
+        const normRoute = route.replace(/\/$/, '') || '/'
+        return normRoute === normPath
+    })
+
+    if (isSpaRoute && !isAsset) {
+        const indexPath = path.join(OUT, 'index.html')
+        if (fs.existsSync(indexPath)) {
+            serveHTML(res, indexPath, 200)
+            return
+        }
+    }
+
+    // 404 not found
+    const notFound = path.join(OUT, '404.html')
+    if (fs.existsSync(notFound)) {
+        serveHTML(res, notFound, 404)
     } else {
-        const data = fs.readFileSync(filePath)
-        res.writeHead(200, { 'Content-Type': mime })
-        res.end(data)
+        res.writeHead(404)
+        res.end('404 Not Found')
     }
 }
 
