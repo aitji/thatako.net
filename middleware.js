@@ -17,7 +17,7 @@ async function getSpaRoutes(request) {
 }
 
 export default async function middleware(request) {
-  const pathname = request.nextUrl.pathname
+  const { pathname } = new URL(request.url)
   const ext = pathname.split('.').pop()?.toLowerCase()
 
   const isAsset = ASSET_EXTS.includes(ext) // assets passthrough
@@ -34,6 +34,7 @@ export default async function middleware(request) {
   })
 
   // index.html for spa routing
-  if (isSpaRoute) return new Response(fetch(new URL('/index.html', request.url)), { status: 200, })
+  if (isSpaRoute) return fetch(new URL('/index.html', request.url))
+
   return null
 }
