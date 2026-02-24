@@ -119,12 +119,13 @@ const handler = (req, res) => {
     try {
         const rootDir = path.resolve(OUT)
         // First resolve the requested path relative to the root directory
-        const candidatePath = path.resolve(rootDir, '.' + path.sep + url.replace(/^\//, ''))
+        const candidatePath = path.resolve(rootDir, url.replace(/^\//, ''))
         const normalizedPath = fs.existsSync(candidatePath)
             ? fs.realpathSync(candidatePath)
             : candidatePath
 
-        if (!normalizedPath.startsWith(rootDir + path.sep) && normalizedPath !== rootDir) {
+        const rootWithSep = rootDir.endsWith(path.sep) ? rootDir : rootDir + path.sep
+        if (normalizedPath !== rootDir && !normalizedPath.startsWith(rootWithSep)) {
             // path escapes root dir ; reject it
             const notFound = path.join(OUT, '404.html')
             if (fs.existsSync(notFound)) serveHTML(res, notFound, 404)
@@ -153,12 +154,18 @@ const handler = (req, res) => {
     if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) filePath = path.join(filePath, 'index.html')
 
     let fileExists = fs.existsSync(filePath) // check if file exists
-    if (!fileExists && !path.extname(filePath)) { // extension files → try .html
-        const withHtml = filePath + '.html'
-        // check .html variant is also within root dir --(CodeQL) prevent path traversal
+    if (!fileExists && !path.extname(filePath)) { // extensionless files → try .html
+        // construct .html variant safely under the same root directory
         const rootDir = path.resolve(OUT)
-        const resolvedHtmlPath = path.resolve(withHtml)
-        if ((resolvedHtmlPath.startsWith(rootDir + path.sep) || resolvedHtmlPath === rootDir) && fs.existsSync(withHtml)) {
+        const relativeFromRoot = path.relative(rootDir, filePath)
+        const htmlRelative = relativeFromRoot + '.html'
+        const withHtml = path.resolve(rootDir, htmlRelative)
+        // verify it's within root dir and exists
+        const resolvedHtmlPath = fs.existsSync(withHtml)
+            ? fs.realpathSync(withHtml)
+            : withHtml
+        const rootWithSep = rootDir.endsWith(path.sep) ? rootDir : rootDir + path.sep
+        if ((resolvedHtmlPath === rootDir || resolvedHtmlPath.startsWith(rootWithSep)) && fs.existsSync(withHtml)) {
             filePath = withHtml
             fileExists = true
         }
