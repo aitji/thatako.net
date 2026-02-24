@@ -115,13 +115,48 @@ const handler = (req, res) => {
 
     let filePath = path.join(OUT, url)
 
+    // validate res-path ; within the root dir --(CodeQL) prevent path traversal
+    try {
+        const rootDir = path.resolve(OUT)
+        const resolvedPath = fs.existsSync(filePath)
+            ? fs.realpathSync(filePath)
+            : path.resolve(filePath)
+
+        if (!resolvedPath.startsWith(rootDir + path.sep) && resolvedPath !== rootDir) {
+            // path escapes root dir ; reject it
+            const notFound = path.join(OUT, '404.html')
+            if (fs.existsSync(notFound)) serveHTML(res, notFound, 404)
+            else {
+                res.writeHead(404)
+                res.end('404 Not Found')
+            }
+
+            return
+        }
+
+        filePath = resolvedPath
+    } catch (e) {
+        // path res fails, reject the request
+        const notFound = path.join(OUT, '404.html')
+        if (fs.existsSync(notFound)) {
+            serveHTML(res, notFound, 404)
+        } else {
+            res.writeHead(404)
+            res.end('404 Not Found')
+        }
+        return
+    }
+
     // directory → index.html
     if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) filePath = path.join(filePath, 'index.html')
 
     let fileExists = fs.existsSync(filePath) // check if file exists
     if (!fileExists && !path.extname(filePath)) { // extension files → try .html
         const withHtml = filePath + '.html'
-        if (fs.existsSync(withHtml)) {
+        // check .html variant is also within root dir --(CodeQL) prevent path traversal
+        const rootDir = path.resolve(OUT)
+        const resolvedHtmlPath = path.resolve(withHtml)
+        if ((resolvedHtmlPath.startsWith(rootDir + path.sep) || resolvedHtmlPath === rootDir) && fs.existsSync(withHtml)) {
             filePath = withHtml
             fileExists = true
         }
