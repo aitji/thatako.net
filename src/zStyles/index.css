@@ -425,6 +425,7 @@
   align-self: flex-start;
   max-height: calc(100vh - var(--topbar-height) - var(--space-2xl));
   overflow-y: auto;
+  overflow-x: hidden;
 }
 .toc-label {
   font-size: 11px;
