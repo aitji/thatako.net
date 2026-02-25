@@ -2,7 +2,7 @@ import "../short/boostrap.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
-const TOAST_DELAY = 3000
+const TOAST_DELAY = 8000
 
 let editing = null
 let busy = false
@@ -44,7 +44,7 @@ const toast = (msg, ok = true) => {
             aria-hidden="true"
             style="color:${!ok ? 'var(--color-text-danger)' : 'var(--color-badge-green-text)'}"></i>
         <span>${msg || 'ไม่มีข้อความ'}</span>
-        <button class="toast-close" aria-label="ปิด">
+        <button class="toast-close" aria-label="ปิด" title="ปิด">
             <i class="fa-solid fa-xmark"></i>
         </button>`
     el.querySelector(".toast-close").onclick = () => el.dispatchEvent(new Event('hidden.bs.toast'))
@@ -69,13 +69,13 @@ const renderList = links => {
             .map(l => `
             <tr>
                 <td>
-                    <a href="https://go.thatako.net/${l.slug}" target="_blank">${l.slug}</a>
+                    <a href="https://go.thatako.net/${l.slug}" target="_blank" title="คัดลอกลิงก์">${l.slug}</a>
                 </td>
                 <td>${truncate(l.to)}</td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-primary mt-2" data-edit="${l.slug}" data-to="${l.to}">แก้ไข</button>
-                    <button class="btn btn-sm btn-outline-secondary mt-2" data-qr="${l.slug}">สร้าง QR</button>
-                    <button class="btn btn-sm btn-outline-danger mt-2" data-revoke="${l.slug}">ลบ</button>
+                    <button class="btn btn-sm btn-primary mt-2" data-edit="${l.slug}" data-to="${l.to}" title="แก้ไขลิงก์">แก้ไข</button>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" data-qr="${l.slug}" title="สร้าง QR CODE">สร้าง QR</button>
+                    <button class="btn btn-sm btn-outline-danger mt-2" data-revoke="${l.slug}" title="ลบลิงก์">ลบ</button>
                 </td>
             </tr>`)
             .join("")

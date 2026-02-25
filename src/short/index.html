@@ -96,14 +96,14 @@
     <!-- topbar -->
     <header class="topbar">
         <a href="/" class="logo-dot" width="32" height="32"></a>
-        <a href="/" class="mobile-hidden topbar-logo">thatako.net</a>
+        <a href="/" class="mobile-hidden topbar-logo" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
         <span class="topbar-sep mobile-hidden">/</span>
-        <a href="/" class="topbar-title">go.thatako.net</a>
+        <a href="/" class="topbar-title" title="ย่อ URL พร้อมสร้าง QR CODE">go.thatako.net</a>
 
         <div class="topbar-right">
             <a href="/" class="btn btn-ghost" style="height:30px; font-size:11px;">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span
-                    class="mobile-hidden">กลับหน้าหลัก</span>
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <span class="mobile-hidden">กลับหน้าหลัก</span>
             </a>
         </div>
     </header>
@@ -112,7 +112,7 @@
     <main class="page-wrap">
 
         <div class="page-header">
-            <div class="page-header-eyebrow">URL Shortener</div>
+            <div class="page-header-eyebrow" title="ย่อ URL พร้อมสร้าง QR CODE">URL Shortener</div>
             <h1>go.thatako.net/*</h1>
             <div class="page-meta">
                 <span>aitji</span>
@@ -142,17 +142,17 @@
                             <p class="muted">รหัสสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว</p>
                             <div class="input-row">
                                 <input type="checkbox" id="show-pass" hidden checked>
-
-                                <input type="text" id="key" autocomplete="off" placeholder="รหัสลับของคุณ">
+                                <input type="text" id="key" autocomplete="off" placeholder="รหัสลับของคุณ"
+                                    title="รหัสลับสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว">
 
                                 <label for="show-pass" class="btn btn-ghost toggle-pass"
-                                    style="border-left:none; flex-shrink:0;">
+                                    style="border-left:none; flex-shrink:0;" title="แสดงหรือซ่อนรหัสลับ">
                                     <i class="fa-solid fa-eye eye"></i>
                                     <i class="fa-solid fa-eye-slash eye-slash"></i>
                                 </label>
 
                                 <button type="button" class="btn btn-ghost" id="random"
-                                    style="border-left:none; flex-shrink:0;">
+                                    style="border-left:none; flex-shrink:0;" title="สุ่มรหัสลับใหม่">
                                     <i class="fa-solid fa-shuffle" aria-hidden="true"></i> สุ่ม
                                 </button>
                             </div>
@@ -165,21 +165,22 @@
                             </div>
                             <p class="muted">ตั้งชื่อที่ต้องการ เช่น openhouse2026</p>
                             <div class="input-row">
-                                <span class="input-prefix">go.thatako.net/</span>
-                                <input type="text" id="slug" placeholder="openhouse2026" maxlength="1024" required>
+                                <span class="input-prefix" title="ย่อ URL พร้อม QR CODE">go.thatako.net/</span>
+                                <input type="text" id="slug" placeholder="openhouse2026" maxlength="1024"
+                                    title="ลิงก์ย่อสำหรับให้ผู้ใช้เข้าถึง" required>
                             </div>
                         </div>
 
                         <!-- target URL -->
                         <div class="field">
-                            <div class="field-label">
-                                ลิงก์เต็ม
-                            </div>
+                            <div class="field-label">ลิงก์เต็ม</div>
                             <p class="muted">ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com</p>
-                            <input type="text" type="url" id="to" placeholder="https://example.com" required>
+                            <input type="url" id="to" placeholder="https://example.com"
+                                title="ลิงก์เต็มที่ลิงก์ย่อจะพาผู้ใช้ไป" required>
                         </div>
 
-                        <button type="button" class="btn btn-primary btn-full" id="create">
+                        <button type="button" class="btn btn-primary btn-full" id="create"
+                            title="สร้างลิงก์ย่อพร้อม QR CODE">
                             <i class="fa-solid fa-link" aria-hidden="true"></i>
                             สร้างลิงก์ย่อ
                         </button>
@@ -195,7 +196,8 @@
                         <i class="fa-solid fa-list" aria-hidden="true"></i>
                         ลิงก์ที่ถืออยู่
                     </div>
-                    <button class="btn btn-ghost" id="refresh" style="height:28px; padding:0 10px; font-size:11px;">
+                    <button class="btn btn-ghost" id="refresh" style="height:28px; padding:0 10px; font-size:11px;"
+                        title="รีเฟรชข้อมูลของลิงก์">
                         <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
                     </button>
                 </div>
