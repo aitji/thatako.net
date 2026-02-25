@@ -79,37 +79,41 @@
         }
     }
     </script>
+    <script src="https://thatako.net/theme.js"></script>
 
     <!-- styles -->
     <link rel="stylesheet" href="https://thatako.net/zStyles/index.css">
     <link rel="stylesheet" href="https://thatako.net/zStyles/home.css">
+    <link rel="stylesheet" href="https://thatako.net/zStyles/theme.css">
 </head>
 
 <body>
     <header class="topbar" role="banner">
-        <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="sidebar">
+        <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="sidebar"
+            title="เปิดและปิด เมนูด้านข้าง">
             <i class="fa-solid fa-bars" aria-hidden="true"></i>
         </button>
 
-        <a href="/" class="topbar-title" aria-label="thatako.net home">
-            <span class="logo-dot" aria-hidden="true"></span>
+        <a href="/" class="topbar-title" aria-label="thatako.net home" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+            <span class="logo-dot" aria-hidden="true" width="32" height="32" title="โลโก thatako.net"></span>
             thatako.net
         </a>
 
         <div class="topbar-search" role="search">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-            <input type="search" placeholder="ค้นหา..." aria-label="ค้นหาในเว็บไซต์">
+            <input type="search" placeholder="ค้นหา..." aria-label="ค้นหาในเว็บไซต์" title="ค้นหาเอกสารจากแถบด้านข้าง">
             <div class="topbar-kbd" aria-hidden="true">
-                <kbd>ctrl</kbd><kbd>k</kbd>
+                <kbd title="ปุ่ม Ctrl">ctrl</kbd><kbd title="ปุ่ม K (หรือ /)">k</kbd>
             </div>
         </div>
 
         <div class="topbar-actions">
+            <div id="theme-switcher"></div>
             <a href="https://github.com/aitji/thatako.net" class="topbar-btn" target="_blank" rel="noopener"
-                aria-label="GitHub">
+                aria-label="GitHub" title="GitHub Repository">
                 <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
             </a>
-            <a href="/short/" class="topbar-btn">
+            <a href="/short/" class="topbar-btn" title="ย่อ URL พรอ้ม QR CODE">
                 <i class="fa-solid fa-link" aria-hidden="true"></i> go.thatako.net
             </a>
         </div>
@@ -126,14 +130,14 @@
 
                 <header class="doc-header">
                     <div class="doc-breadcrumb">
-                        <a href="/">thatako.net</a>
+                        <a href="/" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
                         <span>/</span>
-                        <span class="muted">404</span>
+                        <span class="muted" title="ไม่พบเอกสาร">404</span>
                     </div>
 
                     <h1>
-                        <span class="status-code">404</span>
-                        <span class="status-title">Not Found</span>
+                        <span class="status-code" title="รหัสข้อผิดพลาด 404">404</span>
+                        <span class="status-title" title="ไม่พบเอกสาร">Not Found</span>
                     </h1>
 
                     <p class="doc-description">
@@ -142,12 +146,12 @@
                     </p>
 
                     <div class="doc-actions">
-                        <a href="/" class="btn btn-primary">
+                        <a href="/" class="btn btn-primary" title="ย้อนกลับไปที่หน้าแรก">
                             <i class="fa-solid fa-home" aria-hidden="true"></i>
                             กลับไปที่หน้าแรก
                         </a>
                         <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener"
-                            class="btn btn-ghost">
+                            class="btn btn-ghost" title="รายงานปัญหาเกี่ยวกับเส้นทางที่ไม่ถูกต้อง">
                             <i class="fa-solid fa-bug" aria-hidden="true"></i>
                             รายงานปัญหา
                         </a>
@@ -192,13 +196,13 @@ Application Router
 
                     <div class="doc-grid">
 
-                        <a href="/" class="doc-card">
+                        <a href="/" class="doc-card" title="ย้อนกลับไปหน้าหลัก">
                             <h3>กลับไปที่หน้าแรก</h3>
                             <p>นำทางไปยังจุดเริ่มต้นของเอกสาร</p>
                         </a>
 
                         <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener"
-                            class="doc-card">
+                            class="doc-card" title="รายงานปัญหา">
                             <h3>รายงานปัญหา</h3>
                             <p>ส่งรายงานปัญหาเกี่ยวกับเส้นทางที่ไม่ถูกต้อง</p>
                         </a>
@@ -209,7 +213,8 @@ Application Router
                                     เส้นทางอาจถูกลบออกไปในระหว่างการอัปเดตเอกสารหรือการปรับโครงสร้างเว็บไซต์
                                     การเผยแพร่แคช Edge มักจะแก้ไขได้ภายในระยะเวลาอันสั้น หากคุณเชื่อว่านี่เป็นข้อผิดพลาด
                                     โปรด<a href="https://github.com/aitji/thatako.net/issues" target="_blank"
-                                        rel="noopener">รายงานปัญหา</a>เพื่อให้เราสามารถตรวจสอบและแก้ไขได้
+                                        title="รายงานปัญหา" rel="noopener">รายงานปัญหา</a>
+                                    เพื่อให้เราสามารถตรวจสอบและแก้ไขได้
                                 </p>
                             </div>
                         </section>

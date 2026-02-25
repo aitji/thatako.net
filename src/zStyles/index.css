@@ -29,6 +29,9 @@
 .topbar-title:hover { text-decoration: none; }
 
 .logo-dot {
+  background-color: var(--color-bg-tertiary);
+  border-radius: 50%;
+
   background-image: url(/img/icon/apple-icon-120x120.png);
   background-size: cover;
   opacity: .8;
@@ -293,7 +296,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--color-overlay-dark);
   z-index: var(--z-overlay);
 }
 .sidebar-overlay.open { display: block; }
@@ -353,7 +356,7 @@
   margin-bottom: 16px;
 }
 
-.content a { color: var(--color-text-link); }
+.content a:not(.btn) { color: var(--color-text-link); }
 
 /* callout */
 .callout {
@@ -532,7 +535,7 @@
 
 input {
   width: 100%;
-  background: var(--color-input-bg, #1a1f2b);
+  background: var(--color-input-bg, var(--color-input-bg));
   border: 1px solid var(--color-border-input);
   color: var(--color-text-primary);
   font-family: var(--font-family);
@@ -584,6 +587,49 @@ input::placeholder {
   display: flex;
   align-items: center;
 }
+
+/* tooltip */
+.aitji-tooltip {
+  position: absolute;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 280px;
+  word-wrap: break-word;
+  opacity: 0;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 3px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  backdrop-filter: saturate(1.8);
+  visibility: hidden;
+}
+.aitji-tooltip .aitji-text {
+  display: block;
+  margin: 0;
+}
+.aitji-tooltip .aitji-arrow {
+  width: 0;
+  height: 0;
+  position: absolute;
+  border: 7px solid transparent;
+}
+.aitji-tooltip.top .aitji-arrow {
+  top: 100%;
+  border-top-color: var(--color-border);
+  border-bottom: none;
+}
+.aitji-tooltip.bottom .aitji-arrow {
+  bottom: 100%;
+  border-bottom-color: var(--color-border);
+  border-top: none;
+}
+[title]:hover, [data-tooltip]:hover { position: relative; }
 
 /* other utiles ☆.☆ */
 .no-dot {

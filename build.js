@@ -80,6 +80,7 @@ const minifyHTMLFile = async file => {
         html5: true
     })
     if (!WATCH) out = out.replace('</head>', `${google}</head>`)
+    else out = out.replaceAll('thatako.net', 'dev.thatako.net')
     fs.writeFileSync(file, banner.html + out)
 }
 
@@ -94,6 +95,8 @@ const minifyJSFile = async (src, out) => {
         mangle: { toplevel: true },
         format: { comments: false }
     })
+
+    if (WATCH) r.code = r.code.replaceAll('thatako.net', 'dev.thatako.net')
     fs.writeFileSync(out, banner.js + r.code)
 }
 
