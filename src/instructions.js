@@ -106,6 +106,14 @@ function initSearch() {
   })
 }
 
+const version = "v0.5-alpha"
+const _opts = {
+  footer: true,
+  toc: true,
+  search: true,
+  footerOpts: { version }
+}
+
 // boot & init
 function _boot(opts) {
   const {
@@ -114,18 +122,10 @@ function _boot(opts) {
     footerOpts = {},
   } = opts
 
+  localStorage.setItem('v', version)
   if (search) initSearch()
   // (toc) handled by router
   if (footer) injectFooter(footerOpts)
-}
-
-const _opts = {
-  footer: true,
-  toc: true,
-  search: true,
-  footerOpts: {
-    version: 'v0.5-alpha',
-  }
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => _boot(_opts))

@@ -1,4 +1,5 @@
 let routesConfig = null
+const version = localStorage.getItem('v') || 'v0.5-alpha'
 
 const router = {
   contentEl: null,
@@ -17,7 +18,7 @@ const router = {
 
     // load routes configuration
     try {
-      const res = await fetch('/routes.json')
+      const res = await fetch('/routes.json?v=' + version)
       if (!res.ok) throw new Error(`Failed to load routes.json`)
       routesConfig = await res.json()
     } catch (err) {

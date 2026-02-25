@@ -18,6 +18,18 @@
             }
         },
         {
+            "src": "/docs/(.*)",
+            "headers": {
+                "cache-control": "public, max-age=2592000, immutable"
+            }
+        },
+        {
+            "src": "/routes.json",
+            "headers": {
+                "cache-control": "public, max-age=2592000, immutable"
+            }
+        },
+        {
             "src": "/.well-known/discord",
             "status": 302,
             "dest": "/zDesk/discord.html"

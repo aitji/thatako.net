@@ -1,12 +1,13 @@
 const ASSET_EXTS = ['js', 'css', 'json', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'eot', 'webp', 'mp4', 'webm', 'pdf']
 let cacheRoutes = null
+const version = localStorage.getItem('v') || 'v0.5-alpha'
 
 async function getSpaRoutes(request) {
   if (cacheRoutes) return cacheRoutes
 
   try {
     const url = new URL('/routes.json', request.url)
-    const res = await fetch(url)
+    const res = await fetch(url + "?v=" + version)
     const data = await res.json()
     cacheRoutes = data.routes.map(r => r.path)
     return cacheRoutes
