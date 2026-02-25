@@ -1,0 +1,248 @@
+/* shimmer anim ; DO NOT INCLUDE IN "anim.css" */
+@keyframes skeleton-shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--color-bg-secondary) 0%,
+            var(--color-bg-tertiary) 50%,
+            var(--color-bg-secondary) 100%);
+    background-size: 2000px 100%;
+    animation: skeleton-shimmer 2s infinite;
+    border-radius: 4px;
+}
+
+/* hero o.o */
+.skeleton-hero {
+    padding: var(--space-xl) 0 var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-xl);
+}
+
+.skeleton-eyebrow {
+    height: 12px;
+    width: 120px;
+    margin-bottom: var(--space-md);
+    border-radius: 2px;
+}
+
+.skeleton-eyebrow.skeleton {
+    background: linear-gradient(90deg,
+            var(--color-border) 0%,
+            var(--color-border-input) 50%,
+            var(--color-border) 100%);
+    background-size: 2000px 100%;
+    animation: skeleton-shimmer 2s infinite;
+}
+
+.skeleton-h1 {
+    height: 32px;
+    width: 60%;
+    margin-bottom: var(--space-md);
+    border-radius: 4px;
+}
+
+.skeleton-meta {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    align-items: center;
+}
+
+.skeleton-meta-item {
+    height: 14px;
+    width: 100px;
+    border-radius: 2px;
+}
+
+.skeleton-meta-item:nth-child(2) {
+    width: 6px;
+    height: 4px;
+}
+
+.skeleton-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: var(--space-lg);
+    max-width: 520px;
+}
+
+.skeleton-desc-line {
+    height: 16px;
+    border-radius: 3px;
+}
+
+.skeleton-desc-line:last-child {
+    width: 85%;
+}
+
+.skeleton-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.skeleton-btn {
+    height: 32px;
+    width: 140px;
+    border-radius: 4px;
+}
+
+/* content v.v */
+.skeleton-section {
+    margin-bottom: var(--space-xl);
+}
+
+.skeleton-heading {
+    height: 24px;
+    width: 45%;
+    margin-bottom: var(--space-md);
+    border-radius: 3px;
+}
+
+.skeleton-paragraph {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: var(--space-lg);
+}
+
+.skeleton-line {
+    height: 16px;
+    border-radius: 3px;
+}
+
+.skeleton-line:nth-child(1) {
+    width: 100%;
+}
+
+.skeleton-line:nth-child(2) {
+    width: 100%;
+}
+
+.skeleton-line:nth-child(3) {
+    width: 90%;
+}
+
+/* toc 0.0 */
+@media (min-width: 1200px) {
+    .skeleton-toc {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .skeleton-toc-item {
+        height: 14px;
+        border-radius: 2px;
+    }
+
+    .skeleton-toc-item.main {
+        width: 140px;
+    }
+
+    .skeleton-toc-item.sub {
+        width: 120px;
+        margin-left: 12px;
+        opacity: 0.7;
+    }
+
+    .skeleton-toc-item:nth-child(1) {
+        width: 100px;
+    }
+
+    .skeleton-toc-item:nth-child(4) {
+        width: 140px;
+    }
+
+    .skeleton-toc-item:nth-child(5) {
+        width: 110px;
+    }
+}
+
+/* grid & toc */
+@media (min-width: 1200px) {
+    .skeleton-layout {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 40px;
+        align-items: start;
+    }
+}
+
+@media (max-width: 1200px) {
+    .skeleton-toc {
+        display: none;
+    }
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    .skeleton-h1 {
+        height: 28px;
+        width: 75%;
+    }
+
+    .skeleton-desc-line {
+        height: 14px;
+    }
+
+    .skeleton-btn {
+        height: 28px;
+        width: 110px;
+        flex: 1;
+        min-width: 45%;
+    }
+
+    .skeleton-actions {
+        gap: var(--space-xs);
+    }
+
+    .skeleton-heading {
+        height: 22px;
+        width: 60%;
+    }
+
+    .skeleton-line {
+        height: 14px;
+    }
+}
+
+@media (max-width: 680px) {
+    .skeleton-hero {
+        padding: var(--space-lg) 0 var(--space-md);
+        margin-bottom: var(--space-lg);
+    }
+
+    .skeleton-h1 {
+        height: 24px;
+        width: 80%;
+    }
+
+    .skeleton-desc {
+        max-width: 100%;
+    }
+
+    .skeleton-btn {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .skeleton-heading {
+        width: 70%;
+    }
+}
+
+/* load state container */
+.skeleton-container {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.skeleton-container.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
