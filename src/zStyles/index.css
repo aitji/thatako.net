@@ -588,6 +588,49 @@ input::placeholder {
   align-items: center;
 }
 
+/* tooltip */
+.aitji-tooltip {
+  position: absolute;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 280px;
+  word-wrap: break-word;
+  opacity: 0;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 3px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  backdrop-filter: saturate(1.8);
+  visibility: hidden;
+}
+.aitji-tooltip .aitji-text {
+  display: block;
+  margin: 0;
+}
+.aitji-tooltip .aitji-arrow {
+  width: 0;
+  height: 0;
+  position: absolute;
+  border: 7px solid transparent;
+}
+.aitji-tooltip.top .aitji-arrow {
+  top: 100%;
+  border-top-color: var(--color-border);
+  border-bottom: none;
+}
+.aitji-tooltip.bottom .aitji-arrow {
+  bottom: 100%;
+  border-bottom-color: var(--color-border);
+  border-top: none;
+}
+[title]:hover, [data-tooltip]:hover { position: relative; }
+
 /* other utiles ☆.☆ */
 .no-dot {
   list-style: none;

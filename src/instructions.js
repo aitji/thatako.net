@@ -1,3 +1,5 @@
+import "./zLib/tooltip.js"
+
 // theme manager
 const THEME_KEY = 'site-theme-preference'
 const themes = { SYSTEM: 'system', LIGHT: 'light', DARK: 'dark' }
@@ -35,6 +37,7 @@ function getEffectiveTheme() {
   return pref
 }
 
+// footer
 function injectFooter(opts = {}) {
   const year = opts.year ?? new Date().getFullYear()
   const version = opts.version ?? ''
