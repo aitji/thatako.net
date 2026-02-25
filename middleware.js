@@ -1,6 +1,6 @@
 const ASSET_EXTS = ['js', 'css', 'json', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'eot', 'webp', 'mp4', 'webm', 'pdf']
 let cacheRoutes = null
-const version = localStorage.getItem('v') || 'v0.5-alpha'
+const version = 'v0.5-alpha'
 
 async function getSpaRoutes(request) {
   if (cacheRoutes) return cacheRoutes
