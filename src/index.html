@@ -79,11 +79,13 @@
     }
   }
   </script>
+  <script src="/theme.js"></script>
 
   <!-- styles -->
   <link rel="stylesheet" href="./zStyles/index.css">
   <link rel="stylesheet" href="./zStyles/home.css">
   <link rel="stylesheet" href="./zStyles/skeleton.css">
+  <link rel="stylesheet" href="./zStyles/theme.css">
 </head>
 
 <body>
@@ -93,7 +95,7 @@
     </button>
 
     <a href="/" class="topbar-title" aria-label="thatako.net home">
-      <span class="logo-dot" aria-hidden="true"></span>
+      <span class="logo-dot" aria-hidden="true" width="32" height="32"></span>
       thatako.net
     </a>
 
@@ -106,6 +108,7 @@
     </div>
 
     <div class="topbar-actions">
+      <div id="theme-switcher"></div>
       <a href="https://github.com/aitji/thatako.net" class="topbar-btn" target="_blank" rel="noopener"
         aria-label="GitHub">
         <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub

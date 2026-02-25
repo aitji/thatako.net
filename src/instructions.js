@@ -1,3 +1,40 @@
+// theme manager
+const THEME_KEY = 'site-theme-preference'
+const themes = { SYSTEM: 'system', LIGHT: 'light', DARK: 'dark' }
+
+function getThemePreference() {
+  return localStorage.getItem(THEME_KEY) || themes.SYSTEM
+}
+
+function setThemePreference(theme) {
+  if (!Object.values(themes).includes(theme)) return
+  localStorage.setItem(THEME_KEY, theme)
+  applyTheme(theme)
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement
+  if (theme === themes.SYSTEM) {
+    html.removeAttribute('data-theme')
+    html.style.colorScheme = ''
+  } else if (theme === themes.LIGHT) {
+    html.setAttribute('data-theme', 'light')
+    html.style.colorScheme = 'light'
+  } else if (theme === themes.DARK) {
+    html.setAttribute('data-theme', 'dark')
+    html.style.colorScheme = 'dark'
+  }
+  window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme } }))
+}
+
+function getEffectiveTheme() {
+  const pref = getThemePreference()
+  if (pref === themes.SYSTEM) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? themes.DARK : themes.LIGHT
+  }
+  return pref
+}
+
 function injectFooter(opts = {}) {
   const year = opts.year ?? new Date().getFullYear()
   const version = opts.version ?? ''
@@ -106,11 +143,50 @@ function initSearch() {
   })
 }
 
+// theme switcher UI
+function initThemeSwitcher(containerId = 'theme-switcher') {
+  const container = document.getElementById(containerId)
+  if (!container) return
+
+  const switcher = document.createElement('div')
+  switcher.className = 'theme-switcher-group'
+  switcher.setAttribute('aria-label', 'Theme selector')
+
+  const buttons = [
+    { class: 'theme-btn-system', icon: 'fa-desktop', label: 'System', theme: themes.SYSTEM },
+    { class: 'theme-btn-light', icon: 'fa-sun', label: 'Light', theme: themes.LIGHT },
+    { class: 'theme-btn-dark', icon: 'fa-moon', label: 'Dark', theme: themes.DARK }
+  ]
+
+  buttons.forEach(btn => {
+    const button = document.createElement('button')
+    button.className = `theme-btn ${btn.class}`
+    button.setAttribute('aria-label', btn.label + ' theme')
+    button.setAttribute('title', btn.label)
+    button.innerHTML = `<i class="fas ${btn.icon}"></i>`
+    button.addEventListener('click', () => {
+      setThemePreference(btn.theme)
+      updateActive(btn.theme)
+    })
+    switcher.appendChild(button)
+  })
+
+  function updateActive(theme) {
+    switcher.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'))
+    switcher.querySelector(`.theme-btn-${theme === themes.SYSTEM ? 'system' : theme === themes.LIGHT ? 'light' : 'dark'}`).classList.add('active')
+  }
+
+  updateActive(getThemePreference())
+  window.addEventListener('theme-changed', e => updateActive(e.detail.theme))
+  container.appendChild(switcher)
+}
+
 const version = "v0.5-alpha"
 const _opts = {
   footer: true,
   toc: true,
   search: true,
+  themeSwitcher: true,
   footerOpts: { version }
 }
 
@@ -119,11 +195,13 @@ function _boot(opts) {
   const {
     footer = true,
     search = true,
+    themeSwitcher = true,
     footerOpts = {},
   } = opts
 
   localStorage.setItem('v', version)
   if (search) initSearch()
+  if (themeSwitcher) initThemeSwitcher()
   // (toc) handled by router
   if (footer) injectFooter(footerOpts)
 }
@@ -131,4 +209,4 @@ function _boot(opts) {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => _boot(_opts))
 else _boot(_opts)
 
-export { injectFooter, initToc, initSearch }
+export { injectFooter, initToc, initSearch, initThemeSwitcher, getThemePreference, setThemePreference, getEffectiveTheme }
