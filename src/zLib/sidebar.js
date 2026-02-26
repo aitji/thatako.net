@@ -137,6 +137,11 @@ const buildSidebar = (config) => {
         'aria-label': 'เมนูหลัก',
     }, [inner])
 
+    const theme = el('div', {
+        className: "theme-switcher",
+        id: 'theme-switcher'
+    })
+    nav.appendChild(theme)
 
     var footer = el('div', { className: 'sidebar-footer' }, [
         el('span', { className: 'sf-dot pulse', 'aria-hidden': 'true' }),
