@@ -37,6 +37,20 @@ function getEffectiveTheme() {
   return pref
 }
 
+const awaitEl = async (id) => new Promise(resolve => {
+  const el = document.getElementById(id)
+  if (el) return resolve(el)
+
+  const observer = new MutationObserver(() => {
+    const found = document.getElementById(id)
+    if (!found) return
+    observer.disconnect()
+    resolve(found)
+  })
+
+  observer.observe(document.body, { childList: true, subtree: true })
+})
+
 // footer
 function injectFooter(opts = {}) {
   const year = opts.year ?? new Date().getFullYear()
@@ -156,9 +170,9 @@ function initThemeSwitcher(containerId = 'theme-switcher') {
   switcher.setAttribute('aria-label', 'Theme selector')
 
   const buttons = [
-    { class: 'theme-btn-system', icon: 'fa-desktop', label: 'System', theme: themes.SYSTEM },
-    { class: 'theme-btn-light', icon: 'fa-sun', label: 'Light', theme: themes.LIGHT },
-    { class: 'theme-btn-dark', icon: 'fa-moon', label: 'Dark', theme: themes.DARK }
+    { class: 'theme-btn-system', icon: 'fa-desktop', label: 'ธีมระบบ', theme: themes.SYSTEM },
+    { class: 'theme-btn-light', icon: 'fa-sun', label: 'ธีมสีอ่อน', theme: themes.LIGHT },
+    { class: 'theme-btn-dark', icon: 'fa-moon', label: 'ธีมสีเข้ม', theme: themes.DARK }
   ]
 
   buttons.forEach(btn => {
@@ -187,7 +201,6 @@ function initThemeSwitcher(containerId = 'theme-switcher') {
 const version = "v0.5-alpha"
 const _opts = {
   footer: true,
-  toc: true,
   search: true,
   themeSwitcher: true,
   footerOpts: { version }
