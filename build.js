@@ -14,15 +14,7 @@ const WATCH = process.argv.includes('--watch')
 
 const ensure = p => fs.mkdirSync(p, { recursive: true })
 
-const google = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-MB904QRERQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-MB904QRERQ');
-</script>`
+const google = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-MB904QRERQ"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-MB904QRERQ");</script>`
 const YEAR = new Date().getFullYear()
 const bannerText = `
                           ,
@@ -68,53 +60,61 @@ const banner = {
 }
 
 const minifyJSONFile = async file => {
-    const src = fs.readFileSync(file, 'utf8')
-    const out = JSON.stringify(JSON.parse(src))
-    fs.writeFileSync(file, out) // no banner ;p
+    try {
+        if (!fs.existsSync(file)) throw new Error(`file not found: ${file}`);
+
+        const src = fs.readFileSync(file, 'utf8')
+        const out = JSON.stringify(JSON.parse(src))
+        fs.writeFileSync(file, out)
+    } catch (error) { console.error(`[JSON] error processing ${file}: ${error.message}`) }
 }
 
 const minifyHTMLFile = async file => {
-    let src = fs.readFileSync(file, 'utf8')
-    if (!WATCH) src = src.replace('</head>', `${google}</head>`)
-    else src = src.replaceAll('thatako.net', 'dev.thatako.net')
+    try {
+        let src = fs.readFileSync(file, 'utf8')
+        if (!WATCH) src = src.replace('</head>', `${google}</head>`)
+        else src = src.replaceAll('thatako.net', 'dev.thatako.net')
 
-    // <script type="application/ld+json">{"@context": "https://schema.org"...}</script>
-    const regex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i
-    const match = src.match(regex)
+        // <script type="application/ld+json">{"@context": "https://schema.org"...}</script>
+        const regex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i
+        const match = src.match(regex)
 
-    if (match) {
-        const jsonSrc = match[1]
-        const jsonOut = JSON.stringify(JSON.parse(jsonSrc))
-        src = src.replace(jsonSrc, jsonOut)
-    }
+        if (match) {
+            const jsonSrc = match[1]
+            const jsonOut = JSON.stringify(JSON.parse(jsonSrc))
+            src = src.replace(jsonSrc, jsonOut)
+        }
 
-    let out = await minifyHTML(src, {
-        collapseWhitespace: true,
-        removeComments: true,
-        removeRedundantAttributes: true,
-        removeEmptyAttributes: true,
-        minifyCSS: true,
-        minifyJS: true,
-        keepClosingSlash: true,
-        html5: true
-    })
-    fs.writeFileSync(file, banner.html + out)
+        let out = await minifyHTML(src, {
+            collapseWhitespace: true,
+            removeComments: true,
+            removeRedundantAttributes: true,
+            removeEmptyAttributes: true,
+            minifyCSS: true,
+            minifyJS: true,
+            keepClosingSlash: true,
+            html5: true
+        })
+        fs.writeFileSync(file, banner.html + out)
+    } catch (error) { console.error(`[HTML] error processing ${file}: ${error.message}`) }
 }
 
 const minifyJSFile = async (src, out) => {
-    const code = fs.readFileSync(src, 'utf8')
-    const r = await minifyJS(code, {
-        compress: {
-            passes: 3,
-            drop_console: true,
-            unsafe: true
-        },
-        mangle: { toplevel: true },
-        format: { comments: false }
-    })
+    try {
+        const code = fs.readFileSync(src, 'utf8')
+        const r = await minifyJS(code, {
+            compress: {
+                passes: 3,
+                drop_console: true,
+                unsafe: true
+            },
+            mangle: { toplevel: true },
+            format: { comments: false }
+        })
 
-    if (WATCH) r.code = r.code.replaceAll('thatako.net', 'dev.thatako.net')
-    fs.writeFileSync(out, banner.js + r.code)
+        if (WATCH) r.code = r.code.replaceAll('thatako.net', 'dev.thatako.net')
+        fs.writeFileSync(out, banner.js + r.code)
+    } catch (error) { console.error(`[HTML] error processing ${file}: ${error.message}`) }
 }
 
 const esbuildContexts = new Map() // esbuild context cache for CSS watch mode
@@ -154,13 +154,15 @@ const processFile = async (src, out) => {
             // esbuild in watch mode returns context with "watch"
             // but using "fs.watch", just build normally
         }
-        await build({
-            entryPoints: [src],
-            outfile: out,
-            minify: true,
-            legalComments: "none",
-            banner: { css: banner.css }
-        })
+        try {
+            await build({
+                entryPoints: [src],
+                outfile: out,
+                minify: true,
+                legalComments: "none",
+                banner: { css: banner.css }
+            })
+        } catch (error) { console.error(`[CSS] error processing file: ${error.message}`) }
         return
     }
 
