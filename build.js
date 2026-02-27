@@ -133,7 +133,7 @@ const processFile = async (src, out) => {
     }
 
     if (src.endsWith('.json')) {
-        await minifyJSONFile(out)
+        await minifyJSONFile(src)
         return
     }
 
