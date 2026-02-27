@@ -132,11 +132,11 @@ const processFile = async (src, out) => {
         return
     }
 
-    if (src.endsWith('.json')) {
-        fs.copyFileSync(src, out)
-        await minifyJSONFile(out)
-        return
-    }
+    // if (src.endsWith('.json')) {
+    //     fs.copyFileSync(src, out)
+    //     await minifyJSONFile(out)
+    //     return
+    // }
 
     if (src.endsWith('.css')) {
         if (WATCH) {
