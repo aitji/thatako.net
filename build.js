@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import ignore from 'ignore'
 import { build } from 'esbuild'
-import { minify as minifyHTML } from 'html-minifier-terser'
+import { minify, minify as minifyHTML } from 'html-minifier-terser'
 import { minify as minifyJS } from 'terser'
 
 const ig = ignore()
@@ -67,8 +67,27 @@ const banner = {
     css: `/*${bannerText}*/\n`
 }
 
-const minifyHTMLFile = async file => {
+const minifyJSONFile = async file => {
     const src = fs.readFileSync(file, 'utf8')
+    const out = JSON.stringify(JSON.parse(src))
+    fs.writeFileSync(file, out) // no banner ;p
+}
+
+const minifyHTMLFile = async file => {
+    let src = fs.readFileSync(file, 'utf8')
+    if (!WATCH) src = src.replace('</head>', `${google}</head>`)
+    else src = src.replaceAll('thatako.net', 'dev.thatako.net')
+
+    // <script type="application/ld+json">{"@context": "https://schema.org"...}</script>
+    const regex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i
+    const match = src.match(regex)
+
+    if (match) {
+        const jsonSrc = match[1]
+        const jsonOut = JSON.stringify(JSON.parse(jsonSrc))
+        src = src.replace(jsonSrc, jsonOut)
+    }
+
     let out = await minifyHTML(src, {
         collapseWhitespace: true,
         removeComments: true,
@@ -79,8 +98,6 @@ const minifyHTMLFile = async file => {
         keepClosingSlash: true,
         html5: true
     })
-    if (!WATCH) out = out.replace('</head>', `${google}</head>`)
-    else out = out.replaceAll('thatako.net', 'dev.thatako.net')
     fs.writeFileSync(file, banner.html + out)
 }
 
@@ -115,6 +132,11 @@ const processFile = async (src, out) => {
         return
     }
 
+    if (src.endsWith('.json')) {
+        await minifyJSONFile(out)
+        return
+    }
+
     if (src.endsWith('.css')) {
         if (WATCH) {
             // dispose old context if re-processing
@@ -136,6 +158,7 @@ const processFile = async (src, out) => {
             entryPoints: [src],
             outfile: out,
             minify: true,
+            legalComments: "none",
             banner: { css: banner.css }
         })
         return
