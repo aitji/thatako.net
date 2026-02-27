@@ -133,7 +133,8 @@ const processFile = async (src, out) => {
     }
 
     if (src.endsWith('.json')) {
-        await minifyJSONFile(src)
+        fs.copyFileSync(src, out)
+        await minifyJSONFile(out)
         return
     }
 
@@ -251,7 +252,7 @@ const startWatch = () => {
     // )
 
     copyRoot('img')
-    // copyRoot('ads.txt')
+    // copyRoot('routes.json')
     // copyRoot('sitemap.xml')
 
     if (WATCH) startWatch()
