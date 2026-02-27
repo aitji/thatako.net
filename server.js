@@ -57,6 +57,7 @@ const MIME = {
 }
 
 const LIVERELOAD_SCRIPT = `
+<!-- [live] ignore this injected javascript -->
 <script>
 (function () {
     try { new EventSource('/__livereload').close() }
@@ -71,8 +72,7 @@ const LIVERELOAD_SCRIPT = `
         }
         console.log('[live] socket connected successfully')
     } catch (e) {}
-})()
-</script>`
+})()</script>`
 
 const clients = new Set()
 const broadcastReload = () => {
@@ -91,7 +91,7 @@ fs.watch(OUT, { recursive: true }, () => {
 const serveHTML = (res, filePath, statusCode = 200) => {
     let html = fs.readFileSync(filePath, 'utf8')
     html = html.includes('</body>')
-        ? html.replace('</body>', `${LIVERELOAD_SCRIPT}\n</body>`)
+        ? html.replace('</body>', `${LIVERELOAD_SCRIPT}</body>`)
         : html + LIVERELOAD_SCRIPT
     res.writeHead(statusCode, { 'Content-Type': 'text/html; charset=utf-8' })
     res.end(html)

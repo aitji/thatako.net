@@ -161,9 +161,12 @@ function initSearch() {
 }
 
 // theme switcher UI
-function initThemeSwitcher(containerId = 'theme-switcher') {
-  const container = document.getElementById(containerId)
-  if (!container) return
+async function initThemeSwitcher(containerId = 'theme-switcher') {
+  var container = document.getElementById(containerId)
+  if (!container) {
+    console.log('waiting for el: ', containerId)
+    container = await awaitEl(containerId)
+  }
 
   const switcher = document.createElement('div')
   switcher.className = 'theme-switcher-group'
