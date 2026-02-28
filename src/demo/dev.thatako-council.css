@@ -1,0 +1,101 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+.container { max-width: 640px; margin: 0 auto; }
+h1 { font-size: 1.4rem; color: #fff; margin-bottom: 4px; }
+.subtitle { font-size: 0.8rem; color: #666; margin-bottom: 32px; }
+.card {
+    border: 1px solid #222;
+    padding: 24px;
+    margin-bottom: 16px;
+    background: #111;
+}
+.card h2 { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 6px; }
+input[type="text"], input[type="email"], select {
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    margin-bottom: 16px;
+}
+input:focus, select:focus { border-color: #555; }
+.subdomain-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.subdomain-row input { margin-bottom: 0; flex: 1; }
+.subdomain-row span { color: #555; font-size: 0.85rem; white-space: nowrap; }
+button {
+    background: #e0e0e0;
+    color: #0a0a0a;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 4px;
+}
+button:hover { background: #fff; }
+button:disabled { background: #333; color: #666; cursor: not-allowed; }
+.btn-secondary {
+    background: transparent;
+    color: #888;
+    border: 1px solid #333;
+    margin-top: 8px;
+}
+.btn-secondary:hover { border-color: #555; color: #e0e0e0; background: transparent; }
+.status {
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    margin-top: 12px;
+    display: none;
+}
+.status.ok { background: #0d1f0d; border: 1px solid #1a4d1a; color: #4caf50; }
+.status.err { background: #1f0d0d; border: 1px solid #4d1a1a; color: #f44336; }
+.status.info { background: #0d0d1f; border: 1px solid #1a1a4d; color: #7986cb; }
+.user-badge {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #222; margin-bottom: 16px;
+}
+.user-badge img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #333; }
+.user-badge .name { font-size: 0.85rem; }
+.user-badge .id { font-size: 0.75rem; color: #555; }
+.owner-list { margin-bottom: 12px; }
+.owner-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 10px; background: #0a0a0a; border: 1px solid #222;
+    margin-bottom: 6px; font-size: 0.8rem;
+}
+.owner-item button {
+    width: auto; padding: 2px 8px; margin: 0;
+    background: transparent; color: #f44336; border: 1px solid #4d1a1a;
+    font-size: 0.75rem;
+}
+.owner-item button:hover { background: #1f0d0d; }
+.add-owner-row { display: flex; gap: 8px; }
+.add-owner-row input { margin-bottom: 0; flex: 1; }
+.add-owner-row button { width: auto; padding: 8px 14px; margin: 0; }
+.records-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 12px; }
+.records-table th { text-align: left; color: #555; padding: 4px 8px; border-bottom: 1px solid #222; }
+.records-table td { padding: 6px 8px; border-bottom: 1px solid #181818; }
+.records-table input { margin: 0; padding: 4px 8px; width: 100%; }
+.records-table button { width: auto; padding: 2px 8px; margin: 0; background: transparent; color: #f44336; border: 1px solid #4d1a1a; font-size: 0.75rem; }
+.records-table button:hover { background: #1f0d0d; }
+.add-record-row { display: flex; gap: 8px; align-items: center; }
+.add-record-row select { margin: 0; width: auto; }
+.add-record-row input { margin: 0; flex: 1; }
+.add-record-row button { width: auto; padding: 8px 14px; margin: 0; }
+.step { display: none; }
+.step.active { display: block; }
+pre { background: #0a0a0a; border: 1px solid #222; padding: 12px; font-size: 0.75rem; overflow-x: auto; color: #888; margin-top: 12px; }
+.tag { display: inline-block; padding: 2px 8px; font-size: 0.7rem; border: 1px solid #333; color: #666; margin-right: 4px; }
+.warning { font-size: 0.75rem; color: #888; margin-top: 8px; line-height: 1.5; }
