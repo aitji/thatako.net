@@ -17,7 +17,7 @@ h1 { font-size: 1.4rem; color: #fff; margin-bottom: 4px; }
 }
 .card h2 { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
 label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 6px; }
-input[type="text"], input[type="email"], select {
+input, select {
     width: 100%;
     background: #0a0a0a;
     border: 1px solid #333;

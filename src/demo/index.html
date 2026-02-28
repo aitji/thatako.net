@@ -21,6 +21,11 @@
                     sign in with GitHub to claim your free subdomain<br>
                     your identity is used to verify ownership when making changes
                 </p>
+                <div class="subdomain-row">
+                    <input type="text" id="subdomain-input" placeholder="yourname"
+                        oninput="validateSubdomain(this.value)" />
+                    <span>.id.thatako.net</span>
+                </div>
                 <button id="btn-login" onclick="startLogin()">Login with GitHub →</button>
             </div>
         </div>
@@ -67,6 +72,7 @@
                     <thead>
                         <tr>
                             <th>Type</th>
+                            <th>Name</th>
                             <th>Value</th>
                             <th></th>
                         </tr>
@@ -74,16 +80,19 @@
                     <tbody id="records-body"></tbody>
                 </table>
                 <div class="add-record-row">
-                    <select id="new-record-type">
+                    <select id="new-record-type" onchange="toggleNameField(this.value)">
                         <option>A</option>
                         <option>AAAA</option>
                         <option>CNAME</option>
                         <option>TXT</option>
                         <option>MX</option>
                     </select>
+                    <input type="text" id="new-record-name" placeholder="name" style="display:none" />
                     <input type="text" id="new-record-value" placeholder="value" />
                     <button onclick="addRecord()">+ add</button>
                 </div>
+                <p style="font-size:0.72rem;color:#555;margin-top:6px">name = host label from your provider (e.g.
+                    <code>aitji.id</code> for a CNAME)</p>
             </div>
 
             <div class="card">
@@ -135,9 +144,16 @@
         let records = []
         let owners = []
 
+        // types that need a name field (host label from provider)
+        const NAME_TYPES = new Set(['CNAME', 'MX'])
+
         const DEFAULT_RECORDS = {
-            vercel: [{ type: 'A', value: '76.76.21.21' }, { type: 'TXT', value: 'vercel TXT here' }],
-            'github-pages': [{ type: 'CNAME', value: 'your-user.github.io' }],
+            vercel: [
+                { type: 'A', name: '', value: '76.76.21.21' },
+                { type: 'CNAME', name: '', value: '' },
+                { type: 'TXT', name: '', value: '' },
+            ],
+            'github-pages': [{ type: 'CNAME', name: '', value: 'your-user.github.io' }],
             custom: [],
         }
 
@@ -203,8 +219,7 @@
         }
 
         // subdomain
-        const DISALLOWED = ['www', 'mail', 'ftp', 'admin', 'api', 'dashboard', 'help', 'support',
-            'blog', 'status', 'cdn', 'static', 'assets', 'img', 'images', 'ns1', 'ns2', 'smtp', 'pop', 'imap'];
+        const DISALLOWED = ['www', 'mail', 'ftp', 'admin', 'api', 'dashboard', 'help', 'support', 'blog', 'status', 'cdn', 'static', 'assets', 'img', 'images', 'ns1', 'ns2', 'smtp', 'pop', 'imap', "go"]
 
         function validateSubdomain(val) {
             const el = document.getElementById('subdomain-status')
@@ -233,6 +248,11 @@
         }
 
         // record
+        function toggleNameField(type) {
+            const el = document.getElementById('new-record-name')
+            el.style.display = NAME_TYPES.has(type) ? '' : 'none'
+        }
+
         function updateRecordDefaults(host) {
             records = [...(DEFAULT_RECORDS[host] || [])]
             renderRecords()
@@ -240,20 +260,27 @@
         }
 
         function renderRecords() {
-            const tbody = document.getElementById('records-body');
-            tbody.innerHTML = records.map((r, i) => `
-            <tr>
-                <td>${r.type}</td>
-                <td><input value="${escHtml(r.value)}" oninput="records[${i}].value=this.value;updatePreview()" /></td>
-                <td><button onclick="removeRecord(${i})">✕</button></td>
-            </tr>`).join('')
+            const tbody = document.getElementById('records-body')
+            tbody.innerHTML = records.map((r, i) => {
+                const nameCell = NAME_TYPES.has(r.type)
+                    ? `<td><input value="${escHtml(r.name || '')}" placeholder="name" oninput="records[${i}].name=this.value;updatePreview()" /></td>`
+                    : `<td style="color:#555;font-size:0.75rem">(subdomain)</td>`
+                return `<tr>
+                    <td>${r.type}</td>
+                    ${nameCell}
+                    <td><input value="${escHtml(r.value)}" placeholder="value" oninput="records[${i}].value=this.value;updatePreview()" /></td>
+                    <td><button onclick="removeRecord(${i})">✕</button></td>
+                </tr>`
+            }).join('')
         }
 
         function addRecord() {
             const type = document.getElementById('new-record-type').value
+            const name = document.getElementById('new-record-name').value.trim()
             const value = document.getElementById('new-record-value').value.trim()
             if (!value) return
-            records.push({ type, value })
+            records.push({ type, name: NAME_TYPES.has(type) ? name : '', value })
+            document.getElementById('new-record-name').value = ''
             document.getElementById('new-record-value').value = ''
             renderRecords()
             updatePreview()
@@ -314,11 +341,18 @@
             const host = document.getElementById('host-select').value
 
             // records object
-            const recordsObj = {};
+            const recordsObj = {}
             records.forEach(r => {
-                if (!recordsObj[r.type]) recordsObj[r.type] = []
-                if (r.type === 'TXT') recordsObj['TXT'] = r.value // single string
-                else recordsObj[r.type].push(r.value)
+                if (!r.value) return // skip empty rows
+                if (NAME_TYPES.has(r.type)) {
+                    if (!recordsObj[r.type]) recordsObj[r.type] = []
+                    recordsObj[r.type].push(r.name ? { name: r.name, value: r.value } : { value: r.value })
+                } else if (r.type === 'TXT') {
+                    recordsObj['TXT'] = r.value // single string
+                } else {
+                    if (!recordsObj[r.type]) recordsObj[r.type] = []
+                    recordsObj[r.type].push(r.value)
+                }
             })
 
             const ownerEntry = { github: user?.login || '', 'github-id': user?.id || 0 }
