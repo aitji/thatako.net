@@ -333,8 +333,17 @@ const boot_ = () => {
             {
                 label: 'บริการ',
                 items: [
-                    { title: 'URL Shortener', href: '/short/', icon: 'fa-solid fa-link', external: false },
-                    { title: 'QR Generator', href: '/short/', icon: 'fa-solid fa-qrcode', external: false },
+                    { title: 'ย่อลิ้งก์', href: '/short', icon: 'fa-solid fa-link', external: false },
+                    {
+                        title: 'โดเมนย่อยฟรี',
+                        icon: 'fa-solid fa-network-wired',
+                        section: true,
+                        items: [
+                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'รับโดเมนย่อย', href: '/subdomain/grab', icon: 'fa-solid fa-tag', badge: { text: "wip", color: 'orange' }, external: false },
+                        ]
+                    },
                 ]
             },
             {
