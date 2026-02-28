@@ -57,7 +57,7 @@ const MIME = {
 }
 
 const LIVERELOAD_SCRIPT = `
-<!-- [live] ignore this injected javascript -->
+<!-- [live] ignore this injected by aitji self-build live server -->
 <script>
 (function () {
     try { new EventSource('/__livereload').close() }
