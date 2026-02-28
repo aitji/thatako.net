@@ -339,9 +339,9 @@ const boot_ = () => {
                         icon: 'fa-solid fa-network-wired',
                         section: true,
                         items: [
-                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', external: false },
-                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', external: false },
-                            { title: 'รับโดเมนย่อย', href: '/subdomain/grab', icon: 'fa-solid fa-tag', badge: { text: "ฟรี", color: 'green' }, external: false },
+                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'รับโดเมนย่อย', href: '/subdomain/grab', icon: 'fa-solid fa-tag', badge: { text: "wip", color: 'orange' }, external: false },
                         ]
                     },
                 ]
