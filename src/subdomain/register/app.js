@@ -51,27 +51,27 @@ const HOST_TEMPLATES = {
     },
     'github-pages': {
         records: [{ type: 'CNAME', name: '@', value: '[USERNAME].github.io' }],
-        hint: '💡 Replace USERNAME with your GitHub username. Then enable Pages in your repo → Settings → Pages.',
+        hint: '💡 Replace USERNAME with your GitHub username. Then enable Pages in your repo → Settings → Pages. ',
         docs: 'https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site',
     },
     netlify: {
         records: [{ type: 'CNAME', name: '@', value: 'your-site.netlify.app' }],
-        hint: '💡 Replace with your actual Netlify site subdomain (found in Site settings → Domain management).',
+        hint: '💡 Replace with your actual Netlify site subdomain (found in Site settings → Domain management). ',
         docs: 'https://docs.netlify.com/domains-https/custom-domains/',
     },
     cloudflare: {
         records: [{ type: 'A', name: '@', value: '192.0.2.1' }],
-        hint: '💡 Replace 192.0.2.1 with your actual origin server IP address.',
+        hint: '💡 Replace 192.0.2.1 with your actual origin server IP address. ',
         docs: 'https://developers.cloudflare.com/dns/',
     },
     render: {
         records: [{ type: 'CNAME', name: '@', value: 'your-service.onrender.com' }],
-        hint: '💡 Replace with your Render service URL (found in the service dashboard).',
+        hint: '💡 Replace with your Render service URL (found in the service dashboard). ',
         docs: 'https://render.com/docs/custom-domains',
     },
     railway: {
         records: [{ type: 'CNAME', name: '@', value: 'your-service.up.railway.app' }],
-        hint: '💡 Replace with your Railway service URL (found in service → Settings → Networking).',
+        hint: '💡 Replace with your Railway service URL (found in service → Settings → Networking). ',
         docs: 'https://docs.railway.app/deploy/custom-domains',
     },
     'fly.io': {
@@ -79,7 +79,7 @@ const HOST_TEMPLATES = {
             { type: 'A', name: '@', value: '66.241.125.1' },
             { type: 'AAAA', name: '@', value: '2a09:8280:1::1:b3b5' },
         ],
-        hint: '💡 After saving, run: fly certs add yourdomain.id.thatako.net',
+        hint: '💡 After saving, run: fly certs add yourdomain.id.thatako.net ',
         docs: 'https://fly.io/docs/app-guides/custom-domains-with-fly/',
     },
     other: { records: [], hint: '', docs: '' },
@@ -102,9 +102,7 @@ function applyHostTemplate(host, forceApply = false) {
         pendingTemplateApply = doApply
         document.getElementById('templateModalLabel').textContent = host
         document.getElementById('templateModal').classList.add('open')
-    } else {
-        doApply()
-    }
+    } else doApply()
 }
 
 function updateHostHint(tpl) {
@@ -123,7 +121,7 @@ function updateHostHint(tpl) {
     }
     if (tpl?.hint) {
         hint.style.display = ''
-        hint.innerHTML = `<span style="flex:1;">${tpl.hint}</span>${tpl.docs ? `<a href="${tpl.docs}" target="_blank" rel="noopener" style="white-space:nowrap;font-size:11px;flex-shrink:0;">Docs ↗</a>` : ''}`
+        hint.innerHTML = `<span style="flex:1;">${tpl.hint}</span> ${tpl.docs ? `<a href="${tpl.docs}" target="_blank" rel="noopener" style="white-space:nowrap;font-size:11px;flex-shrink:0;">Docs <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ''}`
     } else {
         hint.style.display = 'none'
     }
@@ -158,7 +156,7 @@ function renderRecords() {
     <div class="record-row" id="recrow-${r.id}">
       <span class="record-type-badge">${r.type}</span>
       <input type="text" id="rec-name-${r.id}" placeholder="name (e.g. @)" style="flex:1;"
-             oninput="validateRecordConflicts()">
+        oninput="validateRecordConflicts()">
       <input type="text" id="rec-val-${r.id}" placeholder="value" style="flex:2;">
       <button class="btn btn-danger" onclick="removeRecord(${r.id})" title="ลบ record">
         <i class="fa-solid fa-trash"></i>
@@ -190,7 +188,7 @@ function validateRecordConflicts() {
         banner.style.display = 'flex'
         banner.innerHTML = `
           <i class="fa-solid fa-triangle-exclamation" style="flex-shrink:0;margin-top:1px;"></i>
-          <span><strong>Record conflict:</strong> ${conflicts.join(', ')} —
+          <span><strong>Record conflict:</strong> ${conflicts.join(', ')}
           a CNAME cannot coexist with A, AAAA, or MX on the same name.</span>`
         submitBtn.disabled = true
     } else {
@@ -417,13 +415,18 @@ async function loadDomains(auth) {
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="3">
             <div class="empty-state">
-              <i class="fa-solid fa-circle-exclamation" style="color:var(--color-danger,#ef4444);font-size:20px;"></i>
-              <span>${e.message}</span>
-              <button class="btn btn-ghost" onclick="document.getElementById('refreshBtn').click()"
-                      style="font-size:11px;height:26px;margin-top:4px;">
-                <i class="fa-solid fa-rotate-right"></i> ลองใหม่
-              </button>
-            </div></td></tr>`
+                <div style="display:flex;justify-content:center">
+                    <i class="fa-solid fa-circle-exclamation" style="color:var(--color-danger,#ef4444);font-size:20px;"></i>
+                </div>
+                <span>${e.message}</span>
+                <div>
+                    <button class="btn btn-ghost" onclick="document.getElementById('refreshBtn').click()"
+                        style="font-size:11px;height:26px;margin-top:4px;">
+                        ลองใหม่
+                    </button>
+                </div
+            </div>
+        </td></tr>`
     }
 }
 
@@ -432,7 +435,9 @@ function renderDomains() {
     if (!domainsCache.length) {
         tbody.innerHTML = `<tr><td colspan="3">
             <div class="empty-state">
-                <i class="fa-solid fa-globe" style="font-size:24px;opacity:.35;"></i>
+                <div style="display:flex;justify-content:center">
+                    <i class="fa-solid fa-globe" style="font-size:24px;opacity:.35;"></i>
+                </div>
                 <span>ยังไม่มีโดเมน</span>
             </div></td></tr>`
         return

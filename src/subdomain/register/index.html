@@ -4,13 +4,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>id.thatako.net - Domain Registration</title>
+  <title>โดเมนย่อยฟรี - ศูนย์รวมข้อมูลท่าตะโกพิทยาคม</title>
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#4f5d97">
 
+  <!-- icon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
+  <link rel="manifest" href="/img/icon/manifest.json">
 
+  <!-- open graph meta tags -->
+  <meta property="og:site_name" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+  <meta property="og:title" content="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">
+  <meta property="og:description"
+    content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก">
+  <meta property="og:image" content="https://thatako.net/img/banner.png">
+  <meta property="og:image:type" content="image/png">
+
+  <meta property="og:url" content="https://thatako.net">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"
+    content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+  <!-- twitter cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://thatako.net/img/banner.png">
+  <meta name="twitter:image:alt"
+    content="แบนเนอร์ศูนย์รวมข้อมูลท่าตะโกพิทยาคม มีข้อความว่า 'Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม ศูนย์รวมข้อมูลและบริการสำหรับนักเรียน ครู และบุคคลภายนอก' บนพื้นหลังสีฟ้าอมม่วงและดาวบนท้องฟ้า">
+
+  <!-- SEO tags -->
+  <meta name="description"
+    content="ศูนย์รวมข้อมูลและบริการดิจิทัล โรงเรียนท่าตะโกพิทยาคม สำหรับนักเรียน ครู และบุคคลภายนอก" />
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="aitji">
+
+  <!-- Website maintained by @aitji -->
+  <link rel="canonical" href="https://thatako.net">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "ศูนย์รวมข้อมูลท่าตะโกพิทยาคม",
+    "alternateName": "thatako.net",
+    "inLanguage": "th",
+    "url": "https://thatako.net",
+    "logo": "https://thatako.net/img/icon/favicon-180x180.png",
+    "sameAs": [
+      "https://pr.thatako.net",
+      "https://thatako-council.com",
+      "https://thatako.ac.th"
+    ],
+    "founder": {
+      "@type": "Person",
+      "name": "aitji",
+      "url": "https://aitji.is-a.dev",
+      "sameAs": [
+        "https://github.com/aitji",
+        "https://www.youtube.com/@aitji.",
+
+        "https://pr.thatako.net",
+        "https://thatako-council.com"
+      ],
+      "image": "https://aitji.is-a.dev/img/favicon-180x180.png",
+      "description": "Curious council student, full-stack developer, and code optimizer who loves building cool things.",
+      "jobTitle": "Student Developer",
+      "affiliation": {
+        "@type": "EducationalOrganization",
+        "name": "Thatakophittayakom School"
+      }
+    }
+  }
+  </script>
   <script src="/theme.js"></script>
 
   <link rel="stylesheet" href="../../zStyles/index.css">
@@ -252,6 +320,7 @@
   <div class="toast-container" id="toasts" aria-live="polite"></div>
 
   <script src="../../subdomain/register/app.js" type="module"></script>
+  <script src="../../instructions.js" type="module"></script>
 </body>
 
 </html>
