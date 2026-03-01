@@ -209,12 +209,6 @@ function getRecordsPayload() {
     return records
 }
 
-// github id ; 3-step
-// | step 1    /api/gh-user   ; proxy with server-side token
-// | step 2    api.github.com ; auth with user's OAuth token
-// | step 3    api.github.com ; anonymous (60 req/h per IP ; last resort)
-// | fallback  show manual    ; instruction box, user can find their own ID
-
 const ghIdCache = {}
 const lookupTimers = {}
 const GH_DEBOUNCE = 600 // ms
@@ -226,14 +220,14 @@ window.scheduleGhLookup = function (rowId) {
 
 async function lookupGhId(rowId) {
     const ghInput = document.getElementById(`co-gh-${rowId}`)
-    const idInput = document.getElementById(`co-id-${rowId}`)
     const statusEl = document.getElementById(`co-status-${rowId}`)
     const manualBox = document.getElementById(`co-manual-${rowId}`)
+    const chipEl = document.getElementById(`co-chip-${rowId}`)
     if (!ghInput) return
 
     const username = ghInput.value.trim()
     if (!username) {
-        if (idInput) idInput.value = ''
+        setCoownerChip(chipEl, null)
         if (statusEl) statusEl.innerHTML = ''
         if (manualBox) manualBox.style.display = 'none'
         return
@@ -241,7 +235,7 @@ async function lookupGhId(rowId) {
 
     const key = username.toLowerCase()
     const cached = ghIdCache[key]
-    if (cached) { setLookupSuccess(idInput, statusEl, manualBox, cached); return }
+    if (cached) { setLookupSuccess(chipEl, statusEl, manualBox, cached); return }
 
     setLookupStatus(statusEl, '', '…')
 
@@ -251,11 +245,11 @@ async function lookupGhId(rowId) {
         if (res.ok) {
             const data = await res.json()
             ghIdCache[key] = data
-            setLookupSuccess(idInput, statusEl, manualBox, data)
+            setLookupSuccess(chipEl, statusEl, manualBox, data)
             return
         }
-        if (res.status === 404) return notFound(idInput, statusEl)
-    } catch { /* proxy unavailable ; fall through */ }
+        if (res.status === 404) return notFound(chipEl, statusEl)
+    } catch { }
 
     // 2. auth with oauth token
     const token = getAuth()?.token
@@ -272,10 +266,10 @@ async function lookupGhId(rowId) {
                 const data = await res.json()
                 const info = { id: data.id, login: data.login, avatar_url: data.avatar_url }
                 ghIdCache[key] = info
-                setLookupSuccess(idInput, statusEl, manualBox, info)
+                setLookupSuccess(chipEl, statusEl, manualBox, info)
                 return
             }
-            if (res.status === 404) return notFound(idInput, statusEl)
+            if (res.status === 404) return notFound(chipEl, statusEl)
         } catch { }
     }
 
@@ -288,18 +282,17 @@ async function lookupGhId(rowId) {
             const data = await res.json()
             const info = { id: data.id, login: data.login, avatar_url: data.avatar_url }
             ghIdCache[key] = info
-            setLookupSuccess(idInput, statusEl, manualBox, info)
+            setLookupSuccess(chipEl, statusEl, manualBox, info)
             return
         }
-        if (res.status === 404) { notFound(idInput, statusEl); return }
-    } catch { /* all step failed */ }
+        if (res.status === 404) { notFound(chipEl, statusEl); return }
+    } catch { }
 
-    // all step failed ._.
     showManualIdBox(statusEl, manualBox, username)
 }
 
-function notFound(idInput, statusEl) {
-    if (idInput) idInput.value = ''
+function notFound(chipEl, statusEl) {
+    setCoownerChip(chipEl, null)
     setLookupStatus(statusEl, 'error', 'ไม่พบผู้ใช้')
 }
 
@@ -312,10 +305,26 @@ function setLookupStatus(el, type, text) {
     el.textContent = text
 }
 
-function setLookupSuccess(idInput, statusEl, manualBox, data) {
-    if (idInput) idInput.value = data.id
+function setLookupSuccess(chipEl, statusEl, manualBox, data) {
     if (manualBox) manualBox.style.display = 'none'
-    setLookupStatus(statusEl, 'success', `${data.login}`)
+    setLookupStatus(statusEl, 'success', '')
+    setCoownerChip(chipEl, data)
+}
+
+// Update the co-owner chip to look like primaryOwnerChip
+function setCoownerChip(chipEl, data) {
+    if (!chipEl) return
+    if (!data) {
+        chipEl.style.display = 'none'
+        return
+    }
+    chipEl.style.display = 'flex'
+    chipEl.innerHTML = `
+        <img src="${data.avatar_url}" alt="" width="18" height="18" style="border-radius:50%;">
+        <strong>@${data.login}</strong>
+        <span class="badge-primary-owner" style="background:var(--color-badge-muted-bg);color:var(--color-badge-muted-text);">Co-owner</span>
+        <input type="hidden" id="co-id-hidden-${chipEl.dataset.rowid}" value="${data.id}">
+    `
 }
 
 function showManualIdBox(statusEl, manualBox, username) {
@@ -333,8 +342,24 @@ function showManualIdBox(statusEl, manualBox, username) {
           2. คัดลอก <code>"id"</code> ดังกล่าวแล้วนำไปวางในช่อง GitHub ID<br>
           <span class="muted">หรือเข้าไปที่ <a href="${profileUrl}" target="_blank" rel="noopener">${profileUrl}</a>
           และกด <kbd>Ctrl+U</kbd> (view source) ค้นหา <code>data-scope-id</code></span>
+          <br><input type="number" id="co-manual-id-input-${manualBox.dataset.rowid}" placeholder="GitHub ID" min="1"
+            style="margin-top:6px;max-width:160px;height:30px;font-size:12px;"
+            oninput="applyManualId(${manualBox.dataset.rowid}, this.value)">
         </div>
       </div>`
+}
+
+window.applyManualId = function (rowId, value) {
+    const id = parseInt(value)
+    if (!id) return
+    const ghInput = document.getElementById(`co-gh-${rowId}`)
+    const chipEl = document.getElementById(`co-chip-${rowId}`)
+    const manualBox = document.getElementById(`co-manual-${rowId}`)
+    const statusEl = document.getElementById(`co-status-${rowId}`)
+    const username = ghInput?.value.trim() || 'unknown'
+    const data = { id, login: username, avatar_url: `https://avatars.githubusercontent.com/u/${id}?v=4` }
+    ghIdCache[username.toLowerCase()] = data
+    setLookupSuccess(chipEl, statusEl, manualBox, data)
 }
 
 // co-owner builder
@@ -343,52 +368,88 @@ let coownerCounter = 0
 
 window.addCoowner = function (github = '', githubId = '', email = '') {
     const id = ++coownerCounter
-    coownerRows.push({ id })
+    _snapshotCoownerValues()
+    coownerRows.push({ id, github, githubId, email, resolvedData: null })
     renderCoowners()
-    if (github) document.getElementById(`co-gh-${id}`).value = github
-    if (githubId) document.getElementById(`co-id-${id}`).value = githubId
-    if (email) document.getElementById(`co-email-${id}`).value = email
-    // trigger lookup if username given but no id yet
+
     if (github && !githubId) scheduleGhLookup(id)
+    if (github && githubId) {
+        const avatarUrl = `https://avatars.githubusercontent.com/u/${githubId}?v=4`
+        const data = { id: githubId, login: github, avatar_url: avatarUrl }
+        ghIdCache[github.toLowerCase()] = data
+        const chipEl = document.getElementById(`co-chip-${id}`)
+        const statusEl = document.getElementById(`co-status-${id}`)
+        const manualBox = document.getElementById(`co-manual-${id}`)
+        setLookupSuccess(chipEl, statusEl, manualBox, data)
+    }
+}
+
+function _snapshotCoownerValues() {
+    for (const r of coownerRows) {
+        const ghEl = document.getElementById(`co-gh-${r.id}`)
+        const emailEl = document.getElementById(`co-email-${r.id}`)
+        if (ghEl) r.github = ghEl.value
+        if (emailEl) r.email = emailEl.value
+
+        const hiddenId = document.getElementById(`co-id-hidden-${r.id}`)
+        if (hiddenId) r.githubId = hiddenId.value
+    }
 }
 
 window.removeCoowner = function (id) {
+    _snapshotCoownerValues()
     coownerRows = coownerRows.filter(r => r.id !== id)
     renderCoowners()
+
+    for (const r of coownerRows) {
+        if (r.githubId && r.github) {
+            const data = ghIdCache[r.github.toLowerCase()] || {
+                id: r.githubId,
+                login: r.github,
+                avatar_url: `https://avatars.githubusercontent.com/u/${r.githubId}?v=4`
+            }
+            const chipEl = document.getElementById(`co-chip-${r.id}`)
+            const statusEl = document.getElementById(`co-status-${r.id}`)
+            const manualBox = document.getElementById(`co-manual-${r.id}`)
+            setLookupSuccess(chipEl, statusEl, manualBox, data)
+        }
+    }
 }
 
 function renderCoowners() {
     const container = document.getElementById('coownersBuilder')
     container.innerHTML = coownerRows.map(r => `
     <div class="owner-row" id="corow-${r.id}">
-      <div class="owner-row-inputs">
+      <div style="display:flex;flex-direction:column;gap:5px;grid-column:1/-1;">
         <div class="owner-input-group">
-          <input type="text"   id="co-gh-${r.id}"    placeholder="GitHub username"
+          <input type="text" id="co-gh-${r.id}" placeholder="GitHub username"
+                 value="${r.github || ''}"
                  autocomplete="off" oninput="scheduleGhLookup(${r.id})">
-          <span id="co-status-${r.id}" class="gh-lookup-status"></span>
+          <input type="email" id="co-email-${r.id}" placeholder="Email (optional)"
+                 value="${r.email || ''}"
+                 autocomplete="off" style="max-width:200px;">
+          <button class="btn btn-danger btn-icon" onclick="removeCoowner(${r.id})" title="ลบ co-owner">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
-        <input type="number"   id="co-id-${r.id}"    placeholder="GitHub ID"
-               autocomplete="off" min="1" style="max-width:130px;">
-        <input type="email"    id="co-email-${r.id}" placeholder="Email (optional)"
-               autocomplete="off">
+        <span id="co-status-${r.id}" class="gh-lookup-status"></span>
+        <div class="owner-primary" id="co-chip-${r.id}" data-rowid="${r.id}" style="display:none;margin-bottom:0;"></div>
+        <div class="manual-id-box" id="co-manual-${r.id}" data-rowid="${r.id}" style="display:none;"></div>
       </div>
-      <button class="btn btn-danger btn-icon" onclick="removeCoowner(${r.id})" title="ลบ co-owner">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="manual-id-box" id="co-manual-${r.id}" style="display:none;grid-column:1/-1;"></div>
     </div>`).join('')
 }
 
 function getCoownersPayload(auth) {
+    _snapshotCoownerValues()
     const owners = [{
         github: auth.user.login,
         'github-id': auth.user.id,
         email: auth.user.email || '',
     }]
     for (const r of coownerRows) {
-        const gh = document.getElementById(`co-gh-${r.id}`)?.value.trim()
-        const ghId = parseInt(document.getElementById(`co-id-${r.id}`)?.value.trim())
-        const email = document.getElementById(`co-email-${r.id}`)?.value.trim()
+        const gh = r.github?.trim()
+        const ghId = parseInt(r.githubId) || parseInt(document.getElementById(`co-id-hidden-${r.id}`)?.value)
+        const email = r.email?.trim()
         if (gh && ghId) owners.push({ github: gh, 'github-id': ghId, email: email || '' })
     }
     return owners
@@ -424,7 +485,7 @@ async function loadDomains(auth) {
                         style="font-size:11px;height:26px;margin-top:4px;">
                         ลองใหม่
                     </button>
-                </div
+                </div>
             </div>
         </td></tr>`
     }
@@ -469,7 +530,9 @@ function setFormMode(domain = null) {
     const isEdit = !!domain
     document.getElementById('formIcon').className = isEdit ? 'fa-solid fa-pen' : 'fa-solid fa-plus'
     document.getElementById('formTitle').textContent = isEdit ? 'แก้ไขโดเมน' : 'ลงทะเบียนโดเมนใหม่'
-    document.getElementById('submitLabel').textContent = isEdit ? 'บันทึกการแก้ไข' : 'ลงทะเบียนโดเมน'
+    document.getElementById('submitBtn').innerHTML = isEdit
+        ? '<i class="fa-solid fa-check" aria-hidden="true"></i> บันทึกการแก้ไข'
+        : '<i class="fa-solid fa-check" aria-hidden="true"></i> ลงทะเบียนโดเมน'
     document.getElementById('formResetBtn').style.display = isEdit ? '' : 'none'
     document.getElementById('formModeHint').style.display = isEdit ? '' : 'none'
     if (isEdit) document.getElementById('editingDomainLabel').textContent = domain
@@ -564,9 +627,10 @@ async function submitForm(auth) {
         records,
     }
 
-    const btn = document.getElementById('submitBtn')
-    const wasEditing = !!editingDomain   // ← snapshot BEFORE resetForm() clears it
+    const wasEditing = !!editingDomain
+    const successMsg = wasEditing ? 'อัปเดตโดเมนสำเร็จ' : 'ลงทะเบียนโดเมนสำเร็จ'
 
+    const btn = document.getElementById('submitBtn')
     btn.disabled = true
     btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก...'
 
@@ -578,12 +642,12 @@ async function submitForm(auth) {
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'เกิดข้อผิดพลาด')
-        toast(data.action === 'update' ? 'อัปเดตโดเมนสำเร็จ ✓' : 'ลงทะเบียนโดเมนสำเร็จ ✓', 'success')
+
         resetForm()
         loadDomains(auth)
+        toast(successMsg, 'success')
     } catch (e) {
         toast(e.message, 'error')
-    } finally {
         btn.disabled = false
         btn.innerHTML = `<i class="fa-solid fa-check" aria-hidden="true"></i> ${wasEditing ? 'บันทึกการแก้ไข' : 'ลงทะเบียนโดเมน'}`
     }
