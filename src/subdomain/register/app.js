@@ -139,13 +139,13 @@ async function loadDomains(auth) {
 
         domainsCache = data.domains || []
         renderDomains()
-    } catch (e) { tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i>${e.message}</div></td></tr>` }
+    } catch (e) { tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><div style="display:flex;justify-content:center"><i class="fa-solid fa-circle-exclamation"></div></i>${e.message}</div></td></tr>` }
 }
 
 function renderDomains() {
     const tbody = document.getElementById('domainsList')
     if (!domainsCache.length) {
-        tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-globe"></i>ยังไม่มีโดเมน</div></td></tr>`
+        tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><div style="display:flex;justify-content:center"><i class="fa-solid fa-globe"></div></i>ยังไม่มีโดเมน</div></td></tr>`
         return
     }
     tbody.innerHTML = domainsCache.map(d => `
