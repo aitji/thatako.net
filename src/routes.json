@@ -20,11 +20,6 @@
             "id": "subdomain-tos",
             "path": "/subdomain/tos",
             "file": "docs/subdomain/tos.html"
-        },
-        {
-            "id": "subdomain-grab",
-            "path": "/subdomain/grab",
-            "file": "docs/subdomain/grab.html"
         }
     ],
     "_note": "more routes here with any id (subfolders 'docs/nested/page')"
