@@ -54,6 +54,60 @@
   border-color: var(--color-text-muted);
   text-decoration: none;
 }
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.gh-lookup-status {
+  font-size: 11px;
+  min-width: 72px;
+  white-space: nowrap;
+}
+
+/* manual instruction box */
+.manual-id-box {
+  grid-column: 1 / -1;
+}
+
+.manual-id-box-inner {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: color-mix(
+    in srgb,
+    var(--color-badge-orange-text, --color-callout-warn) 10%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--color-badge-orange-text, --color-callout-warn) 30%,
+      transparent
+    );
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 2px;
+}
+
+.manual-id-box-inner code,
+.manual-id-box-inner kbd {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 10px;
+}
+
+.manual-id-box-inner a {
+  color: inherit;
+}
 
 /* dashboard */
 .dashboard {
@@ -320,6 +374,30 @@ select {
   margin-top: 4px;
 }
 
+/* dns banner */
+#conflictBanner {
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  background: color-mix(
+    in srgb,
+    var(--color-text-danger, --color-callout-error) 10%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--color-text-danger, --color-callout-error) 35%,
+      transparent
+    );
+  color: var(--color-text-danger, --color-callout-error);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
 /* records */
 .records-section {
   margin-bottom: 16px;
@@ -377,11 +455,24 @@ select {
   grid-template-columns: 1fr 1fr auto;
   gap: 6px;
   margin-bottom: 6px;
-  align-items: center;
+  align-items: start;
 }
 .owner-row input {
   height: 32px;
   font-size: 12px;
+}
+.owner-row-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.owner-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.owner-input-group input {
+  flex: 1;
 }
 .owner-row .btn {
   height: 32px;

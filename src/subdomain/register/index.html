@@ -42,7 +42,10 @@
     <div class="auth-gate" id="authGate">
       <div class="auth-gate-icon"><i class="fa-solid fa-globe"></i></div>
       <h2>id.thatako.net</h2>
-      <p>ลงทะเบียนโดเมน <code style="font-family:var(--font-mono);font-size:12px;color:var(--color-code);">[ชื่อ].id.thatako.net</code> ฟรี สำหรับนักเรียนและครู</p>
+      <p>ลงทะเบียนโดเมน
+        <code style="font-family:var(--font-mono);font-size:12px;color:var(--color-code);">[name].id.thatako.net</code>
+        ฟรีสำหรับนักเรียนและครู
+      </p>
       <button class="btn-github" id="loginBtn">
         <i class="fa-brands fa-github" aria-hidden="true"></i>
         เข้าสู่ระบบด้วย GitHub
@@ -86,9 +89,10 @@
               <!-- subdomain -->
               <div class="field">
                 <div class="field-label">ชื่อโดเมน</div>
-                <p class="muted">ตั้งชื่อที่ต้องการ เช่น myname</p>
+                <p class="muted">ตั้งชื่อที่ต้องการ เช่น myname (a-z, 0-9, -)</p>
                 <div class="input-row">
-                  <input type="text" id="subdomain" placeholder="myname" maxlength="63" required>
+                  <input type="text" id="subdomain" placeholder="myname" maxlength="63" required
+                    pattern="[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]">
                   <span class="input-suffix">.id.thatako.net</span>
                 </div>
               </div>
@@ -96,7 +100,7 @@
               <!-- host -->
               <div class="field">
                 <div class="field-label">Host / Provider</div>
-                <p class="muted">เลือกบริการที่ใช้งาน</p>
+                <p class="muted">เลือกบริการที่ใช้งาน — DNS records จะถูกเติมให้อัตโนมัติ</p>
                 <select id="hostSelect">
                   <option value="vercel">Vercel</option>
                   <option value="github-pages">GitHub Pages</option>
@@ -107,6 +111,7 @@
                   <option value="fly.io">Fly.io</option>
                   <option value="other">Other</option>
                 </select>
+                <!-- host hint injected here by JS -->
               </div>
 
               <hr class="panel-divider">
@@ -114,13 +119,18 @@
               <!-- DNS Records -->
               <div class="field">
                 <div class="field-label">DNS Records</div>
-                <p class="muted">เพิ่ม record ที่ต้องการ</p>
+                <p class="muted">เพิ่ม record ที่ต้องการ (สามารถแก้ไขค่าที่เติมมาได้)</p>
                 <div id="recordsBuilder"></div>
+
+                <!-- conflict warning banner -->
+                <div id="conflictBanner" role="alert"></div>
+
                 <div class="record-add-row" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-                  <button class="btn btn-ghost btn-add-record" data-type="CNAME" onclick="addRecord('CNAME')">+ CNAME</button>
-                  <button class="btn btn-ghost btn-add-record" data-type="A" onclick="addRecord('A')">+ A</button>
-                  <button class="btn btn-ghost btn-add-record" data-type="TXT" onclick="addRecord('TXT')">+ TXT</button>
-                  <button class="btn btn-ghost btn-add-record" data-type="MX" onclick="addRecord('MX')">+ MX</button>
+                  <button class="btn btn-ghost btn-add-record" onclick="addRecord('CNAME')">+ CNAME</button>
+                  <button class="btn btn-ghost btn-add-record" onclick="addRecord('A')">+ A</button>
+                  <button class="btn btn-ghost btn-add-record" onclick="addRecord('AAAA')">+ AAAA</button>
+                  <button class="btn btn-ghost btn-add-record" onclick="addRecord('TXT')">+ TXT</button>
+                  <button class="btn btn-ghost btn-add-record" onclick="addRecord('MX')">+ MX</button>
                 </div>
               </div>
 
@@ -129,7 +139,8 @@
               <!-- Co-owners -->
               <div class="field">
                 <div class="field-label">Owners</div>
-                <p class="muted">เจ้าของโดเมน สามารถเพิ่มคนอื่นได้</p>
+                <p class="muted">เจ้าของโดเมน สามารถเพิ่มคนอื่นได้ — พิมพ์ username แล้ว GitHub ID จะถูกค้นหาอัตโนมัติ
+                </p>
 
                 <!-- primary owner (read-only) -->
                 <div class="owner-primary" id="primaryOwnerChip">
@@ -194,15 +205,16 @@
   </main>
 
   <!-- Delete confirm modal -->
-  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
     <div class="modal-box">
       <div class="modal-header">
-        <span>ยืนยันการลบ</span>
-        <button class="modal-close" id="deleteModalClose"><i class="fa-solid fa-xmark"></i></button>
+        <span id="deleteModalTitle">ยืนยันการลบ</span>
+        <button class="modal-close" id="deleteModalClose" aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
         คุณต้องการลบโดเมน <strong id="deleteDomainLabel"></strong> ใช่หรือไม่?<br>
-        <span style="color:var(--color-text-danger);font-size:12px;margin-top:8px;display:block;">การกระทำนี้ไม่สามารถย้อนกลับได้</span>
+        <span
+          style="color:var(--color-text-danger);font-size:12px;margin-top:8px;display:block;">การกระทำนี้ไม่สามารถย้อนกลับได้</span>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" id="deleteModalCancel">ยกเลิก</button>
@@ -213,8 +225,33 @@
     </div>
   </div>
 
+  <!-- Template apply confirm modal (edit mode only) -->
+  <div class="modal-overlay" id="templateModal" role="dialog" aria-modal="true" aria-labelledby="templateModalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span id="templateModalTitle">เปลี่ยน Provider template</span>
+        <button class="modal-close" id="templateModalCancel" aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        ใช้ template ของ <strong id="templateModalLabel"></strong>?<br>
+        <span style="color:var(--color-text-muted);font-size:12px;margin-top:8px;display:block;">
+          DNS records ปัจจุบันจะถูกแทนที่ด้วยค่า default ของ provider นี้
+          คุณสามารถแก้ไขได้หลังจากใช้ template
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="templateModalCancel2"
+          onclick="document.getElementById('templateModal').classList.remove('open')">ยกเลิก</button>
+        <button class="btn btn-primary" id="templateModalConfirm">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> ใช้ template
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-container" id="toasts" aria-live="polite"></div>
 
   <script src="../../subdomain/register/app.js" type="module"></script>
 </body>
+
 </html>
