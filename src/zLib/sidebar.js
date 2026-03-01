@@ -341,7 +341,7 @@ const boot_ = () => {
                         items: [
                             { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "wip", color: 'orange' }, external: false },
                             { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "wip", color: 'orange' }, external: false },
-                            { title: 'รับโดเมนย่อย', href: '/subdomain/grab', icon: 'fa-solid fa-tag', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'รับโดเมนย่อย', href: '/subdomain/register', icon: 'fa-solid fa-tag', badge: { text: "wip", color: 'orange' }, external: false },
                         ]
                     },
                 ]

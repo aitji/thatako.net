@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>id.thatako.net - Domain Registration</title>
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#4f5d97">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/icon/apple-icon-180x180.png">
+
+  <script src="/theme.js"></script>
+
+  <link rel="stylesheet" href="../../zStyles/index.css">
+  <link rel="stylesheet" href="../../zStyles/anim.css">
+  <link rel="stylesheet" href="../../zStyles/no-sidebar.css">
+  <link rel="stylesheet" href="../../zStyles/page/register.css">
+  <link rel="stylesheet" href="../../zStyles/page/helper.css">
+  <link rel="stylesheet" href="../../zStyles/theme.css">
+</head>
+
+<body>
+  <!-- topbar -->
+  <header class="topbar">
+    <a href="/" class="logo-dot" width="32" height="32"></a>
+    <a href="/" class="mobile-hidden topbar-logo" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
+    <span class="topbar-sep mobile-hidden">/</span>
+    <a href="/id/" class="topbar-title" title="id.thatako.net - Domain Registration">id.thatako.net</a>
+    <div class="topbar-right">
+      <a href="/" class="btn btn-ghost" style="height:30px;font-size:11px;">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        <span class="mobile-hidden">กลับหน้าหลัก</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+      <div class="auth-gate-icon"><i class="fa-solid fa-globe"></i></div>
+      <h2>id.thatako.net</h2>
+      <p>ลงทะเบียนโดเมน <code style="font-family:var(--font-mono);font-size:12px;color:var(--color-code);">[ชื่อ].id.thatako.net</code> ฟรี สำหรับนักเรียนและครู</p>
+      <button class="btn-github" id="loginBtn">
+        <i class="fa-brands fa-github" aria-hidden="true"></i>
+        เข้าสู่ระบบด้วย GitHub
+      </button>
+    </div>
+
+    <!-- DASHBOARD (hidden until authed) -->
+    <div class="dashboard" id="dashboard">
+
+      <div class="dash-header">
+        <div class="dash-header-left">
+          <div class="dash-eyebrow">Domain Registration</div>
+          <h1>id.thatako.net</h1>
+        </div>
+        <div class="user-chip" id="userChip">
+          <img id="userAvatar" src="" alt="avatar">
+          <strong id="userLogin"></strong>
+          <button class="btn-logout" id="logoutBtn" title="ออกจากระบบ">ออกจากระบบ</button>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+
+        <!-- LEFT: Register / Edit form -->
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <i class="fa-solid fa-plus" id="formIcon" aria-hidden="true"></i>
+              <span id="formTitle">ลงทะเบียนโดเมนใหม่</span>
+              <button class="panel-title-right" id="formResetBtn" style="display:none;">
+                <i class="fa-solid fa-xmark"></i> ยกเลิกแก้ไข
+              </button>
+            </div>
+            <div class="panel-body">
+
+              <div class="form-mode-hint" id="formModeHint" style="display:none;">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>กำลังแก้ไข: <strong id="editingDomainLabel"></strong></span>
+              </div>
+
+              <!-- subdomain -->
+              <div class="field">
+                <div class="field-label">ชื่อโดเมน</div>
+                <p class="muted">ตั้งชื่อที่ต้องการ เช่น myname</p>
+                <div class="input-row">
+                  <input type="text" id="subdomain" placeholder="myname" maxlength="63" required>
+                  <span class="input-suffix">.id.thatako.net</span>
+                </div>
+              </div>
+
+              <!-- host -->
+              <div class="field">
+                <div class="field-label">Host / Provider</div>
+                <p class="muted">เลือกบริการที่ใช้งาน</p>
+                <select id="hostSelect">
+                  <option value="vercel">Vercel</option>
+                  <option value="github-pages">GitHub Pages</option>
+                  <option value="netlify">Netlify</option>
+                  <option value="cloudflare">Cloudflare</option>
+                  <option value="render">Render</option>
+                  <option value="railway">Railway</option>
+                  <option value="fly.io">Fly.io</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <hr class="panel-divider">
+
+              <!-- DNS Records -->
+              <div class="field">
+                <div class="field-label">DNS Records</div>
+                <p class="muted">เพิ่ม record ที่ต้องการ</p>
+                <div id="recordsBuilder"></div>
+                <div class="record-add-row" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                  <button class="btn btn-ghost btn-add-record" data-type="CNAME" onclick="addRecord('CNAME')">+ CNAME</button>
+                  <button class="btn btn-ghost btn-add-record" data-type="A" onclick="addRecord('A')">+ A</button>
+                  <button class="btn btn-ghost btn-add-record" data-type="TXT" onclick="addRecord('TXT')">+ TXT</button>
+                  <button class="btn btn-ghost btn-add-record" data-type="MX" onclick="addRecord('MX')">+ MX</button>
+                </div>
+              </div>
+
+              <hr class="panel-divider">
+
+              <!-- Co-owners -->
+              <div class="field">
+                <div class="field-label">Owners</div>
+                <p class="muted">เจ้าของโดเมน สามารถเพิ่มคนอื่นได้</p>
+
+                <!-- primary owner (read-only) -->
+                <div class="owner-primary" id="primaryOwnerChip">
+                  <img id="primaryOwnerAvatar" src="" alt="">
+                  <strong id="primaryOwnerLogin"></strong>
+                  <span class="badge-primary-owner">Primary</span>
+                </div>
+
+                <!-- co-owner rows -->
+                <div id="coownersBuilder"></div>
+                <button class="btn btn-ghost btn-add-record" onclick="addCoowner()" style="margin-top:4px;">
+                  <i class="fa-solid fa-user-plus"></i> เพิ่ม co-owner
+                </button>
+              </div>
+
+              <hr class="panel-divider">
+
+              <button class="btn btn-primary btn-full" id="submitBtn">
+                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                <span id="submitLabel">ลงทะเบียนโดเมน</span>
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: My domains list -->
+        <div>
+          <div class="domains-header">
+            <div class="domains-title">
+              <i class="fa-solid fa-list" aria-hidden="true"></i>
+              โดเมนของฉัน
+            </div>
+            <button class="btn btn-ghost" id="refreshBtn" style="height:28px;padding:0 10px;font-size:11px;">
+              <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
+            </button>
+          </div>
+
+          <table class="domains-table" aria-label="ตารางโดเมน">
+            <thead>
+              <tr>
+                <th style="width:45%">โดเมน</th>
+                <th style="width:20%">Host</th>
+                <th style="width:35%;text-align:right;">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="domainsList">
+              <tr>
+                <td colspan="3">
+                  <div class="loading-state">
+                    <span class="spinner"></span>
+                    <span>กำลังโหลด...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Delete confirm modal -->
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>ยืนยันการลบ</span>
+        <button class="modal-close" id="deleteModalClose"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        คุณต้องการลบโดเมน <strong id="deleteDomainLabel"></strong> ใช่หรือไม่?<br>
+        <span style="color:var(--color-text-danger);font-size:12px;margin-top:8px;display:block;">การกระทำนี้ไม่สามารถย้อนกลับได้</span>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="deleteModalCancel">ยกเลิก</button>
+        <button class="btn btn-danger" id="deleteModalConfirm">
+          <i class="fa-solid fa-trash"></i> ลบโดเมน
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toasts" aria-live="polite"></div>
+
+  <script src="../../subdomain/register/app.js" type="module"></script>
+</body>
+</html>
