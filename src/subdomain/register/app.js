@@ -1,7 +1,7 @@
 const AUTH_URL = 'https://dev.thatako.net/api/auth'
 const WORKER_URL = 'https://workers.thatako.net'
 // github id
-const GH_PROXY = 'https://dev.thatako.net/api/api/gh-user'
+const GH_PROXY = 'https://dev.thatako.net/api/gh-user'
 const GH_API = 'https://api.github.com'
 
 // auth helpers
