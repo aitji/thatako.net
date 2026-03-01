@@ -178,7 +178,7 @@ export default {
 
 		// GET: list of domains owned by auth user
 		if (request.method === 'GET') {
-			const { type } = request.query
+			const type = request.query?.type || ''
 
 			const auth = await authenticate(request, env)
 			if (!auth.ok) return json({ error: auth.error }, 401)
