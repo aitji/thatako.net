@@ -62,6 +62,22 @@ async function authenticate(request, env) {
 }
 
 function checkPayload(payload) {
+	const DISALLOWED = [
+		"www", "mail", "ftp", "smtp", "pop", "imap", "pop3",
+		"admin", "administrator", "root", "superuser",
+		"api", "dashboard", "control", "panel", "cpanel",
+		"help", "support", "billing", "abuse",
+		"blog", "news", "shop", "store",
+		"status", "uptime", "monitor",
+		"cdn", "static", "assets", "img", "images", "media", "files",
+		"ns", "ns1", "ns2", "dns", "resolver",
+		"id", "auth", "oauth", "sso", "login", "register",
+		"vpn", "proxy", "gateway", "docs",
+		"dev", "staging", "test", "beta", "alpha",
+		"localhost", "internal", "local",
+		"thatako", "worker", "workers", "go"
+	]
+
 	const errors = []
 	if (!payload.domain || typeof payload.domain !== 'string') errors.push('domain is required')
 
@@ -69,6 +85,7 @@ function checkPayload(payload) {
 		errors.push('domain must match [name].id.thatako.net')
 	if (payload.domain.includes('..') || payload.domain.includes('/'))
 		errors.push('invalid domain characters')
+	if (DISALLOWED.includes(payload.domain)) errors.push('this domain has been protected')
 
 	if (!Array.isArray(payload.host) || payload.host.length === 0) errors.push('host array required')
 	if (!Array.isArray(payload.owner) || payload.owner.length === 0) errors.push('owner array required')
@@ -161,6 +178,8 @@ export default {
 
 		// GET: list of domains owned by auth user
 		if (request.method === 'GET') {
+			const { type } = request.query
+
 			const auth = await authenticate(request, env)
 			if (!auth.ok) return json({ error: auth.error }, 401)
 
@@ -175,8 +194,11 @@ export default {
 					const data = JSON.parse(raw)
 
 					// only include domains this user owns
-					const isOwner = (data.owner || []).some(o => o['github-id'] === auth.id)
-					if (isOwner) domains.push(data)
+					if (type === 'full') domains.push(data) // for checking avaible domain
+					else {
+						const isOwner = (data.owner || []).some(o => o['github-id'] === auth.id)
+						if (isOwner) domains.push(data)
+					}
 				} catch { /* skip malformed files */ }
 			}
 
