@@ -168,8 +168,9 @@
               <!-- host -->
               <div class="field">
                 <div class="field-label">Host / Provider</div>
-                <p class="muted">เลือกบริการที่ใช้งาน — DNS records จะถูกเติมให้อัตโนมัติ</p>
+                <p class="muted">เลือกบริการที่ใช้งาน DNS records จะถูกเติมให้อัตโนมัติ</p>
                 <select id="hostSelect">
+                  <option value="other" selected disabled>เลือก Provider</option>
                   <option value="vercel">Vercel</option>
                   <option value="github-pages">GitHub Pages</option>
                   <option value="netlify">Netlify</option>
@@ -190,9 +191,7 @@
                 <p class="muted">เพิ่ม record ที่ต้องการ (สามารถแก้ไขค่าที่เติมมาได้)</p>
                 <div id="recordsBuilder"></div>
 
-                <!-- conflict warning banner -->
-                <div id="conflictBanner" role="alert"></div>
-
+                <div id="conflictBanner" role="alert" style="display:none;"></div>
                 <div class="record-add-row" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
                   <button class="btn btn-ghost btn-add-record" onclick="addRecord('CNAME')">+ CNAME</button>
                   <button class="btn btn-ghost btn-add-record" onclick="addRecord('A')">+ A</button>
@@ -207,7 +206,7 @@
               <!-- Co-owners -->
               <div class="field">
                 <div class="field-label">Owners</div>
-                <p class="muted">เจ้าของโดเมน สามารถเพิ่มคนอื่นได้ — พิมพ์ username แล้ว GitHub ID จะถูกค้นหาอัตโนมัติ
+                <p class="muted">เจ้าของโดเมน สามารถเพิ่มคนอื่นได้ พิมพ์ username แล้ว GitHub ID จะถูกค้นหาอัตโนมัติ
                 </p>
 
                 <!-- primary owner (read-only) -->
@@ -241,31 +240,58 @@
             <div class="domains-title">
               <i class="fa-solid fa-list" aria-hidden="true"></i>
               โดเมนของฉัน
+              <span class="domain-count-badge" id="domainCount"></span>
             </div>
             <button class="btn btn-ghost" id="refreshBtn" style="height:28px;padding:0 10px;font-size:11px;">
               <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
             </button>
           </div>
 
-          <table class="domains-table" aria-label="ตารางโดเมน">
-            <thead>
-              <tr>
-                <th style="width:45%">โดเมน</th>
-                <th style="width:20%">Host</th>
-                <th style="width:35%;text-align:right;">จัดการ</th>
+          <!-- search + filter toolbar -->
+          <div class="domains-toolbar">
+            <input type="text" id="domainSearch" placeholder="ค้นหาโดเมน..." autocomplete="off">
+            <select id="domainFilterHost" title="กรองตาม host">
+              <option value="">ทุก host</option>
+            </select>
+            <label title="แสดงเฉพาะโดเมนที่เป็น co-owner">
+              <input type="checkbox" class="checkbox" id="domainFilterCoowner">
+              co-owner เท่านั้น
+            </label>
+          </div>
+
+          <!-- virtual scroll wrapper -->
+          <div class="domains-scroll-wrapper" id="domainsScrollWrapper">
+            <table class="domains-table" aria-label="ตารางโดเมน">
+              <thead>
+                <tr>
+                  <th style="width:45%">โดเมน</th>
+                  <th style="width:20%">Host</th>
+                  <th style="width:35%;text-align:right;">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- top spacer -->
+                <tr class="vs-spacer" id="domainsSpacerTop">
+                  <td colspan="3"></td>
+                </tr>
+                <!-- rendered rows injected here -->
+              <tbody id="domainsList">
+                <tr>
+                  <td colspan="3">
+                    <div class="loading-state">
+                      <span class="spinner"></span>
+                      <span>กำลังโหลด...</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <!-- bottom spacer -->
+              <tr class="vs-spacer" id="domainsSpacerBot">
+                <td colspan="3"></td>
               </tr>
-            </thead>
-            <tbody id="domainsList">
-              <tr>
-                <td colspan="3">
-                  <div class="loading-state">
-                    <span class="spinner"></span>
-                    <span>กำลังโหลด...</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>

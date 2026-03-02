@@ -73,7 +73,9 @@ const minifyHTMLFile = async file => {
     try {
         let src = fs.readFileSync(file, 'utf8')
         if (!WATCH) src = src.replace('</head>', `${google}</head>`)
-        else src = src.replaceAll('thatako.net', 'dev.thatako.net')
+        else {
+            src = src.replaceAll('https://thatako.net', 'https://dev.thatako.net')
+        }
 
         // <script type="application/ld+json">{"@context": "https://schema.org"...}</script>
         const regex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i
@@ -112,7 +114,7 @@ const minifyJSFile = async (src, out) => {
             format: { comments: false }
         })
 
-        if (WATCH) r.code = r.code.replaceAll('thatako.net', 'dev.thatako.net')
+        if (WATCH) r.code = r.code.replaceAll('https://thatako.net', 'https://dev.thatako.net')
         fs.writeFileSync(out, banner.js + r.code)
     } catch (error) { console.error(`[HTML] error processing ${file}: ${error.message}`) }
 }
