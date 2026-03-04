@@ -1,0 +1,83 @@
+name: Deploy Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/**"
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      workers: ${{ steps.detect.outputs.workers }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed workers
+        id: detect
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          WORKERS_JSON="[]"
+
+          for worker_dir in workers/*/; do
+            worker_name=$(basename "$worker_dir")
+
+            if [ ! -f "${worker_dir}wrangler.jsonc" ]; then
+              echo "   skipping '$worker_name' ; no wrangler.jsonc found"
+              continue
+            fi
+
+            if echo "$CHANGED_FILES" | grep -q "^workers/${worker_name}/"; then
+              echo "   '$worker_name' has changes ; queued for deploy"
+              WORKERS_JSON=$(echo "$WORKERS_JSON" | jq --arg w "$worker_name" '. + [$w]')
+            else
+              echo "   skipping '$worker_name' ; no changes detected"
+            fi
+          done
+
+          echo "workers=$WORKERS_JSON" >> "$GITHUB_OUTPUT"
+          echo "Workers to deploy: $WORKERS_JSON"
+
+  deploy:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+
+    if: needs.detect-changes.outputs.workers != '[]'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        worker: ${{ fromJson(needs.detect-changes.outputs.workers) }}
+
+    name: Deploy ${{ matrix.worker }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd workers/${{ matrix.worker }}
+          npm install
+
+      - name: Deploy Worker
+        run: |
+          cd workers/${{ matrix.worker }}
+          npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
