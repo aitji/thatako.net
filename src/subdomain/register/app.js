@@ -50,6 +50,20 @@ function escHtml(str) {
         .replace(/'/g, '&#39;')
 }
 
+function ghAvatarUrl(id) {
+    const n = parseInt(id)
+    if (!n || n <= 0) return ''
+    return `https://avatars.githubusercontent.com/u/${n}?v=4`
+}
+
+function setAvatarSrc(el, url) {
+    if (!el) return
+    const safe = sanitizeUrl(url)
+
+    if (safe) el.setAttribute('src', safe)
+    else el.removeAttribute('src')
+}
+
 // toast
 function toast(msg, type = 'info', duration = 5000) {
     const c = document.getElementById('toasts')
@@ -400,13 +414,13 @@ function setCoownerChip(chipEl, data, rowId) {
     // safe DOM construction; no innerHTML w/ user data
     chipEl.innerHTML = ''
 
-    const safeAvatar = sanitizeUrl(data.avatar_url)
     const safeLogin = sanitizeLogin(data.login)
     const safeId = parseInt(data.id) || 0
+    const safeAvatar = ghAvatarUrl(safeId)
 
     if (safeAvatar) {
         const img = document.createElement('img')
-        img.src = safeAvatar
+        setAvatarSrc(img, safeAvatar)
         img.alt = ''
         img.width = 18
         img.height = 18
@@ -439,23 +453,58 @@ function setCoownerChip(chipEl, data, rowId) {
 function showManualIdBox(statusEl, manualBox, username) {
     setLookupStatus(statusEl, 'warn', 'rate limited')
     if (!manualBox) return
-    const safeUser = escHtml(sanitizeLogin(username))
-    const apiUrl = `https://api.github.com/users/${safeUser}`
-    const profileUrl = `https://github.com/${safeUser}`
+    const safeUser = sanitizeLogin(username)
+
     manualBox.style.display = ''
     // build safely
     manualBox.innerHTML = ''
     const inner = document.createElement('div')
     inner.className = 'manual-id-box-inner'
-    inner.innerHTML = `
-      <i class="fa-solid fa-triangle-exclamation" style="color:var(--color-warning,#f59e0b);flex-shrink:0;margin-top:2px;"></i>
-      <div>
-        <strong>GitHub API rate limited.</strong> ค้นหา ID ด้วยตนเอง:<br>
-        1. เปิด <a href="${apiUrl}" target="_blank" rel="noopener noreferrer">${apiUrl}</a><br>
-        2. คัดลอก <code>"id"</code> แล้ววางในช่ด้านล่าง<br>
-        <span class="muted">หรือเข้า <a href="${profileUrl}" target="_blank" rel="noopener noreferrer">${profileUrl}</a>
-        แล้วกด <kbd>Ctrl+U</kbd> ค้นหา <code>data-scope-id</code></span>
-      </div>`
+
+    const apiUrl = `https://api.github.com/users/${encodeURIComponent(safeUser)}`
+    const profileUrl = `https://github.com/${encodeURIComponent(safeUser)}`
+
+    const icon = document.createElement('i')
+    icon.className = 'fa-solid fa-triangle-exclamation'
+    icon.style.cssText = 'color:var(--color-warning,#f59e0b);flex-shrink:0;margin-top:2px;'
+
+    const desc = document.createElement('div')
+
+    const titleEl = document.createElement('strong')
+    titleEl.textContent = 'GitHub API rate limited. ค้นหา ID ด้วยตนเอง:'
+    desc.appendChild(titleEl)
+    desc.appendChild(document.createElement('br'))
+
+    const step1 = document.createTextNode('1. เปิด ')
+    const apiLink = document.createElement('a')
+    apiLink.setAttribute('href', apiUrl)
+    apiLink.target = '_blank'
+    apiLink.rel = 'noopener noreferrer'
+    apiLink.textContent = apiUrl
+    desc.append(step1, apiLink, document.createElement('br'))
+
+    const step2 = document.createTextNode('2. คัดลอก ')
+    const code = document.createElement('code')
+    code.textContent = '"id"'
+    desc.append(step2, code, document.createTextNode(' แล้ววางในช่ด้านล่าง'), document.createElement('br'))
+
+    const muted = document.createElement('span')
+    muted.className = 'muted'
+    const orText = document.createTextNode('หรือเข้า ')
+    const profileLink = document.createElement('a')
+    profileLink.setAttribute('href', profileUrl)
+    profileLink.target = '_blank'
+    profileLink.rel = 'noopener noreferrer'
+    profileLink.textContent = profileUrl
+    const kbdText = document.createTextNode(' แล้วกด ')
+    const kbd = document.createElement('kbd')
+    kbd.textContent = 'Ctrl+U'
+    const searchText = document.createTextNode(' ค้นหา ')
+    const code2 = document.createElement('code')
+    code2.textContent = 'data-scope-id'
+    muted.append(orText, profileLink, kbdText, kbd, searchText, code2)
+    desc.appendChild(muted)
+
     const input = document.createElement('input')
     input.type = 'number'
     input.id = `co-manual-id-input-${manualBox.dataset.rowid}`
@@ -463,7 +512,9 @@ function showManualIdBox(statusEl, manualBox, username) {
     input.min = '1'
     input.style.cssText = 'margin-top:6px;max-width:160px;height:30px;font-size:12px;'
     input.addEventListener('input', () => applyManualId(manualBox.dataset.rowid, input.value))
-    inner.querySelector('div').appendChild(input)
+    desc.appendChild(input)
+
+    inner.append(icon, desc)
     manualBox.appendChild(inner)
 }
 
@@ -475,7 +526,7 @@ window.applyManualId = function (rowId, value) {
     const manualBox = document.getElementById(`co-manual-${rowId}`)
     const statusEl = document.getElementById(`co-status-${rowId}`)
     const username = sanitizeLogin(ghInput?.value.trim() || 'unknown')
-    const safeAvatar = `https://avatars.githubusercontent.com/u/${id}?v=4`
+    const safeAvatar = ghAvatarUrl(id)
     const data = { id, login: username, avatar_url: safeAvatar }
     ghIdCache[username.toLowerCase()] = data
     setLookupSuccess(chipEl, statusEl, manualBox, data, Number(rowId))
@@ -494,7 +545,7 @@ window.addCoowner = function (github = '', githubId = '', email = '') {
     if (github && githubId) {
         const safeId = parseInt(githubId)
         const safeLogin = sanitizeLogin(github)
-        const avatarUrl = `https://avatars.githubusercontent.com/u/${safeId}?v=4`
+        const avatarUrl = ghAvatarUrl(safeId)
         const data = { id: safeId, login: safeLogin, avatar_url: avatarUrl }
         ghIdCache[safeLogin.toLowerCase()] = data
         const chipEl = document.getElementById(`co-chip-${id}`)
@@ -528,7 +579,7 @@ window.removeCoowner = function (id) {
         const data = ghIdCache[r.github.toLowerCase()] || {
             id: parseInt(r.githubId),
             login: r.github,
-            avatar_url: `https://avatars.githubusercontent.com/u/${r.githubId}?v=4`
+            avatar_url: ghAvatarUrl(r.githubId),
         }
         const chipEl = document.getElementById(`co-chip-${r.id}`)
         const statusEl = document.getElementById(`co-status-${r.id}`)
@@ -703,8 +754,8 @@ function buildDomainRow(d) {
     const tdDomain = document.createElement('td')
     tdDomain.className = 'domain-name'
     const link = document.createElement('a')
-    // safe: domain validated by server regex; still use textContent
-    link.href = 'https://' + encodeURIComponent(d.domain).replace(/%2E/g, '.')
+    const safeDomain = String(d.domain).replace(/[^a-z0-9.\-]/gi, '')
+    link.setAttribute('href', 'https://' + safeDomain)
     link.target = '_blank'
     link.rel = 'noopener'
     link.textContent = d.domain
@@ -958,11 +1009,11 @@ function showDashboard(auth) {
 
     // safe DOM population; textContent only for user data
     const safeLogin = sanitizeLogin(auth.user.login)
-    const safeAvatar = sanitizeUrl(auth.user.avatar_url)
+    const safeAvatar = ghAvatarUrl(auth.user.id)
 
-    document.getElementById('userAvatar').src = safeAvatar
+    setAvatarSrc(document.getElementById('userAvatar'), safeAvatar)
     document.getElementById('userLogin').textContent = safeLogin
-    document.getElementById('primaryOwnerAvatar').src = safeAvatar
+    setAvatarSrc(document.getElementById('primaryOwnerAvatar'), safeAvatar)
     document.getElementById('primaryOwnerLogin').textContent = '@' + safeLogin
 
     document.getElementById('logoutBtn').onclick = () => { clearAuth(); location.reload() }
