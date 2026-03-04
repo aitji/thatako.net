@@ -13,6 +13,12 @@
     "compatibility_flags": [
         "nodejs_compat"
     ],
+    "kv_namespaces": [
+        {
+            "binding": "LINKS",
+            "id": "e4817765a9d94168aa05fb31c3d05bfb"
+        }
+    ],
     "routes": [
         {
             "custom_domain": true,

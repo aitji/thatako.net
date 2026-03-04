@@ -110,13 +110,13 @@ async function api(req, env, path, ctx) {
 
 		if (!validSlug(slug)) return j({ ok: false, msg: 'bad slug' })
 		if (!validUrl(to)) return j({ ok: false, msg: 'bad url' })
-		if (await env.KV_LINKS.get('l:' + slug)) return j({ ok: false, msg: 'duplicate' })
+		if (await env.LINKS.get('l:' + slug)) return j({ ok: false, msg: 'duplicate' })
 
-		await env.KV_LINKS.put('l:' + slug, JSON.stringify({ to, key }))
+		await env.LINKS.put('l:' + slug, JSON.stringify({ to, key }))
 
-		const list = await getUserList(env.KV_LINKS, key)
+		const list = await getUserList(env.LINKS, key)
 		if (!list.includes(slug)) list.push(slug)
-		await setUserList(env.KV_LINKS, key, list)
+		await setUserList(env.LINKS, key, list)
 
 		hot(slug, to)
 		return j({ ok: true })
@@ -129,14 +129,14 @@ async function api(req, env, path, ctx) {
 
 		const clean = norm(slug)
 
-		const data = await env.KV_LINKS.get('l:' + clean, 'json')
+		const data = await env.LINKS.get('l:' + clean, 'json')
 		if (!data || data.key !== key) return j({ ok: false })
 
-		await env.KV_LINKS.delete('l:' + clean)
+		await env.LINKS.delete('l:' + clean)
 
-		const list = await getUserList(env.KV_LINKS, key)
+		const list = await getUserList(env.LINKS, key)
 		const next = list.filter(s => s !== clean)
-		await setUserList(env.KV_LINKS, key, next)
+		await setUserList(env.LINKS, key, next)
 
 		mem.delete(clean)
 		markEdited(clean, ctx)
@@ -152,7 +152,7 @@ async function api(req, env, path, ctx) {
 		slug = norm(slug)
 		if (newSlug) newSlug = norm(newSlug)
 
-		const data = await env.KV_LINKS.get('l:' + slug, 'json')
+		const data = await env.LINKS.get('l:' + slug, 'json')
 		if (!data || data.key !== key) return j({ ok: false })
 
 		const finalSlug = newSlug || slug
@@ -160,16 +160,16 @@ async function api(req, env, path, ctx) {
 		if (!validSlug(finalSlug)) return j({ ok: false, msg: 'bad slug' })
 		if (to && !validUrl(to)) return j({ ok: false, msg: 'bad url' })
 		if (newSlug && newSlug !== slug)
-			if (await env.KV_LINKS.get('l:' + newSlug))
+			if (await env.LINKS.get('l:' + newSlug))
 				return j({ ok: false, msg: 'duplicate' })
 
 		const updated = { ...data, to: to || data.to }
-		await env.KV_LINKS.put('l:' + finalSlug, JSON.stringify(updated))
+		await env.LINKS.put('l:' + finalSlug, JSON.stringify(updated))
 
-		const list = await getUserList(env.KV_LINKS, key)
+		const list = await getUserList(env.LINKS, key)
 
 		if (finalSlug !== slug) {
-			await env.KV_LINKS.delete('l:' + slug)
+			await env.LINKS.delete('l:' + slug)
 
 			const i = list.indexOf(slug)
 			if (i !== -1) list[i] = finalSlug
@@ -182,7 +182,7 @@ async function api(req, env, path, ctx) {
 			markEdited(slug, ctx)
 		}
 
-		await setUserList(env.KV_LINKS, key, list)
+		await setUserList(env.LINKS, key, list)
 
 		return j({ ok: true, slug: finalSlug })
 	}
@@ -192,11 +192,11 @@ async function api(req, env, path, ctx) {
 		const key = new URL(req.url).searchParams.get('key')
 		if (!key) return j([])
 
-		const list = await getUserList(env.KV_LINKS, key)
+		const list = await getUserList(env.LINKS, key)
 		const out = []
 
 		for (const slug of list) {
-			const d = await env.KV_LINKS.get('l:' + slug, 'json')
+			const d = await env.LINKS.get('l:' + slug, 'json')
 			if (d) out.push({ slug, ...d })
 		}
 
@@ -228,7 +228,7 @@ export default {
 			return r(m.to, true)
 		}
 
-		const data = await env.KV_LINKS.get('l:' + slug, 'json')
+		const data = await env.LINKS.get('l:' + slug, 'json')
 
 		if (!data) {
 			const debug = {
