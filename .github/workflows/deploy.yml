@@ -38,7 +38,7 @@ jobs:
 
             if echo "$CHANGED_FILES" | grep -q "^workers/${worker_name}/"; then
               echo "   '$worker_name' has changes ; queued for deploy"
-              WORKERS_JSON=$(echo "$WORKERS_JSON" | jq --arg w "$worker_name" '. + [$w]')
+              WORKERS_JSON=$(echo "$WORKERS_JSON" | jq -c --arg w "$worker_name" '. + [$w]')
             else
               echo "   skipping '$worker_name' ; no changes detected"
             fi
