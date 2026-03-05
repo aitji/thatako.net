@@ -4,13 +4,16 @@ import "./zLib/tooltip.js"
 const THEME_KEY = 'site-theme-preference'
 const themes = { SYSTEM: 'system', LIGHT: 'light', DARK: 'dark' }
 
-function getThemePreference() {
-  return localStorage.getItem(THEME_KEY) || themes.SYSTEM
+function getCookie(name) {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]+)'))
+  return m ? decodeURIComponent(m[1]) : null
 }
 
+const setCookie = (name, value) => document.cookie = `${name}=${encodeURIComponent(value)}; Domain=.thatako.net; Path=/; Max-Age=31536000; SameSite=Lax`
+const getThemePreference = () => getCookie(THEME_KEY) || themes.SYSTEM
 function setThemePreference(theme) {
   if (!Object.values(themes).includes(theme)) return
-  localStorage.setItem(THEME_KEY, theme)
+  setCookie(THEME_KEY, theme)
   applyTheme(theme)
 }
 
