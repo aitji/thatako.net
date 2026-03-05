@@ -145,7 +145,7 @@ const buildSidebar = (config) => {
 
     var footer = el('div', { className: 'sidebar-footer' }, [
         el('span', { className: 'sf-dot pulse', 'aria-hidden': 'true' }),
-        el('a', { href: '#blogs', className: 'unnoticed-link', textContent: 'all systems up   ·   thatako.net' })
+        el('a', { href: 'https://status.thatako.net', className: 'unnoticed-link', textContent: 'all systems up   ·   thatako.net' })
     ])
     nav.appendChild(footer)
 
