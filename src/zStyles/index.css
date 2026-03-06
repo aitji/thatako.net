@@ -145,16 +145,21 @@
   border-top: 1px solid var(--color-border);
   font-size: 11px;
   color: var(--color-text-muted);
+  background: var(--color-badge-muted-bg);
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 .sidebar-footer .sf-dot {
   width: 6px; height: 6px;
-  background: var(--color-badge-green-text);
+  background: var(--color-badge-muted-bg);
   display: inline-block;
   flex-shrink: 0;
 }
+.sf-dot { background: var(--color-badge-muted-bg); }
+.sf-dot.ok { background: var(--color-badge-green-bg); }
+.sf-dot.warn { background: var(--color-badge-orange-bg); }
+.sf-dot.down { background: var(--color-callout-error); }
 
 /* sidebar/group ~.~!  */
 .sb-group { padding: 20px 0 4px; }

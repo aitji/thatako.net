@@ -144,8 +144,8 @@ const buildSidebar = (config) => {
     nav.appendChild(theme)
 
     var footer = el('div', { className: 'sidebar-footer' }, [
-        el('span', { className: 'sf-dot pulse', 'aria-hidden': 'true' }),
-        el('a', { href: 'https://status.thatako.net', className: 'unnoticed-link', textContent: 'all systems up   ·   thatako.net' })
+        el('span', { className: 'sf-dot', 'aria-hidden': 'true', id: 'sf-footer-dot' }),
+        el('a', { href: 'https://status.thatako.net', className: 'unnoticed-link', textContent: 'all systems up   ·   thatako.net', id: 'sf-footer-status' })
     ])
     nav.appendChild(footer)
 
@@ -167,6 +167,53 @@ const injectSidebar = (config) => {
 
     layout.insertBefore(nav, layout.firstChild)
     return nav
+}
+
+async function loadAll() {
+    try {
+        const r = await fetch(API)
+        return r.ok ? r.json() : null
+    } catch { return null }
+}
+
+const API = 'https://status.thatako.net/api/data'
+const SLOW_MS = 1500
+const SERVICES = [
+    'thatako.net', 'status.thatako.net', 'go.thatako.net',
+    'workers.thatako.net', 'workers.thatako.net/dns'
+]
+const footerStatus = async () => {
+    const { metrics } = await loadAll()
+    const status = document.getElementById('sf-footer-status')
+    const dot = document.getElementById('sf-footer-dot')
+    SERVICES.forEach((svc, idx) => {
+        const data = metrics?.[svc] || []
+        const latest = data[data.length - 1]
+
+        const ms = latest?.ms ?? null
+        const up = latest?.up ?? null
+        let allOk = true
+        let anyDown = false
+
+        if (up === null) {
+        } else if (!up) {
+            anyDown = true
+            allOk = false
+        } else if (ms > SLOW_MS) allOk = false
+
+        if (!metrics) {
+            status.textContent = 'ไร้ข้อมูล · thatako.net'
+        } else if (anyDown) {
+            dot.classList.add('down', 'pulse')
+            status.textContent = 'หยุดทำงานบางส่วน · thatako.net'
+        } else if (!allOk) {
+            dot.classList.add('warn', 'pulse')
+            status.textContent = 'ตอบสนองช้า · thatako.net'
+        } else {
+            dot.classList.add('ok', 'pulse')
+            status.textContent = 'ทำงานปกติ · thatako.net'
+        }
+    })
 }
 
 // overlay & hamburger
@@ -260,7 +307,7 @@ const initEvents = () => {
     document.querySelectorAll('.sb-link').forEach((link) =>
         link.addEventListener('click', (e) => {
             if (link.getAttribute('target') === '_blank') return
-            
+
             const href = link.getAttribute('href')
             if (_router && href && !href.startsWith('http') && !href.startsWith('mailto:')) {
                 e.preventDefault()
@@ -339,9 +386,9 @@ const boot_ = () => {
                         icon: 'fa-solid fa-network-wired',
                         section: true,
                         items: [
-                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "wip", color: 'orange' }, external: false },
-                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "wip", color: 'orange' }, external: false },
-                            { title: 'รับโดเมนย่อย', href: '/subdomain/register', icon: 'fa-solid fa-tag', badge: { text: "wip", color: 'orange' }, external: false },
+                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "tbd", color: 'orange' }, external: false },
+                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "tbd", color: 'orange' }, external: false },
+                            { title: 'รับโดเมนย่อย', href: '/subdomain/register', icon: 'fa-solid fa-tag', external: false },
                         ]
                     },
                 ]
@@ -353,13 +400,13 @@ const boot_ = () => {
                     { title: 'ประชาสัมพันธ์', href: 'https://pr.thatako.net', icon: 'fa-solid fa-bullhorn', external: true },
                     {
                         title: 'Subdomains',
-                        icon: 'fa-solid fa-earth-asia',
+                        icon: 'fa-solid fa-code-branch',
                         section: true,
                         items: [
                             { title: 'council.thatako.net', href: 'https://thatako-council.com', icon: 'fa-solid fa-circle-dot', external: true },
                             { title: 'pr.thatako.net', href: 'https://pr.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
                             { title: 'go.thatako.net', href: 'https://go.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
-                            { title: '*.id.thatako.net', href: '/id', icon: 'fa-solid fa-circle-dot', badge: { text: 'plan', color: 'muted' } },
+                            { title: '*.id.thatako.net', href: '/subdomain/register', icon: 'fa-solid fa-circle-dot' },
                         ]
                     },
                 ]
@@ -367,6 +414,7 @@ const boot_ = () => {
             {
                 label: 'Infrastructure',
                 items: [
+                    { title: 'สถานะเซิร์ฟเวอร์', href: 'https://status.thatako.net', icon: 'fa-solid fa-server', external: true },
                     { title: 'Cloudflare', href: 'https://www.cloudflare.com', icon: 'fa-solid fa-cloud', external: true },
                     { title: 'Vercel', href: 'https://vercel.com', icon: 'fa-brands fa-node-js', external: true },
                     { title: 'Dragonhispeed', href: 'https://www.dragonhispeed.com', icon: 'fa-solid fa-dragon', external: true },
@@ -388,6 +436,7 @@ const boot_ = () => {
     ensureMenuToggle()
     syncSidebarToUrl()
     initEvents()
+    footerStatus()
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot_)
