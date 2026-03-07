@@ -1,6 +1,6 @@
-const AUTH_URL = 'https://dev.thatako.net/api/auth'
+const AUTH_URL = 'https://thatako.net/api/auth'
 const WORKER_URL = 'https://workers.thatako.net'
-const GH_PROXY = 'https://dev.thatako.net/api/gh-user'
+const GH_PROXY = 'https://thatako.net/api/gh-user'
 const GH_API = 'https://api.github.com'
 
 // auth helpers
@@ -19,7 +19,7 @@ const getAuth = () => {
 const saveAuth = (auth) => localStorage.setItem(AUTH_KEY, JSON.stringify({ auth, expires: Date.now() + AUTH_TTL }))
 const clearAuth = () => localStorage.removeItem(AUTH_KEY)
 const startLogin = () => {
-    const returnUrl = window.location.origin + window.location.pathname
+    const returnUrl = window.location.pathname
     window.location.href = AUTH_URL + '?return=' + encodeURIComponent(returnUrl)
 }
 
