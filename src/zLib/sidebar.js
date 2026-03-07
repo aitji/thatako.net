@@ -386,27 +386,10 @@ const boot_ = () => {
                         icon: 'fa-solid fa-network-wired',
                         section: true,
                         items: [
-                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', badge: { text: "tbd", color: 'orange' }, external: false },
-                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', badge: { text: "tbd", color: 'orange' }, external: false },
-                            { title: 'รับโดเมนย่อย', href: '/subdomain/register', icon: 'fa-solid fa-tag', external: false },
-                        ]
-                    },
-                ]
-            },
-            {
-                label: 'โรงเรียน',
-                items: [
-                    { title: 'สภานักเรียน', href: 'https://thatako-council.com', icon: 'fa-solid fa-users', external: true },
-                    { title: 'ประชาสัมพันธ์', href: 'https://pr.thatako.net', icon: 'fa-solid fa-bullhorn', external: true },
-                    {
-                        title: 'Subdomains',
-                        icon: 'fa-solid fa-code-branch',
-                        section: true,
-                        items: [
-                            { title: 'council.thatako.net', href: 'https://thatako-council.com', icon: 'fa-solid fa-circle-dot', external: true },
-                            { title: 'pr.thatako.net', href: 'https://pr.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
-                            { title: 'go.thatako.net', href: 'https://go.thatako.net', icon: 'fa-solid fa-circle-dot', external: true },
-                            { title: '*.id.thatako.net', href: '/subdomain/register', icon: 'fa-solid fa-circle-dot' },
+                            { title: 'ภาพรวม', href: '/subdomain', icon: 'fa-solid fa-folder-open', external: false },
+                            { title: 'ข้อตกลง', href: '/subdomain/tos', icon: 'fa-solid fa-comments', external: false },
+                            { title: 'รายงานปัญหา', href: '/subdomain/abuse', icon: 'fa-solid fa-flag', external: false },
+                            { title: 'รับโดเมนย่อย', href: '/subdomain/register', icon: 'fa-solid fa-tag', badge: { text: "รับฟรี", color: 'green' }, external: false },
                         ]
                     },
                 ]

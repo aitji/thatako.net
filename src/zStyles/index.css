@@ -145,7 +145,6 @@
   border-top: 1px solid var(--color-border);
   font-size: 11px;
   color: var(--color-text-muted);
-  background: var(--color-badge-muted-bg);
   display: flex;
   align-items: center;
   gap: var(--space-sm);

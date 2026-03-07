@@ -1,0 +1,353 @@
+<div class="hero">
+  <div class="hero-eyebrow">id.thatako.net</div>
+  <h1>โดเมนย่อยฟรี สำหรับนักเรียนและครู</h1>
+  <div class="page-meta">
+    <span title="นายสุริยะ อินชู">aitji</span>
+    <span class="dot">·</span>
+    <span title="อัปเดตล่าสุด มีนาคม 2026">อัปเดตล่าสุด 2026</span>
+    <span class="dot">·</span>
+    <span>id.thatako.net</span>
+  </div>
+  <p>
+    นักเรียนและครูโรงเรียนท่าตะโกพิทยาคมสามารถขอ subdomain ฟรีในรูปแบบ
+    <code title="Subdomain สำหรับบุคลากรของท่าตะโกพิทยาคม">[name].id.thatako.net</code>
+    สำหรับโฮสต์โปรเจกต์ส่วนตัว พอร์ตโฟลิโอ หรืองานทดลองต่าง ๆ โดยไม่ต้องซื้อโดเมนเอง
+  </p>
+  <div class="hero-actions">
+    <a href="/subdomain/register/" class="btn btn-primary" title="ลงทะเบียน subdomain ใหม่">
+      <i class="fa-solid fa-globe" aria-hidden="true"></i> ลงทะเบียนโดเมน
+    </a>
+    <a href="/subdomain/tos/" class="btn btn-ghost" title="ข้อกำหนดการใช้งาน">
+      <i class="fa-solid fa-file-lines" aria-hidden="true"></i> ข้อกำหนดการใช้งาน
+    </a>
+  </div>
+</div>
+
+<div id="what-is">
+  <h2>id.thatako.net คืออะไร</h2>
+  <p>
+    บริการนี้ช่วยให้บุคลากรในโรงเรียนท่าตะโกพิทยาคมสามารถนำโดเมนย่อยไปใช้ชี้ไปยังเว็บไซต์ที่โฮสต์อยู่บน
+    Vercel, GitHub Pages, Netlify หรือบริการอื่น ๆ ได้ทันที โดยระบบจัดการ DNS ผ่าน Cloudflare
+    และ record จะถูก deploy อัตโนมัติทันทีที่บันทึก
+  </p>
+
+  <div class="callout">
+    <i class="fa-solid fa-circle-info"></i>
+    <p>
+      จัดการทุกอย่างได้ผ่านหน้าเว็บโดยตรง ไม่ต้องแตะ GitHub repository เลย*<br>
+      ระบบหลังบ้านจัดการ DNS และ GitHub Actions ให้อัตโนมัติทั้งหมด<br>
+      <small>*ในตอนนี้ยังจำเป็นต้องมีบัญชี GitHub สำหรับยืนยันตัวเพื่อแก้ไข Domain ในอนาคต</small>
+    </p>
+  </div>
+
+
+  <div class="infra-grid" style="margin-top: 20px;">
+    <div class="infra-item">
+      <div class="infra-label">DNS Provider</div>
+      <div class="infra-value">Cloudflare</div>
+      <div class="infra-role">Orange cloud, WAF</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">จัดการผ่าน</div>
+      <div class="infra-value">หน้าเว็บ</div>
+      <div class="infra-role">ไม่ต้องเปิด GitHub</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">Deploy</div>
+      <div class="infra-value">GitHub Actions</div>
+      <div class="infra-role">Auto on merge</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">ค่าใช้จ่าย</div>
+      <div class="infra-value">ฟรี</div>
+      <div class="infra-role">สำหรับบุคลากรโรงเรียน</div>
+    </div>
+  </div>
+</div>
+
+<div id="use-cases">
+  <h2>ตัวอย่างการใช้งาน</h2>
+  <p>นักเรียนและครูสามารถใช้ subdomain นี้ได้หลากหลายรูปแบบ ขึ้นอยู่กับความต้องการ</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-id-card" aria-hidden="true"></i></div>
+      <div class="card-title">Portfolio / CV</div>
+      <div class="card-desc">สร้างหน้าพอร์ตโฟลิโอส่วนตัวบน GitHub Pages หรือ Vercel แล้วชี้มาที่
+        <code>[name].id.thatako.net</code>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></div>
+      <div class="card-title">โปรเจกต์ทดลอง</div>
+      <div class="card-desc">ทดสอบ web app, static site หรือ API prototype โดยไม่ต้องซื้อโดเมนแยก</div>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i></div>
+      <div class="card-title">งานครู / กิจกรรม</div>
+      <div class="card-desc">ครูสามารถสร้างหน้าเว็บสำหรับกิจกรรม ชั้นเรียน หรือสื่อการสอนได้ง่าย ๆ</div>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
+      <div class="card-title">เรียนรู้ Web Dev</div>
+      <div class="card-desc">ฝึกทำเว็บไซต์จริงบน production domain ก่อนซื้อโดเมนส่วนตัวในอนาคต</div>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
+      <div class="card-title">งานกลุ่ม</div>
+      <div class="card-desc">เพิ่ม co-owner ได้หลายคน เพื่อให้ทีมสามารถจัดการ DNS record ร่วมกัน</div>
+    </div>
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-link" aria-hidden="true"></i></div>
+      <div class="card-title">Custom Domain</div>
+      <div class="card-desc">รองรับ CNAME, A, AAAA, TXT และ MX records เพื่อใช้กับ provider ที่หลากหลาย</div>
+    </div>
+  </div>
+</div>
+
+<div id="how-to-register">
+  <h2>วิธีลงทะเบียน</h2>
+  <p>ขั้นตอนการขอ subdomain ทำได้ง่าย ๆ ผ่านหน้าเว็บ ไม่ต้องเปิด GitHub เลย*<br>
+    <small>*ในตอนนี้ยังจำเป็นต้องมีบัญชี GitHub สำหรับยืนยันตัวเพื่อแก้ไข Domain ในอนาคต</small>
+  </p>
+
+  <ul class="todo-list" aria-label="ขั้นตอนการลงทะเบียน subdomain">
+    <li class="todo-section-label">ขั้นตอน</li>
+
+    <li class="todo-item wip">
+      <div class="todo-icon"
+        style="background:var(--color-active-bg);border-color:var(--color-accent);color:var(--color-accent);font-size:11px;font-weight:700;">
+        1</div>
+      <span>
+        <strong>เข้าสู่ระบบด้วย GitHub</strong> ที่
+        <a href="/subdomain/register/" title="หน้าลงทะเบียน subdomain">thatako.net/subdomain/register</a>
+        ; ใช้บัญชี GitHub สำหรับยืนยันตัวตนเท่านั้น <small>(ไม่จำเป็นต้องทำอะไรใน GitHub เพิ่มเติม)</small>
+      </span>
+    </li>
+    <li class="todo-item wip">
+      <div class="todo-icon"
+        style="background:var(--color-active-bg);border-color:var(--color-accent);color:var(--color-accent);font-size:11px;font-weight:700;">
+        2</div>
+      <span>
+        <strong>เลือกชื่อ subdomain</strong> ที่ต้องการ เช่น <code>aitji</code>
+        จะได้ <code>aitji.id.thatako.net</code>
+        (ใช้ได้เฉพาะ a-z, 0-9 และ -)
+      </span>
+    </li>
+    <li class="todo-item wip">
+      <div class="todo-icon"
+        style="background:var(--color-active-bg);border-color:var(--color-accent);color:var(--color-accent);font-size:11px;font-weight:700;">
+        3</div>
+      <span>
+        <strong>เลือก provider และเพิ่ม DNS records</strong>
+        ระบบจะเติม record มาให้อัตโนมัติตาม provider ที่เลือก เช่น Vercel, GitHub Pages, Netlify
+        แก้ไขค่าได้ก่อนบันทึก
+      </span>
+    </li>
+    <li class="todo-item wip">
+      <div class="todo-icon"
+        style="background:var(--color-active-bg);border-color:var(--color-accent);color:var(--color-accent);font-size:11px;font-weight:700;">
+        4</div>
+      <span>
+        <strong>กด "ลงทะเบียนโดเมน"</strong>
+        ระบบจะบันทึกและ deploy DNS record เข้า Cloudflare ให้ทันที
+        โดยทั่วไปใช้เวลา propagate ไม่เกิน 5 นาที
+      </span>
+    </li>
+
+    <div class="callout warn">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>
+        ชื่อ subdomain บางชื่อถูกสงวนไว้สำหรับการใช้งานของโรงเรียน เช่น
+        <code>council</code>, <code>pr</code>, <code>go</code>, <code>api</code>, <code>status</code>
+        และชื่ออื่น ๆ ที่อาจเกิด conflict กับ DNS record หลัก
+      </p>
+    </div>
+  </ul>
+</div>
+
+<div id="dns-records">
+  <h2>DNS Records ที่รองรับ</h2>
+  <p>สามารถเพิ่ม record ได้หลายประเภทในโดเมนเดียวกัน โดยมีข้อจำกัดบางอย่างตามมาตรฐาน DNS</p>
+
+  <div class="infra-grid">
+    <div class="infra-item">
+      <div class="infra-label">CNAME</div>
+      <div class="infra-value"><i class="fa-solid fa-check"></i> รองรับ</div>
+      <div class="infra-role">ชี้ไปยัง hostname เช่น Vercel, Netlify</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">A Record</div>
+      <div class="infra-value"><i class="fa-solid fa-check"></i> รองรับ</div>
+      <div class="infra-role">ชี้ไปยัง IPv4 address</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">AAAA Record</div>
+      <div class="infra-value"><i class="fa-solid fa-check"></i> รองรับ</div>
+      <div class="infra-role">ชี้ไปยัง IPv6 address</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">TXT Record</div>
+      <div class="infra-value"><i class="fa-solid fa-check"></i> รองรับ</div>
+      <div class="infra-role">สำหรับ domain verification</div>
+    </div>
+    <div class="infra-item">
+      <div class="infra-label">MX Record</div>
+      <div class="infra-value"><i class="fa-solid fa-check"></i> รองรับ</div>
+      <div class="infra-role">สำหรับ email routing</div>
+    </div>
+  </div>
+  <div class="callout warn">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <p>
+      <strong>ข้อจำกัด:</strong> CNAME ไม่สามารถอยู่ร่วมกับ A, AAAA หรือ MX ในชื่อเดียวกันได้
+      ตามมาตรฐาน RFC 1912 ; ระบบจะแจ้งเตือนอัตโนมัติเมื่อเกิด conflict
+    </p>
+  </div>
+</div>
+
+<div id="rules">
+  <h2>ข้อกำหนดสำคัญ (สรุปย่อ)</h2>
+  <p>
+    รายละเอียดเต็มอยู่ใน <a href="/subdomain/tos/" title="ข้อกำหนดการใช้งานฉบับเต็ม">ข้อกำหนดการใช้งาน</a>
+    ด้านล่างนี้คือสิ่งที่ควรรู้ก่อนสมัคร
+  </p>
+
+  <ul class="todo-list" aria-label="ข้อกำหนดสำคัญ">
+    <li class="todo-section-label">ห้าม</li>
+    <li class="todo-item">
+      <div class="todo-icon" style="border-color:var(--color-callout-error);color:var(--color-callout-error);">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </div>
+      <span>เนื้อหา NSFW หรือเนื้อหาสำหรับผู้ใหญ่ทุกประเภท</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon" style="border-color:var(--color-callout-error);color:var(--color-callout-error);">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </div>
+      <span>เนื้อหาที่ผิดกฎหมายไทย หรือละเมิดลิขสิทธิ์</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon" style="border-color:var(--color-callout-error);color:var(--color-callout-error);">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </div>
+      <span>Phishing, Malware หรือเว็บไซต์หลอกลวง</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon" style="border-color:var(--color-callout-error);color:var(--color-callout-error);">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </div>
+      <span>แก้ไข subdomain ของผู้อื่นโดยไม่ได้รับอนุญาต (ไม่ใช่ owner/co-owner)</span>
+    </li>
+
+    <li class="todo-section-label">อนุญาต</li>
+    <li class="todo-item">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span>ใช้งานจากที่ไหนก็ได้ ไม่จำกัดเฉพาะในโรงเรียน</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span>เพิ่ม co-owner เพื่อให้ผู้อื่นช่วยจัดการ DNS record ร่วมกัน</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span>แก้ไข DNS record ได้ตลอดเวลาผ่านหน้าเว็บหรือ GitHub PR</span>
+    </li>
+    <li class="todo-item">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span>ลบโดเมนของตัวเองได้ทุกเมื่อ</span>
+    </li>
+
+    <div class="callout warn">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>
+        maintainer (<a href="https://github.com/aitji" target="_blank" rel="noopener">@aitji</a>)
+        มีสิทธิ์ระงับหรือลบ subdomain ที่พบว่าใช้งานไม่เหมาะสมโดยไม่ต้องแจ้งล่วงหน้า
+        หากพบการใช้งานที่ไม่เหมาะสม สามารถรายงานได้ที่
+        <a href="/subdomain/abuse/" title="รายงานการใช้งานที่ไม่เหมาะสม">abuse</a>
+      </p>
+    </div>
+  </ul>
+</div>
+
+<div id="faq">
+  <h2>คำถามที่พบบ่อย</h2>
+
+  <div class="callout" id="faq.who">
+    <p>
+      <strong>ใครลงทะเบียนได้บ้าง?</strong>
+      นักเรียนและครูโรงเรียนท่าตะโกพิทยาคมทุกคน โดยต้องมีบัญชี GitHub<br class="mobile-hidden">
+      ไม่มีการตรวจสอบว่าเป็นบุคลากรจริงหรือไม่ในระบบอัตโนมัติ แต่หากพบการใช้งานที่ไม่เหมาะสม maintainer
+      จะดำเนินการตามที่เห็นสมควร
+    </p>
+  </div>
+  <div class="callout" id="faq.expire">
+    <p>
+      <strong>Subdomain มีวันหมดอายุไหม?</strong>
+      ไม่มี subdomain จะยังคงใช้งานได้ตราบเท่าที่ไม่ถูกลบหรือระงับ<br class="mobile-hidden">
+      อย่างไรก็ตาม หากเว็บไซต์ปลายทางไม่ตอบสนองเป็นเวลานาน
+      อาจถูก maintainer ทบทวนเพื่อคืน namespace
+    </p>
+  </div>
+  <div class="callout" id="faq.edit">
+    <p>
+      <strong>สามารถแก้ไข Record หลังลงทะเบียนแล้วได้ไหม?</strong>
+      ได้, เข้าไปที่ <a href="/subdomain/register/" title="หน้าลงทะเบียนและจัดการ subdomain">หน้าจัดการ</a><br
+        class="mobile-hidden">
+      แล้วกด "แก้ไข" ที่โดเมนที่ต้องการ ระบบจะสร้าง PR ใหม่เข้า GitHub อัตโนมัติ<br class="mobile-hidden">
+      การเปลี่ยนแปลงจะมีผลหลัง maintainer approve และ merge
+    </p>
+  </div>
+  <div class="callout" id="faq.coowner">
+    <p>
+      <strong>Co-owner ทำอะไรได้บ้าง?</strong>
+      Co-owner สามารถเปิด Pull Request เพื่อแก้ไข DNS record ของ subdomain นั้นได้<br class="mobile-hidden">
+      แต่ไม่สามารถลบโดเมนหรือเปลี่ยน primary owner ได้<br class="mobile-hidden">
+      GitHub Actions จะตรวจสอบว่าผู้เปิด PR เป็น owner หรือ co-owner ของโดเมนนั้นจริง<br>
+      <small>*Co-owner และ owner สามารถใช้เว็บไซต์สำหรับแก้ไขได้<a href="/subdomain/register/">ที่นี่</a>,
+        หากไม่ต้องการแก้ไขใน GitHub</small>
+    </p>
+  </div>
+  <div class="callout" id="faq.provider">
+    <p>
+      <strong>รองรับ provider อะไรบ้าง?</strong>
+      ระบบมี template พร้อมใช้สำหรับ Vercel, GitHub Pages, Netlify, Cloudflare, Render, Railway และ Fly.io<br>
+      <small>*หากใช้ provider อื่น สามารถเพิ่ม DNS record แบบ manual ได้เช่นกัน</small>
+    </p>
+  </div>
+  <div class="callout" id="faq.provider">
+    <p>
+      <strong>ขอหลาย subdomain ได้ไหม?</strong>
+      ได้ ไม่มีการจำกัดจำนวน subdomain ต่อ 1 บัญชี GitHub
+      อย่างไรก็ตามขอให้ใช้งานจริงและไม่จอง namespace โดยไม่มีวัตถุประสงค์
+    </p>
+  </div>
+  <div class="callout" id="faq.delete">
+    <p>
+      <strong>ลบโดเมนยังไง?</strong>
+      เข้าไปที่ <a href="/subdomain/register/" title="หน้าจัดการ subdomain">หน้าจัดการ</a>
+      แล้วกดปุ่ม "ลบ" ที่โดเมนที่ต้องการ ระบบจะส่ง request ลบ DNS record
+      ออกจาก Cloudflare และ repository ทันที
+    </p>
+  </div>
+</div>
+
+<aside class="toc-inline" style="display: none;">
+  <div class="toc-label">on this page</div>
+
+  <a href="#what-is" class="toc-link">id.thatako.net คืออะไร</a>
+  <a href="#use-cases" class="toc-link">ตัวอย่างการใช้งาน</a>
+  <a href="#how-to-register" class="toc-link">วิธีลงทะเบียน</a>
+  <a href="#dns-records" class="toc-link">DNS Records</a>
+  <a href="#rules" class="toc-link">ข้อกำหนดสำคัญ</a>
+  <a href="#faq" class="toc-link">FAQ</a>
+  <div class="toc-sub">
+    <a href="#faq.who" class="toc-link sub">ใครลงทะเบียนได้บ้าง</a>
+    <a href="#faq.expire" class="toc-link sub">มีวันหมดอายุไหม</a>
+    <a href="#faq.edit" class="toc-link sub">แก้ไข DNS ได้ไหม</a>
+    <a href="#faq.coowner" class="toc-link sub">Co-owner ทำอะไรได้</a>
+    <a href="#faq.provider" class="toc-link sub">รองรับ provider อะไร</a>
+    <a href="#faq.multiple" class="toc-link sub">ขอหลาย subdomain ได้ไหม</a>
+    <a href="#faq.delete" class="toc-link sub">ลบโดเมนยังไง</a>
+  </div>
+</aside>

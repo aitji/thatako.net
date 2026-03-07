@@ -192,7 +192,7 @@ npm run dev:https_live
 - GitHub: [aitji](https://github.com/aitji)
 
 ```
-©2026 thatako.net™ Proprietary software. All rights reserved. No redistribution, modification, or reuse without permission.
+©2026 thatako.net™ Licensed under the Mozilla Public License 2.0 (MPL-2.0).
 
 Infra version : v0.5.1-alpha
 Last updated  : Jan 2026
