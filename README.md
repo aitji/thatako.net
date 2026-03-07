@@ -194,7 +194,7 @@ npm run dev:https_live
 ```
 ©2026 thatako.net™ Proprietary software. All rights reserved. No redistribution, modification, or reuse without permission.
 
-Infra version : v0.5-alpha
+Infra version : v0.5.1-alpha
 Last updated  : Jan 2026
 Author        : aitji
 ```
