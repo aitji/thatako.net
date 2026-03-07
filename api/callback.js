@@ -7,7 +7,13 @@ export default async function handler(req, res) {
     const sigSecret = process.env.SIG_SECRET
 
     if (!code) return res.status(400).json({ error: 'missing code' })
-    if (!clientId || !clientSecret || !sigSecret) return res.status(500).json({ error: 'server misconfigured, try again later' })
+    if (!clientId || !clientSecret || !sigSecret) return res.status(500).json({ error: 'server misconfigured' })
+
+    let returnUrl = '/'
+    try {
+        const decoded = Buffer.from(state || '', 'base64url').toString()
+        if (decoded.startsWith('/')) returnUrl = decoded
+    } catch { }
 
     // exchange code for access token
     let accessToken
@@ -16,65 +22,67 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json'
             },
-            body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
+            body: JSON.stringify({
+                client_id: clientId,
+                client_secret: clientSecret,
+                code
+            })
         })
+
+        if (!tokenRes.ok) throw new Error('github token exchange failed')
+
         const tokenJson = await tokenRes.json()
-        if (tokenJson.error) throw new Error(tokenJson.error_description || tokenJson.error)
         accessToken = tokenJson.access_token
-    } catch (e) {
-        return res.status(400).json({ error: 'token exchange failed: ' + e.message })
-    }
+        if (!accessToken) throw new Error('missing access token')
+    } catch (e) { return res.status(400).json({ error: e.message }) }
 
-    // fetch github user
-    let ghUser, ghEmails
+    let ghUser
+    let ghEmails
+
     try {
+        const headers = {
+            Authorization: `Bearer ${accessToken}`,
+            'User-Agent': 'thatako.net'
+        }
+
         const [uRes, eRes] = await Promise.all([
-            fetch('https://api.github.com/user', { headers: { Authorization: `token ${accessToken}`, 'User-Agent': 'thatako.net' } }),
-            fetch('https://api.github.com/user/emails', { headers: { Authorization: `token ${accessToken}`, 'User-Agent': 'thatako.net' } }),
+            fetch('https://api.github.com/user', { headers }),
+            fetch('https://api.github.com/user/emails', { headers })
         ])
+
+        if (!uRes.ok) throw new Error('user fetch failed')
+
         ghUser = await uRes.json()
-        ghEmails = await eRes.json()
-    } catch (e) {
-        return res.status(500).json({ error: 'GitHub API error' })
-    }
+        ghEmails = eRes.ok ? await eRes.json() : []
+    } catch { return res.status(500).json({ error: 'github api error' }) }
 
-    const primaryEmail = Array.isArray(ghEmails)
-        ? (ghEmails.find(e => e.primary && e.verified)?.email || null)
-        : null
+    const primaryEmail =
+        Array.isArray(ghEmails)
+            ? ghEmails.find(e => e.primary && e.verified)?.email || null
+            : null
 
-    // build user data + sig
-    // userData format: github_login:github_id:timestamp
     const ts = Date.now()
     const userData = `${ghUser.login}:${ghUser.id}:${ts}`
-    const sig = createHmac('sha256', sigSecret).update(userData).digest('hex')
 
-    // decode url
-    let returnUrl = '/'
-    try { returnUrl = Buffer.from(state || '', 'base64url').toString('utf8') || '/' } catch { }
+    const sig = createHmac('sha256', sigSecret)
+        .update(userData)
+        .digest('hex')
 
     const user = {
         login: ghUser.login,
         id: ghUser.id,
         avatar_url: ghUser.avatar_url,
-        email: primaryEmail,
+        email: primaryEmail
     }
 
-    // A: application/json
-    if (req.headers.accept?.includes('application/json')) return res.json({ user, userData, sig, token: accessToken })
-
-    const authPayload = encodeURIComponent(JSON.stringify({
+    const payload = encodeURIComponent(JSON.stringify({
         user,
         userData,
-        sig,
-        token: accessToken,
+        sig
     }))
 
     res.setHeader('Content-Type', 'text/html')
-    res.send(`<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>auth...</title></head>
-<body><script>
-  window.location.href = ${JSON.stringify(returnUrl)} + '?authed=1&auth=' + ${JSON.stringify(authPayload)}
-</script></body></html>`)
+    res.send(`<!doctype html><meta charset="utf-8"><script>location.href=${JSON.stringify(returnUrl)}+'?authed=1&auth='+${JSON.stringify(payload)}</script>`)
 }
