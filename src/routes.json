@@ -3,24 +3,29 @@
         {
             "id": "home",
             "path": "/",
-            "file": "docs/home.html"
+            "file": "/docs/home.html"
         },
         {
             "id": "about",
             "path": "/about",
-            "file": "docs/about.html"
+            "file": "/docs/about.html"
         },
 
         {
             "id": "subdomain-overview",
             "path": "/subdomain",
-            "file": "docs/subdomain/_overview.html"
+            "file": "/docs/subdomain/1.overview.html"
         },
         {
             "id": "subdomain-tos",
             "path": "/subdomain/tos",
-            "file": "docs/subdomain/tos.html"
+            "file": "/docs/subdomain/2.tos.html"
+        },
+        {
+            "id": "subdomain-abuse",
+            "path": "/subdomain/abuse",
+            "file": "/docs/subdomain/3.abuse.html"
         }
     ],
-    "_note": "more routes here with any id (subfolders 'docs/nested/page')"
+    "_note": "more routes here with any id (subfolders '/docs/nested/page')"
 }
