@@ -14,8 +14,8 @@ const WATCH = process.argv.includes('--watch')
 
 const ensure = p => fs.mkdirSync(p, { recursive: true })
 
-const headTag = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-MB904QRERQ"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-MB904QRERQ");</script><script>!function(e,t,a,r,g){e[r]=e[r]||[],e[r].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var n=t.getElementsByTagName(a)[0],s=t.createElement(a);s.async=!0,s.src="https://www.googletagmanager.com/gtm.js?id="+g+("dataLayer"!=r?"&l="+r:""),n.parentNode.insertBefore(s,n)}(window,document,"script","dataLayer","GTM-MP8NVWV4");</script>`
-const bodyTag = `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MP8NVWV4" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`
+const headTag = ''
+const bodyTag = ''
 const YEAR = new Date().getFullYear()
 const bannerText = `
                           ,
@@ -74,8 +74,8 @@ const minifyHTMLFile = async file => {
     try {
         let src = fs.readFileSync(file, 'utf8')
         if (!WATCH) {
-            src = src.replace('</head>', `${headTag}</head>`)
-            src = src.replace('</body>', `${bodyTag}</body>`)
+            if (headTag) src = src.replace('</head>', `${headTag}</head>`)
+            if (bodyTag) src = src.replace('</body>', `${bodyTag}</body>`)
         } else src = src.replaceAll('https://thatako.net', 'https://dev.thatako.net')
 
         // <script type="application/ld+json">{"@context": "https://schema.org"...}</script>
