@@ -1,0 +1,9 @@
+User-agent: *
+
+Disallow: /api/
+Disallow: /docs/
+Disallow: /zDesk/
+
+Allow: /img/
+
+Sitemap: https://thatako.net/sitemap.xml
