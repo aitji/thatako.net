@@ -36,7 +36,7 @@
 
 - [x] ตัวย่อ URL - `go.thatako.net`
 - [x] ตัวสร้าง QR-CODE
-- [ ] โดเมนย่อย สำหรับนักเรียนและคุณครู\* - `[name].id.thatako.net` *(แผน)*
+- [x] โดเมนย่อย สำหรับนักเรียนและคุณครู\* - `[name].id.thatako.net` *(แผน)*
 - [ ] API สาธารณะ *(แผน)*
 - [ ] หน้าสถานะการให้บริการ *(แผน)*
 
@@ -78,10 +78,6 @@ Location: https://example.com
 
 ### โดเมนย่อย สำหรับนักเรียนและคุณครู *(แผน)*
 
-> [!IMPORTANT]
-> บริการนี้อยู่ในระหว่างการทดสอบ
-> ช่วยเราทดสอบบริการได้ [ที่นี่](https://thatako.net/subdomain/register) *ต้องใช้บัญชี github
-
 นักเรียนและคุณครู* จะสามารถขอใช้โดเมนย่อยได้ฟรี ในรูปแบบ
 ```
 [name].id.thatako.net
@@ -95,7 +91,7 @@ Location: https://example.com
 - สร้างพอร์ตเก็บผลงาน
 - ไม่จำเป็นต้องซื้อโดเมน
 
-ยังไม่เปิดให้ลงทะเบียน ในตอนนี้
+รับโดเมนย่อยฟรีได้ **[ที่นี่](https://thatako.net/subdomain)** `แนะนำ` หรือแก้ไขผ่าน GitHub ได้ **[ที่นี่](https://github.com/aitji/id.thatako.net)**
 
 ## โครงสร้างพื้นฐาน
 
@@ -120,11 +116,11 @@ Location: https://example.com
 - ตัวย่อ URL / QR CODE
 
 ### วางแผนแล้ว
-- [ ] โดเมนย่อยของนักเรียนและคุณครู `[name].id.thatako.net`
 - [ ] API สาธารณะสำหรับนักเรียนและครู
-- [ ] status.thatako.net
 
 ### สมบูรณ์
+- [x] โดเมนย่อยของนักเรียนและคุณครู `[name].id.thatako.net`
+- [x] status.thatako.net
 - [x] ออกแบบเว็บไซต์ให้ดูดีขึ้น
 - [x] council.thatako.net
 - [x] pr.thatako.net
@@ -194,7 +190,7 @@ npm run dev:https_live
 ```
 ©2026 thatako.net™ Licensed under the Mozilla Public License 2.0 (MPL-2.0).
 
-Infra version : v0.5.1-alpha
+Infra version : v0.6-alpha
 Last updated  : Jan 2026
 Author        : aitji
 ```

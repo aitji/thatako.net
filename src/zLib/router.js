@@ -1,5 +1,5 @@
 let routesConfig = null
-const version = localStorage.getItem('v') || 'v0.5.1-alpha'
+const version = localStorage.getItem('v') || 'v0.6-alpha'
 
 const SKELETON_TEMPLATE = `
 <div class="skeleton-layout">

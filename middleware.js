@@ -1,6 +1,6 @@
 const ASSET_EXTS = ['js', 'css', 'json', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'eot', 'webp', 'mp4', 'webm', 'pdf']
 let cacheRoutes = null
-const version = 'v0.5.1-alpha'
+const version = 'v0.6-alpha'
 
 async function getSpaRoutes(request) {
   if (cacheRoutes) return cacheRoutes

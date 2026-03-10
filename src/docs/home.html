@@ -6,7 +6,7 @@
     <span class="dot">·</span>
     <span title="อัปเดตล่าสุด มีนาคม 2026">อัปเดตล่าสุด 2026</span>
   </div>
-  <p>Infrastructure สำหรับโรงเรียน thatako - URL shortener, QR codes, subdomains และ public API
+  <p>Infrastructure สำหรับโรงเรียนท่าตะโกพิทยาคม - URL shortener, QR codes, subdomains และ public API
     สำหรับนักเรียนและครู</p>
   <div class="hero-actions">
     <a href="/short/" class="btn btn-primary">
@@ -25,7 +25,9 @@
     <p>บริการย่อลิงก์สำหรับนักเรียนและครู สร้าง slug ที่จำง่ายและ QR code สำหรับแจกในห้องเรียน</p>
     <div class="callout">
       <i class="fa-solid fa-circle-info"></i>
-      <p>กำลังพัฒนา - ใช้งานได้บางส่วนแล้วที่ <a href="./short" title="หน้าเว็บสำหรับย่อ URL พร้อมสร้าง QR CODE">thatako.net/short</a></p>
+      <p>กำลังพัฒนา - ใช้งานได้บางส่วนแล้วที่
+        <a href="./short" title="หน้าเว็บสำหรับย่อ URL พร้อมสร้าง QR CODE">go.thatako.net</a>
+      </p>
     </div>
 
     <pre><code>GET https://go.thatako.net/{slug}
@@ -35,11 +37,13 @@
   <div id="services.subdomains">
     <h3>Subdomains สำหรับนักเรียน</h3>
     <p>แผนในอนาคตจะมีการให้ subdomain แก่นักเรียนที่มีความสามารถแล้วอยากเขียน website ของตัวเองแต่ไม่มีโดเมนใช้
-      สามารถขอ subdomain ของเราได้ฟรี เช่น <code title="Subdomain สำหรับบุคลากรของท่าตะโกพิทยาคม">[name].id.thatako.net</code></p>
+      สามารถขอ subdomain ของเราได้ฟรี เช่น <code
+        title="Subdomain สำหรับบุคลากรของท่าตะโกพิทยาคม">[name].id.thatako.net</code></p>
 
-    <div class="callout warn">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <p>ยังอยู่ในขั้นตอนการวางแผน ยังไม่เปิดให้สมัคร</p>
+    <div class="callout">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>กำลังพัฒนา - ใช้งานได้บางส่วนแล้วที่ <a href="./subdomain"
+          title="ข้อมูลทั่วไปก่อนลงทะเบียนรับโดเมนย่อยฟรี">id.thatako.net</a></p>
     </div>
   </div>
 </div>
@@ -76,26 +80,28 @@
 
     <li class="todo-item wip">
       <div class="todo-icon"><i class="fa-solid fa-spinner spinning" aria-hidden="true"></i></div>
-      <span>short/qrcode url service - <a href="/short/" title="ย่อ URL พร้อมสร้าง QR CODE">go.thatako.net/...</a></span>
+      <span>ให้ subdomain แก่นักเรียน เช่น [name].id.thatako.net - <a href="/subdomain" title="โดเมนย่อยฟรีสำหรับนักเรียนและครู">id.thatako.net</a></span>
     </li>
 
     <li class="todo-section-label">แผน</li>
 
     <li class="todo-item">
       <div class="todo-icon"></div>
-      <span>ให้ subdomain แก่นักเรียน เช่น [name].id.thatako.net</span>
-    </li>
-    <li class="todo-item">
-      <div class="todo-icon"></div>
       <span>Public API สำหรับนักเรียนและครู</span>
-    </li>
-    <li class="todo-item">
-      <div class="todo-icon"></div>
-      <span>status.thatako.net เพื่อตรวจสอบบริการ</span>
     </li>
 
     <li class="todo-section-label">เสร็จแล้ว</li>
 
+    <li class="todo-item done">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span>short/qrcode url service -
+        <a href="/short/" title="ย่อ URL พร้อมสร้าง QR CODE">go.thatako.net/...</a>
+      </span>
+    </li>
+    <li class="todo-item done">
+      <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+      <span><a href="https://status.thatako.net">status.thatako.net</a> เพื่อตรวจสอบบริการ</span>
+    </li>
     <li class="todo-item done">
       <div class="todo-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
       <span>ให้ council และ pr ได้ subdomain - council.thatako.net, pr.thatako.net</span>
