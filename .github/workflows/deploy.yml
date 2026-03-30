@@ -1,5 +1,8 @@
 name: Deploy Cloudflare Workers
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
