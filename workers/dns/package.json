@@ -8,8 +8,8 @@
 		"start": "wrangler dev"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"vitest": "~3.2.0",
+		"@cloudflare/vitest-pool-workers": "^0.16.15",
+		"vitest": "~4.1.8",
 		"wrangler": "^4.78.0"
 	}
 }
