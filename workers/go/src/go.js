@@ -1,3 +1,6 @@
+import { handleFile, filePage, purge, sweepExpired } from './files.js'
+import { handleDrive, drivePage } from './drive.js'
+
 const mem = new Map()
 const recentlyEdited = new Set()
 let lastSweep = 0
@@ -9,7 +12,7 @@ const EDIT_GRACE_PERIOD = 5 * 1000
 
 const CORS = {
 	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+	'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type',
 }
 
@@ -99,7 +102,14 @@ function sweep() {
 const getUserList = async (kv, key) => (await kv.get('u:' + key, 'json')) || []
 const setUserList = (kv, key, list) => kv.put('u:' + key, JSON.stringify(list))
 
+const fileHelpers = { j, norm, validSlug, getUserList, setUserList }
+
 async function api(req, env, path, ctx) {
+	// google drive links
+	if (path.startsWith('api/drive/') || path.startsWith('api/dv/')) return handleDrive(req, env, path, fileHelpers)
+	// file upload / download / usage (r2)
+	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/')) return handleFile(req, env, path, fileHelpers)
+
 	// create
 	if (path === 'api/create' && req.method === 'POST') {
 		let { slug, to, key } = await req.json()
@@ -132,6 +142,11 @@ async function api(req, env, path, ctx) {
 		const data = await env.LINKS.get('l:' + clean, 'json')
 		if (!data || data.key !== key) return j({ ok: false })
 
+		if (data.type === 'drive') await env.LINKS.delete('d:' + data.did)
+		if (data.type === 'file') {
+			await purge(env, data.fid)
+			await env.LINKS.delete('f:' + data.fid)
+		}
 		await env.LINKS.delete('l:' + clean)
 
 		const list = await getUserList(env.LINKS, key)
@@ -155,6 +170,7 @@ async function api(req, env, path, ctx) {
 		const data = await env.LINKS.get('l:' + slug, 'json')
 		if (!data || data.key !== key) return j({ ok: false })
 
+		if (data.type === 'file' || data.type === 'drive') to = undefined
 		const finalSlug = newSlug || slug
 
 		if (!validSlug(finalSlug)) return j({ ok: false, msg: 'bad slug' })
@@ -249,6 +265,9 @@ export default {
 			)
 		}
 
+		if (data.type === 'file') return filePage(env, data)
+		if (data.type === 'drive') return drivePage(env, data)
+
 		mem.set(slug, {
 			to: data.to,
 			exp: now + HOT_TTL,
@@ -256,5 +275,7 @@ export default {
 		})
 
 		return r(data.to, !wasEdited)
-	}
+	},
+
+	async scheduled(_event, env, ctx) { ctx.waitUntil(sweepExpired(env).then(n => console.log(`[cron] removed ${n} expired file(s)`))) }
 }

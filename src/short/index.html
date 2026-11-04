@@ -103,7 +103,8 @@
     <!-- topbar -->
     <header class="topbar">
         <a href="https://thatako.net" class="logo-dot" width="32" height="32"></a>
-        <a href="https://thatako.net" class="mobile-hidden topbar-logo" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
+        <a href="https://thatako.net" class="mobile-hidden topbar-logo"
+            title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
         <span class="topbar-sep mobile-hidden">/</span>
         <a href="https://thatako.net" class="topbar-title" title="ย่อ URL พร้อมสร้าง QR CODE">go.thatako.net</a>
 
@@ -139,6 +140,19 @@
                         สร้างลิงก์ย่อใหม่
                     </div>
                     <div class="panel-body">
+
+                        <!-- mode -->
+                        <div class="mode-tabs" role="tablist">
+                            <button type="button" id="modeLink" class="active" role="tab">
+                                <i class="fa-solid fa-link" aria-hidden="true"></i> ย่อลิงก์
+                            </button>
+                            <button type="button" id="modeFile" role="tab">
+                                <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i> อัปโหลดไฟล์
+                            </button>
+                            <button type="button" id="modeDrive" role="tab">
+                                <i class="fa-solid fa-hard-drive" aria-hidden="true"></i> Google Drive
+                            </button>
+                        </div>
 
                         <!-- password -->
                         <div class="field">
@@ -179,17 +193,90 @@
                         </div>
 
                         <!-- target URL -->
-                        <div class="field">
+                        <div class="field" id="urlField">
                             <div class="field-label">ลิงก์เต็ม</div>
                             <p class="muted">ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com</p>
                             <input type="url" id="to" placeholder="https://example.com"
                                 title="ลิงก์เต็มที่ลิงก์ย่อจะพาผู้ใช้ไป" required>
                         </div>
 
+                        <!-- file upload (direct) -->
+                        <div id="fileField" hidden>
+                            <div id="fileSlot">
+                                <div class="field" id="pickBox">
+                                    <div class="field-label">ไฟล์</div>
+                                    <label class="dropzone" id="drop" for="files">
+                                        <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                                        <b>ลากไฟล์มาวาง หรือกดเพื่อเลือก</b>
+                                        <span class="muted" id="limits"></span>
+                                    </label>
+                                    <input type="file" id="files" multiple hidden>
+                                    <ul class="up-list" id="upList"></ul>
+                                    <div class="muted" id="upTotal"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">อายุลิงก์</div>
+                                <select id="days">
+                                    <option value="7">7 วัน</option>
+                                    <option value="30" selected>30 วัน</option>
+                                    <option value="90">90 วัน</option>
+                                    <option value="0">ไม่หมดอายุ</option>
+                                </select>
+                            </div>
+                            <div class="usage">
+                                <div class="usage-track"><i id="usageBar"></i></div>
+                                <div class="muted" id="usageText"></div>
+                            </div>
+                        </div>
+
+                        <!-- google drive -->
+                        <div id="driveField" hidden>
+                            <div class="drive-note" id="driveNote" hidden>ใช้ Google Drive ได้เลย, ไม่จำกัดขนาดไฟล์
+                                และไม่หมดอายุ</div>
+                            <div class="field-label">วิธีที่ 1: ลงชื่อเข้าใช้ด้วย Google</div>
+                            <p class="muted drive-p">เลือกไฟล์ แล้วกดปุ่ม ระบบจะสร้างโฟลเดอร์
+                            <pre>go.thatako.net</pre> ใน Drive
+                            ของคุณและอัปโหลดให้ ไฟล์ยังเป็นของคุณ ลบเมื่อไรลิงก์ก็หยุดทำงาน</p>
+                            <div id="driveSlot"></div>
+                            <button type="button" class="btn btn-primary btn-full" id="gUpload">ลงชื่อเข้าใช้ด้วย Google
+                                และอัปโหลด</button>
+                            <div class="or-sep"><span>หรือ</span></div>
+                            <div class="field-label">วิธีที่ 2: ใช้ไฟล์ใน Drive ที่มีอยู่แล้ว</div>
+                            <ol class="drive-steps">
+                                <li>เปิด <a href="https://drive.google.com" target="_blank" rel="noopener">Google
+                                        Drive</a> แล้วอัปโหลดไฟล์ <i>หลายไฟล์ให้ใส่ในโฟลเดอร์</i></li>
+                                <li>คลิกขวา > <b>แชร์</b> > เชิญอีเมลนี้ (สิทธิ์ผู้ดู)
+                                    <div class="sa-row"><code id="saMail">กำลังโหลด...</code><button type="button"
+                                            class="btn btn-ghost" id="saCopy">คัดลอก</button></div>
+                                </li>
+                                <li>วางลิงก์ Google Drive ที่นี่
+                                    <input type="text" id="driveLink" placeholder="https://drive.google.com/..."
+                                        autocomplete="off" spellcheck="false">
+                                </li>
+                            </ol>
+                            <button type="button" class="btn btn-primary btn-full" id="gLink">สร้างลิงก์จาก
+                                Drive</button>
+                            <p class="muted drive-p">ทุกคนที่มีลิงก์ go.thatako.net จะดาวน์โหลดได้ อย่าแชร์ไฟล์ลับ,
+                                รองรับไฟล์ทั่วไป (PDF, ZIP, วิดีโอ ฯลฯ) ไม่รองรับ
+                            <pre>Google Docs</pre>/
+                            <pre>Sheets</pre>/
+                            <pre>Slides</pre>
+                            </p>
+                        </div>
+
+                        <div class="up-prog" id="upProg" hidden>
+                            <div class="usage-track"><i id="upBar"></i></div>
+                            <div class="up-prog-row">
+                                <span class="muted" id="upText"></span>
+                                <button type="button" class="btn btn-ghost" id="upCancel">ยกเลิก</button>
+                            </div>
+                        </div>
+
                         <button type="button" class="btn btn-primary btn-full" id="create"
                             title="สร้างลิงก์ย่อพร้อม QR CODE">
                             <i class="fa-solid fa-link" aria-hidden="true"></i>
-                            สร้างลิงก์ย่อ
+                            <span id="createLabel">สร้างลิงก์ย่อ</span>
                         </button>
 
                     </div>

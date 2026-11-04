@@ -1,4 +1,5 @@
 import "../short/boostrap.js"
+import { initUpload, isFileMode, startUpload, fmtSize } from "./upload.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
@@ -61,6 +62,16 @@ const setBusy = v => {
     $("saveEdit").disabled = v
 }
 
+/** @param {any} l */
+const fileInfo = l => {
+    if (l.type === "drive") return `<i class="fa-solid fa-hard-drive" aria-hidden="true"></i> ${l.name}<br>
+        <small class="muted">Google Drive · ${l.kind === "folder" ? "โฟลเดอร์" : "ไฟล์"}</small>`
+    const dead = l.exp && l.exp < Date.now()
+    const day = l.exp ? new Date(l.exp).toLocaleDateString("th-TH", { dateStyle: "medium" }) : ""
+    return `<i class="fa-solid fa-file" aria-hidden="true"></i> ${l.count} ไฟล์ · ${fmtSize(l.total)}<br>
+        <small class="${dead ? "file-dead" : "muted"}">${!l.exp ? "ไม่หมดอายุ" : (dead ? "หมดอายุแล้ว" : "หมดอายุ") + " " + day}</small>`
+}
+
 /** @param {any[]} links */
 const renderList = links => {
     $("list").innerHTML = !links.length
@@ -71,7 +82,7 @@ const renderList = links => {
                 <td>
                     <a href="https://go.thatako.net/${l.slug}" target="_blank" title="คัดลอกลิงก์">${l.slug}</a>
                 </td>
-                <td>${truncate(l.to)}</td>
+                <td>${l.type === "file" || l.type === "drive" ? fileInfo(l) : truncate(l.to)}</td>
                 <td class="text-end">
                     <button class="btn btn-sm btn-primary mt-2" data-edit="${l.slug}" data-to="${l.to}" title="แก้ไขลิงก์">แก้ไข</button>
                     <button class="btn btn-sm btn-outline-secondary mt-2" data-qr="${l.slug}" title="สร้าง QR CODE">สร้าง QR</button>
@@ -107,6 +118,7 @@ const loadLinks = async () => {
 }
 
 const createLink = async () => {
+    if (isFileMode()) return startUpload()
     const slug = $("slug").value.trim()
     const to = $("to").value.trim()
     const key = $("key").value.trim()
@@ -343,6 +355,7 @@ const init = () => {
     new bootstrap.Tooltip(document.body, { selector: '[data-bs-toggle="tooltip"]' })
     initEvents()
     initKey()
+    initUpload({ api: API_URL, key: () => $("key").value.trim(), validSlug, toast, reload: loadLinks })
     loadLinks()
 }
 

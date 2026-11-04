@@ -13,6 +13,26 @@
     "compatibility_flags": [
         "nodejs_compat"
     ],
+    "r2_buckets": [
+        {
+            "binding": "FILES",
+            "bucket_name": "go-thatako-files"
+        }
+    ],
+    "triggers": {
+        "crons": [
+            "17 3 * * *"
+        ]
+    },
+    "vars": {
+        "MAX_UPLOAD_GB": "2",
+        "MAX_KEY_GB": "2",
+        "MAX_TOTAL_GB": "9",
+        "MAX_FILES": "20",
+        "MAX_DAYS": "90",
+        "MAX_PERMANENT_GB": "3",
+        "GOOGLE_CLIENT_ID": "75693672630-gr50jjupmq0pge4r4na6ck4j2l0k6s23.apps.googleusercontent.com"
+    },
     "kv_namespaces": [
         {
             "binding": "LINKS",
