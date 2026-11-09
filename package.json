@@ -20,9 +20,12 @@
   "author": "aitji",
   "license": "UNLICENSED",
   "dependencies": {
-    "esbuild": "^0.27.3",
+    "esbuild": "^0.28.2",
     "html-minifier-terser": "^7.2.0",
-    "ignore": "^7.0.5",
-    "terser": "^5.46.0"
+    "ignore": "^7.0.14",
+    "terser": "^5.51.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
