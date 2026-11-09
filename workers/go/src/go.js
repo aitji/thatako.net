@@ -1,5 +1,4 @@
 import { handleFile, filePage, purge, sweepExpired } from './files.js'
-import { handleDrive, drivePage } from './drive.js'
 
 const mem = new Map()
 const recentlyEdited = new Set()
@@ -105,10 +104,9 @@ const setUserList = (kv, key, list) => kv.put('u:' + key, JSON.stringify(list))
 const fileHelpers = { j, norm, validSlug, getUserList, setUserList }
 
 async function api(req, env, path, ctx) {
-	// google drive links
-	if (path.startsWith('api/drive/') || path.startsWith('api/dv/')) return handleDrive(req, env, path, fileHelpers)
 	// file upload / download / usage (r2)
-	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/')) return handleFile(req, env, path, fileHelpers)
+	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/'))
+		return handleFile(req, env, path, fileHelpers)
 
 	// create
 	if (path === 'api/create' && req.method === 'POST') {
@@ -142,9 +140,8 @@ async function api(req, env, path, ctx) {
 		const data = await env.LINKS.get('l:' + clean, 'json')
 		if (!data || data.key !== key) return j({ ok: false })
 
-		if (data.type === 'drive') await env.LINKS.delete('d:' + data.did)
-		if (data.type === 'file') {
-			await purge(env, data.fid)
+		if (data.type === 'file' || data.type === 'drive') {
+			if (data.type === 'file') await purge(env, data.fid)
 			await env.LINKS.delete('f:' + data.fid)
 		}
 		await env.LINKS.delete('l:' + clean)
@@ -265,8 +262,7 @@ export default {
 			)
 		}
 
-		if (data.type === 'file') return filePage(env, data)
-		if (data.type === 'drive') return drivePage(env, data)
+		if (data.type === 'file' || data.type === 'drive') return filePage(env, data, slug)
 
 		mem.set(slug, {
 			to: data.to,
@@ -277,5 +273,7 @@ export default {
 		return r(data.to, !wasEdited)
 	},
 
-	async scheduled(_event, env, ctx) { ctx.waitUntil(sweepExpired(env).then(n => console.log(`[cron] removed ${n} expired file(s)`))) }
+	async scheduled(_event, env, ctx) {
+		ctx.waitUntil(sweepExpired(env).then(n => console.log(`[cron] removed ${n} expired file(s)`)))
+	}
 }

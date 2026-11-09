@@ -395,6 +395,13 @@ const boot_ = () => {
                 ]
             },
             {
+                label: 'Legal',
+                items: [
+                    { title: 'Privacy Policy', href: '/privacy', icon: 'fa-solid fa-user-shield', external: false },
+                    { title: 'Terms of Service', href: '/terms', icon: 'fa-solid fa-file-contract', external: false },
+                ]
+            },
+            {
                 label: 'Infrastructure',
                 items: [
                     { title: 'สถานะเซิร์ฟเวอร์', href: 'https://status.thatako.net', icon: 'fa-solid fa-server', external: true },

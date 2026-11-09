@@ -1,37 +1,39 @@
 const PARALLEL = 3
 const RETRIES = 3
 const NO_RETRY = ['bad token', 'bad part', 'bad size']
-const FALLBACK = ['storage full', 'key quota', 'too big', 'not allowed', 'perm full']
-const GSI = 'https://accounts.google.com/gsi/client'
-const GAPI = 'https://www.googleapis.com/drive/v3'
-const FOLDER = 'application/vnd.google-apps.folder'
-const G_CHUNK = 16 * 1024 * 1024
 
 const $ = id => document.getElementById(id)
-let ctx, mode = 'link', picked = [], busy = false, ctl = null, lim = null, gcfg = null
+const GIS = 'https://accounts.google.com/gsi/client'
+const SCOPE = 'https://www.googleapis.com/auth/drive.file'
+const DRIVE = 'https://www.googleapis.com/drive/v3'
+const DRIVE_UP = 'https://www.googleapis.com/upload/drive/v3/files'
+const DRIVE_CHUNK = 16 * 1024 * 1024 // must be a multiple of 256 KiB
+const FOLDER = 'go.thatako.net'
+
+let ctx, mode = 'link', store = 'server', picked = [], busy = false, ctl = null, lim = null
+let gisP = null, tok = null, tokExp = 0, me = null
 
 export const isFileMode = () => mode === 'file'
+
 export const fmtSize = b => {
-    const u = ['B', 'KB', 'MB', 'GB'] // hope end at GB
+    const u = ['B', 'KB', 'MB', 'GB', 'TB']
     let i = 0
     while (b >= 1024 && i < 4) { b /= 1024; i++ }
     return `${b >= 100 || !i ? Math.round(b) : b.toFixed(1)} ${u[i]}`
 }
 
 const errText = m => ({
-    'storage full': 'พื้นที่เก็บไฟล์เต็มแล้ว กรุณาลองใหม่ภายหลัง',
     'key quota': 'โควตาของรหัสลับนี้เต็มแล้ว กรุณาลบไฟล์เก่าก่อน',
     'too big': 'ขนาดไฟล์รวมเกินกำหนดต่อครั้ง',
     'bad files': 'จำนวนหรือขนาดไฟล์ไม่ถูกต้อง',
     'duplicate': 'ชื่อนี้ถูกใช้แล้ว ลองเปลี่ยนชื่อหรือปล่อยว่างให้ระบบสุ่ม',
     'bad slug': 'ชื่อลิงก์ย่อไม่ถูกต้อง',
-    'drive bad link': 'ลิงก์ Google Drive ไม่ถูกต้อง',
-    'drive no access': 'ระบบเข้าถึงไฟล์นี้ไม่ได้ ตรวจสอบว่าแชร์ให้อีเมลด้านบนแล้ว',
-    'drive native': 'ไม่รองรับ Google Docs/Sheets/Slides กรุณาอัปโหลดเป็นไฟล์ปกติ (เช่น PDF)',
-    'drive used': 'ไฟล์หรือโฟลเดอร์นี้ถูกใช้สร้างลิงก์แล้ว',
-    'drive bad login': 'ยืนยันบัญชี Google ไม่สำเร็จ กรุณาลองใหม่',
-    'drive not owner': 'คุณไม่ใช่เจ้าของโฟลเดอร์นี้',
-    'login': 'ไม่ได้เข้าสู่ระบบ Google',
+    'storage full': 'พื้นที่เซิร์ฟเวอร์เต็มแล้ว ลองเลือก Google Drive แทน',
+    'drive off': 'ยังไม่ได้ตั้งค่า Google Drive บนระบบนี้',
+    'drive auth': 'เชื่อมต่อ Google Drive ไม่สำเร็จ กรุณาลองใหม่',
+    'drive denied': 'ตรวจสอบไฟล์ใน Google Drive ไม่ผ่าน กรุณาลองใหม่',
+    'drive quota': 'พื้นที่ Google Drive ของคุณเต็ม',
+    'drive failed': 'อัปโหลดไป Google Drive ล้มเหลว กรุณาลองใหม่',
 }[m] || 'อัปโหลดล้มเหลว กรุณาลองใหม่')
 
 const post = async (path, body) => (await fetch(ctx.api + path, {
@@ -39,31 +41,46 @@ const post = async (path, body) => (await fetch(ctx.api + path, {
 })).json()
 
 // ui
-const setMode = (m, note) => {
+const setMode = m => {
     if (busy) return
     mode = m
-    for (const [id, k] of [['modeLink', 'link'], ['modeFile', 'file'], ['modeDrive', 'drive']]) $(id).classList.toggle('active', k === m)
-    $('urlField').hidden = m !== 'link'
+    $('modeLink').classList.toggle('active', m === 'link')
+    $('modeFile').classList.toggle('active', m === 'file')
+    $('urlField').hidden = m === 'file'
     $('fileField').hidden = m !== 'file'
-    $('driveField').hidden = m !== 'drive'
-    $('create').hidden = m === 'drive'
-    $('driveNote').hidden = !note
-    if (m !== 'link') $(m === 'file' ? 'fileSlot' : 'driveSlot').append($('pickBox'))
-    $('slug').placeholder = m === 'link' ? 'openhouse2026' : 'เว้นว่างเพื่อสุ่มชื่อ'
+    $('slug').placeholder = m === 'file' ? 'เว้นว่างเพื่อสุ่มชื่อ' : 'openhouse2026'
     $('createLabel').textContent = m === 'file' ? 'อัปโหลดและสร้างลิงก์' : 'สร้างลิงก์ย่อ'
-    if (m === 'file') loadUsage()
-    if (m === 'drive') loadDrive()
+    if (m === 'file') loadUsage().then(syncStore)
+}
+
+const syncStore = () => {
+    const d = store === 'drive'
+    $('driveBox').hidden = !d
+    $('ageField').hidden = d
+    $('usageBox').hidden = d
+    if (!lim) return
+    $('limits').textContent = d
+        ? `ไม่จำกัดขนาด (ตามพื้นที่ Drive ของคุณ) · สูงสุด ${lim.maxFiles} ไฟล์ · ไม่หมดอายุ`
+        : `สูงสุด ${fmtSize(lim.perUpload)} ต่อครั้ง · ${lim.maxFiles} ไฟล์ · เก็บได้ ${lim.maxDays} วัน`
+    $('driveConnect').disabled = !lim.driveClientId
+    if (d && !lim.driveClientId) $('driveStatus').textContent = 'ยังไม่ได้ตั้งค่า Google Drive บนระบบนี้'
+    else if (d && !me) $('driveStatus').textContent = ''
+}
+
+const setStore = v => {
+    if (busy) return
+    store = v
+    syncStore()
 }
 
 const bar = (el, pct) => el.style.width = Math.min(100, pct) + '%'
+
 const loadUsage = async () => {
     try {
         lim = await (await fetch(`${ctx.api}/usage?key=${encodeURIComponent(ctx.key())}`)).json()
-        $('limits').textContent = `สูงสุด ${fmtSize(lim.perUpload)} ต่อครั้ง · ${lim.maxFiles} ไฟล์ · เก็บได้ ${lim.maxDays} วัน`
-        $('usageText').textContent = `โควตาของคุณ ${fmtSize(lim.mine)} / ${fmtSize(lim.perKey)}` +
-            (lim.canPermanent ? ` · ถาวร ${fmtSize(lim.permanent)} / ${fmtSize(lim.permLimit)}` : '')
-        bar($('usageBar'), lim.mine / lim.perKey * 100)
-        $('usageBar').classList.toggle('warn', lim.mine / lim.perKey > 0.85)
+        $('usageText').textContent = `พื้นที่รวม ${fmtSize(lim.used)} / ${fmtSize(lim.limit)} · ของคุณ ${fmtSize(lim.mine)} / ${fmtSize(lim.perKey)}`
+        bar($('usageBar'), lim.used / lim.limit * 100)
+        $('usageBar').classList.toggle('warn', lim.used / lim.limit > 0.85)
     } catch { /* usage is optional info */ }
 }
 
@@ -102,9 +119,10 @@ const addFiles = list => {
 const lock = v => {
     busy = v
     $('upProg').hidden = !v
-    $('create').disabled = $('gUpload').disabled = $('gLink').disabled = v
+    $('create').disabled = v
     $('files').disabled = v
-    $('modeLink').disabled = $('modeFile').disabled = $('modeDrive').disabled = v
+    $('modeLink').disabled = $('modeFile').disabled = v
+    $('store').disabled = $('driveConnect').disabled = v
 }
 
 // upload engine
@@ -126,7 +144,7 @@ const putChunk = async (url, blob, onBytes) => {
                 x.onerror = x.onabort = () => { ctl.xhrs.delete(x); rej(new Error('network')) }
                 x.send(blob)
             })
-        } catch (e) { // bruh
+        } catch (e) {
             onBytes(-last)
             if (ctl.stop || a >= RETRIES || NO_RETRY.includes(e.message)) throw e
             await new Promise(r => setTimeout(r, 1000 * 2 ** a))
@@ -152,8 +170,181 @@ const uploadFile = async (file, token, chunk, onBytes) => {
     return parts
 }
 
+// google drive
+const loadGIS = () => gisP ??= new Promise((res, rej) => {
+    if (window.google?.accounts?.oauth2) return res()
+    const s = document.createElement('script')
+    s.src = GIS
+    s.async = true
+    s.onload = res
+    s.onerror = () => { gisP = null; rej(new Error('drive auth')) }
+    document.head.appendChild(s)
+})
+
+const getToken = async () => {
+    if (tok && Date.now() < tokExp - 60_000) return tok
+    if (!lim?.driveClientId) throw new Error('drive off')
+    await loadGIS()
+    return new Promise((res, rej) => {
+        google.accounts.oauth2.initTokenClient({
+            client_id: lim.driveClientId,
+            scope: SCOPE,
+            callback: r => {
+                if (!r.access_token) return rej(new Error('drive auth'))
+                tok = r.access_token
+                tokExp = Date.now() + (+r.expires_in || 3600) * 1000
+                res(tok)
+            },
+            error_callback: () => rej(new Error('drive auth')),
+        }).requestAccessToken({ include_granted_scopes: true })
+    })
+}
+
+const gfetch = async (url, opt = {}) => {
+    const t = await getToken()
+    return fetch(url, { ...opt, headers: { authorization: `Bearer ${t}`, ...opt.headers } })
+}
+
+const driveErr = async r => {
+    let reason = ''
+    try { reason = (await r.json()).error?.errors?.[0]?.reason || '' } catch { }
+    if (/quota|storage/i.test(reason)) return new Error('drive quota')
+    return new Error(r.status === 401 ? 'drive auth' : 'drive failed')
+}
+
+const connectDrive = async () => {
+    try {
+        $('driveStatus').textContent = 'กำลังเชื่อมต่อ...'
+        await getToken()
+        const r = await gfetch(`${DRIVE}/about?fields=user(displayName,emailAddress),storageQuota(limit,usage)`)
+        if (!r.ok) throw await driveErr(r)
+        me = await r.json()
+        const q = me.storageQuota
+        const free = q?.limit ? ` · ว่าง ${fmtSize(q.limit - q.usage)}` : ''
+        $('driveStatus').textContent = `เชื่อมต่อแล้ว: ${me.user?.emailAddress || me.user?.displayName || 'Google'}${free}`
+        $('driveBtnText').textContent = 'เชื่อมต่อใหม่ / เปลี่ยนบัญชี'
+    } catch (e) {
+        $('driveStatus').textContent = errText(e.message)
+    }
+}
+
+const ensureFolder = async () => {
+    try {
+        const q = encodeURIComponent(`name='${FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`)
+        const f = await gfetch(`${DRIVE}/files?q=${q}&fields=files(id)&pageSize=1`)
+        if (f.ok) { const id = (await f.json()).files?.[0]?.id; if (id) return id }
+        const c = await gfetch(`${DRIVE}/files?fields=id`, {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ name: FOLDER, mimeType: 'application/vnd.google-apps.folder' })
+        })
+        if (c.ok) return (await c.json()).id
+    } catch { }
+    return null
+}
+
+const putDriveChunk = (url, blob, from, total, onBytes) => new Promise((res, rej) => {
+    const x = new XMLHttpRequest()
+    let last = 0
+    ctl.xhrs.add(x)
+    x.open('PUT', url)
+    x.setRequestHeader('content-range', `bytes ${from}-${from + blob.size - 1}/${total}`)
+    x.upload.onprogress = e => { onBytes(e.loaded - last); last = e.loaded }
+    x.onload = () => {
+        ctl.xhrs.delete(x)
+        if (x.status === 308) return res(null)
+        if (x.status === 200 || x.status === 201) { try { return res(JSON.parse(x.responseText).id) } catch { } }
+        onBytes(-last)
+        rej(new Error(x.status === 403 && /quota|storage/i.test(x.responseText) ? 'drive quota' : 'drive failed'))
+    }
+    x.onerror = x.onabort = () => { ctl.xhrs.delete(x); onBytes(-last); rej(new Error('network')) }
+    x.send(blob)
+})
+
+const uploadToDrive = async (file, folder, onBytes) => {
+    const type = file.type || 'application/octet-stream'
+    const r = await gfetch(`${DRIVE_UP}?uploadType=resumable&fields=id`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json; charset=UTF-8', 'x-upload-content-type': type, 'x-upload-content-length': String(file.size) },
+        body: JSON.stringify({ name: file.name, mimeType: type, ...(folder && { parents: [folder] }) })
+    })
+    if (!r.ok) throw await driveErr(r)
+    const url = r.headers.get('location')
+    if (!url) throw new Error('drive failed')
+
+    let id = null
+    for (let from = 0; from < file.size && !ctl.stop; from += DRIVE_CHUNK) {
+        const blob = file.slice(from, from + DRIVE_CHUNK)
+        for (let a = 0; ; a++) {
+            try { id = await putDriveChunk(url, blob, from, file.size, onBytes); break }
+            catch (e) {
+                if (ctl.stop || a >= RETRIES || e.message !== 'network') throw e
+                await new Promise(r => setTimeout(r, 1000 * 2 ** a))
+            }
+        }
+    }
+    if (ctl.stop) throw new Error('stopped')
+    if (!id) throw new Error('drive failed')
+
+    const p = await gfetch(`${DRIVE}/files/${id}/permissions`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ role: 'reader', type: 'anyone', allowFileDiscovery: false })
+    })
+    if (!p.ok) throw await driveErr(p)
+    return id
+}
+
+const startDriveUpload = async () => {
+    const key = ctx.key(), slug = $('slug').value.trim()
+    const total = picked.reduce((a, f) => a + f.size, 0)
+
+    if (!key) return ctx.toast('กรุณาใส่รหัสลับ', false)
+    if (!picked.length) return ctx.toast('กรุณาเลือกไฟล์ก่อน', false)
+    if (slug && !ctx.validSlug(slug)) return ctx.toast('ชื่อลิงก์ย่อไม่ถูกต้อง', false)
+    if (!lim?.driveClientId) return ctx.toast(errText('drive off'), false)
+    if (picked.length > lim.maxFiles) return ctx.toast(errText('bad files'), false)
+
+    ctl = { stop: false, cancelled: false, xhrs: new Set() }
+    lock(true)
+    $('upText').textContent = 'กำลังเชื่อมต่อ Google Drive...'
+    bar($('upBar'), 0)
+
+    try {
+        await getToken()
+        const q = me?.storageQuota
+        if (q?.limit && +q.usage + total > +q.limit) throw new Error('drive quota')
+
+        const folder = await ensureFolder()
+        let sent = 0
+        const t0 = Date.now()
+        const onBytes = d => {
+            sent += d
+            const sp = sent / Math.max(1, (Date.now() - t0) / 1000)
+            const eta = sp > 0 ? Math.round((total - sent) / sp) : 0
+            bar($('upBar'), sent / total * 100)
+            $('upText').textContent = `${fmtSize(sent)} / ${fmtSize(total)} · ${fmtSize(sp)}/s · เหลือ ~${Math.floor(eta / 60)}:${String(eta % 60).padStart(2, '0')}`
+        }
+
+        const files = []
+        for (const f of picked) files.push({ id: await uploadToDrive(f, folder, onBytes) })
+
+        $('upText').textContent = 'กำลังสร้างลิงก์...'
+        const fin = await post('/file/drive', { key, slug, token: await getToken(), files })
+        if (!fin.ok) throw new Error(fin.msg)
+
+        ctx.toast(`อัปโหลดสำเร็จ → go.thatako.net/${fin.slug}`)
+        picked = []
+        renderPicked()
+        $('slug').value = ''
+        await ctx.reload()
+    } catch (e) {
+        ctx.toast(ctl.cancelled ? 'ยกเลิกการอัปโหลดแล้ว' : errText(e.message), false)
+    }
+    lock(false)
+}
+
 export const startUpload = async () => {
     if (busy) return
+    if (store === 'drive') return startDriveUpload()
     const key = ctx.key(), slug = $('slug').value.trim()
     const total = picked.reduce((a, f) => a + f.size, 0)
 
@@ -167,7 +358,7 @@ export const startUpload = async () => {
     $('upText').textContent = 'กำลังเตรียมอัปโหลด...'
     bar($('upBar'), 0)
 
-    let tokens = [], fallback = false
+    let tokens = []
     try {
         const init = await post('/file/init', {
             key, slug, days: +$('days').value,
@@ -203,177 +394,18 @@ export const startUpload = async () => {
         await ctx.reload()
     } catch (e) {
         if (tokens.length) post('/file/abort', { tokens }).catch(() => { })
-        fallback = !ctl.cancelled && FALLBACK.includes(e.message)
-        if (!fallback) ctx.toast(ctl.cancelled ? 'ยกเลิกการอัปโหลดแล้ว' : errText(e.message), false)
-    }
-    lock(false)
-    if (fallback) setMode('drive', true)
-    else loadUsage()
-}
-
-// drive
-const sleep = ms => new Promise(r => setTimeout(r, ms))
-const loadScript = src => new Promise((res, rej) => {
-    if (window.google?.accounts) return res()
-    const s = document.createElement('script')
-    s.src = src; s.onload = res; s.onerror = rej
-    document.head.appendChild(s)
-})
-
-const loadDrive = async () => {
-    if (gcfg) return
-    try {
-        gcfg = await (await fetch(ctx.api + '/drive/cfg')).json()
-        if (!gcfg.ok) throw 0
-        $('saMail').textContent = gcfg.sa
-        if (gcfg.clientId) loadScript(GSI).catch(() => { })
-    } catch { gcfg = null; $('saMail').textContent = 'ยังไม่พร้อมใช้งาน' }
-}
-
-// short-lived token
-const getToken = async () => {
-    await loadScript(GSI)
-    return new Promise((res, rej) => google.accounts.oauth2.initTokenClient({
-        client_id: gcfg.clientId,
-        scope: 'https://www.googleapis.com/auth/drive.file openid email',
-        callback: r => r.access_token ? res(r.access_token) : rej(new Error('login')),
-        error_callback: () => rej(new Error('login')),
-    }).requestAccessToken())
-}
-
-const gj = async (url, tok, body) => {
-    const r = await fetch(url, { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(body) })
-    if (!r.ok) throw new Error('gdrive ' + r.status)
-    return r.json()
-}
-
-const putG = async (url, blob, range, onBytes) => {
-    for (let a = 0; ; a++) {
-        let last = 0
-        try {
-            return await new Promise((res, rej) => {
-                const x = new XMLHttpRequest()
-                ctl.xhrs.add(x)
-                x.open('PUT', url)
-                x.setRequestHeader('content-range', range)
-                x.upload.onprogress = e => { onBytes(e.loaded - last); last = e.loaded }
-                x.onload = () => { ctl.xhrs.delete(x);[200, 201, 308].includes(x.status) ? res() : rej(new Error('gdrive ' + x.status)) }
-                x.onerror = x.onabort = () => { ctl.xhrs.delete(x); rej(new Error('network')) }
-                x.send(blob)
-            })
-        } catch (e) {
-            onBytes(-last)
-            if (ctl.stop || a >= RETRIES) throw e
-            await sleep(1000 * 2 ** a)
-        }
-    }
-}
-
-const driveUpload = async (f, parent, tok, onBytes) => {
-    const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id', {
-        method: 'POST',
-        headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json; charset=UTF-8', 'x-upload-content-type': f.type || 'application/octet-stream', 'x-upload-content-length': String(f.size) },
-        body: JSON.stringify({ name: f.name, parents: [parent] }),
-    })
-    const url = r.headers.get('location')
-    if (!r.ok || !url) throw new Error('gdrive init')
-    for (let a = 0; a < f.size; a += G_CHUNK) {
-        const end = Math.min(a + G_CHUNK, f.size)
-        await putG(url, f.slice(a, end), `bytes ${a}-${end - 1}/${f.size}`, onBytes)
-    }
-}
-
-const checkForm = needFiles => {
-    const key = ctx.key(), slug = $('slug').value.trim()
-    if (!key) return ctx.toast('กรุณาใส่รหัสลับ', false)
-    if (needFiles && !picked.length) return ctx.toast('กรุณาเลือกไฟล์ก่อน', false)
-    if (slug && !ctx.validSlug(slug)) return ctx.toast('ชื่อลิงก์ย่อไม่ถูกต้อง', false)
-    return { key, slug }
-}
-
-const startDriveUpload = async () => {
-    const f = !busy && checkForm(true)
-    if (!f) return
-    if (!gcfg?.clientId) return ctx.toast('ระบบ Google Drive ยังไม่พร้อมใช้งาน', false)
-
-    ctl = { stop: false, cancelled: false, xhrs: new Set() }
-    lock(true)
-    bar($('upBar'), 0)
-    $('upText').textContent = 'กำลังเข้าสู่ระบบ Google...'
-    let tok, sub, slug
-    try {
-        tok = await getToken()
-        $('upText').textContent = 'กำลังเตรียมโฟลเดอร์ go.thatako.net...'
-        const q = encodeURIComponent(`name='go.thatako.net' and mimeType='${FOLDER}' and trashed=false`)
-        const found = await (await fetch(`${GAPI}/files?q=${q}&fields=files(id)`, { headers: { authorization: 'Bearer ' + tok } })).json()
-        const root = found.files?.[0]?.id || (await gj(`${GAPI}/files?fields=id`, tok, { name: 'go.thatako.net', mimeType: FOLDER })).id
-        await gj(`${GAPI}/files/${root}/permissions?sendNotificationEmail=false`, tok, { type: 'user', role: 'reader', emailAddress: gcfg.sa })
-        sub = (await gj(`${GAPI}/files?fields=id`, tok, {
-            name: f.slug || new Date().toISOString().slice(0, 16).replace('T', ' '), mimeType: FOLDER, parents: [root],
-        })).id
-
-        let reg
-        for (let a = 0; a < 3; a++) {
-            reg = await post('/drive/register', { key: f.key, slug: f.slug, target: sub, token: tok })
-            if (reg.msg !== 'drive no access') break
-            await sleep(1500)
-        }
-        if (!reg.ok) throw new Error(reg.msg)
-        slug = reg.slug
-
-        const total = picked.reduce((a, x) => a + x.size, 0)
-        let sent = 0
-        const t0 = Date.now()
-        const onBytes = d => {
-            sent += d
-            const sp = sent / Math.max(1, (Date.now() - t0) / 1000)
-            const eta = sp > 0 ? Math.round((total - sent) / sp) : 0
-            bar($('upBar'), sent / total * 100)
-            $('upText').textContent = `${fmtSize(sent)} / ${fmtSize(total)} · ${fmtSize(sp)}/s · เหลือ ~${Math.floor(eta / 60)}:${String(eta % 60).padStart(2, '0')}`
-        }
-        for (const file of picked) await driveUpload(file, sub, tok, onBytes)
-
-        ctx.toast(`อัปโหลดไป Google Drive สำเร็จ → go.thatako.net/${slug}`)
-        picked = []
-        renderPicked()
-        $('slug').value = ''
-        await ctx.reload()
-    } catch (e) {
-        if (slug) post('/revoke', { slug, key: f.key }).catch(() => { })
-        if (sub) fetch(`${GAPI}/files/${sub}`, { method: 'DELETE', headers: { authorization: 'Bearer ' + tok } }).catch(() => { })
         ctx.toast(ctl.cancelled ? 'ยกเลิกการอัปโหลดแล้ว' : errText(e.message), false)
     }
     lock(false)
-}
-
-const startDriveLink = async () => {
-    const f = !busy && checkForm(false)
-    if (!f) return
-    const target = $('driveLink').value.trim()
-    if (!target) return ctx.toast('กรุณาวางลิงก์ Google Drive', false)
-    lock(true)
-    $('upProg').hidden = true
-    try {
-        const r = await post('/drive/register', { key: f.key, slug: f.slug, target })
-        if (!r.ok) throw new Error(r.msg)
-        ctx.toast(`สร้างลิงก์สำเร็จ → go.thatako.net/${r.slug}`)
-        $('driveLink').value = ''
-        $('slug').value = ''
-        await ctx.reload()
-    } catch (e) { ctx.toast(errText(e.message), false) }
-    lock(false)
+    loadUsage()
 }
 
 export const initUpload = c => {
     ctx = c
     $('modeLink').onclick = () => setMode('link')
     $('modeFile').onclick = () => setMode('file')
-    $('modeDrive').onclick = () => setMode('drive')
-    $('gUpload').onclick = startDriveUpload
-    $('gLink').onclick = startDriveLink
-    $('saCopy').onclick = () => gcfg && navigator.clipboard.writeText(gcfg.sa).then(() => ctx.toast('คัดลอกอีเมลแล้ว'))
-    $('days').onchange = () => { if (+$('days').value === 0 && !lim?.canPermanent) { $('days').value = '30'; setMode('drive', true) } }
-    $('key').addEventListener('change', () => { if (mode === 'file') loadUsage() })
+    $('store').onchange = e => setStore(e.target.value)
+    $('driveConnect').onclick = connectDrive
     $('files').onchange = e => { addFiles(e.target.files); e.target.value = '' }
     $('upCancel').onclick = () => { ctl.cancelled = ctl.stop = true; ctl.xhrs.forEach(x => x.abort()) }
 

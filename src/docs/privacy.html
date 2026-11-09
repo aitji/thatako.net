@@ -1,0 +1,179 @@
+<div class="hero" lang="en">
+  <div class="hero-eyebrow">thatako.net</div>
+  <h1>Privacy Policy</h1>
+  <div class="page-meta">
+    <span title="Suriya Inchoo">aitji</span>
+    <span class="dot">·</span>
+    <span title="Effective November 9, 2026">Effective November 9, 2026</span>
+    <span class="dot">·</span>
+    <span>Privacy Policy</span>
+  </div>
+  <p>
+    This policy explains what information <code>thatako.net</code> and <code>go.thatako.net</code> collect, how it is
+    used, and the choices you have, including when you connect your Google Drive account to upload files.
+  </p>
+  <div class="hero-actions">
+    <a href="/terms/" class="btn btn-primary" title="Terms of Service">
+      <i class="fa-solid fa-file-contract" aria-hidden="true"></i> Terms of Service
+    </a>
+    <a href="mailto:aitji@duck.com?subject=Privacy%20-%20thatako.net" class="btn btn-ghost" title="Contact about privacy">
+      <i class="fa-solid fa-envelope" aria-hidden="true"></i> Contact
+    </a>
+  </div>
+</div>
+
+<div id="privacy-who" lang="en">
+  <h2>Who we are</h2>
+  <p>
+    <a href="https://thatako.net">thatako.net</a> is a community infrastructure project built for students and teachers of
+    Thatakophittayakom School (Thailand). It is operated by an individual student developer,
+    <a href="https://github.com/aitji" target="_blank" rel="noopener">aitji</a> (Suriya Inchoo), who is the data controller
+    for the information described here. The services covered are the URL shortener, the file sharing feature and the QR
+    code generator at <a href="/short/">go.thatako.net</a>, and the free subdomain service.
+  </p>
+</div>
+
+<div id="privacy-collect" lang="en">
+  <h2>Information we collect</h2>
+
+  <h3>Link and file records</h3>
+  <p>When you create a short link or a file link we store the slug you chose, the destination URL, a creation record, and a
+    random secret key generated in your browser. The secret key is the only credential that lets you list, edit or delete
+    your links. We do not ask for your name, email address or password.</p>
+
+  <h3>Files uploaded to our server</h3>
+  <p>If you choose server storage, the file contents, file names, sizes and MIME types are stored in Cloudflare R2 until the
+    expiry date you selected (7 to 90 days) and then deleted automatically.</p>
+
+  <h3>Files uploaded to your Google Drive</h3>
+  <p>If you choose Google Drive, the file contents go from your browser directly to your own Google Drive and are never
+    copied to our servers. We only store the Google Drive file ID, file name, size and MIME type so that the download page
+    can be shown.</p>
+
+  <h3>Technical data</h3>
+  <p>Our infrastructure providers (Cloudflare and Vercel) process standard request data such as IP address, browser type
+    and timestamps for security, abuse prevention, caching and aggregate analytics. We do not use this data for advertising.</p>
+
+  <h3>Browser storage</h3>
+  <p>Your secret key and theme preference are kept in your browser's local storage. We do not use advertising cookies.</p>
+</div>
+
+<div id="privacy-google" lang="en">
+  <h2>Google user data</h2>
+  <p>
+    The optional Google Drive feature uses Google Sign-In (Google Identity Services) to request exactly one scope:
+  </p>
+  <p><code>https://www.googleapis.com/auth/drive.file</code></p>
+  <p>
+    This scope only lets the app see and manage files and folders that the app itself created or that you opened with
+    the app. It does <strong>not</strong> give us access to the other files in your Google Drive, and we do not request
+    your contacts, calendar, email or any other Google data.
+  </p>
+
+  <h3>What we do with that access</h3>
+  <ul>
+    <li>Create (or reuse) a folder named <code>go.thatako.net</code> in your Drive.</li>
+    <li>Upload the files you select into that folder.</li>
+    <li>Set each uploaded file to "Anyone with the link can view" so the people you share the link with can download it.</li>
+    <li>Read the uploaded file's name, size, type and ownership so we can verify it and show the download page.</li>
+    <li>Read your display name, email address and storage quota, shown only to you in your own browser so you know which
+      account is connected and whether you have enough space.</li>
+  </ul>
+
+  <h3>Access tokens</h3>
+  <p>
+    The Google access token stays in your browser's memory and expires after about one hour. When you finish an upload, the
+    token is sent once, over HTTPS, to our server (go.thatako.net) so that it can confirm with Google that the files you
+    listed exist, are not in the trash, and are owned by you. The server uses the token for that single check and
+    discards it. <strong>We never store, log or reuse access tokens, and we never receive a refresh token.</strong>
+    We do not store your Google email address, name or any Google profile data on our servers.
+  </p>
+
+  <div class="callout">
+    <i class="fa-solid fa-shield-halved"></i>
+    <p>
+      The use and transfer of information received from Google APIs adheres to the
+      <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>,
+      including the Limited Use requirements. We use Google user data only to provide the file-upload feature you ask for,
+      we do not transfer it to others except as needed to provide that feature or to comply with law, we do not use it for
+      advertising, and no humans read it.
+    </p>
+  </div>
+</div>
+
+<div id="privacy-use" lang="en">
+  <h2>How we use information</h2>
+  <ul>
+    <li>To redirect short links and serve file download pages.</li>
+    <li>To let you list, edit and delete the links created with your secret key.</li>
+    <li>To enforce storage limits and to prevent abuse, phishing and malware.</li>
+    <li>To keep the service secure and working.</li>
+  </ul>
+  <p>We do not sell personal information, we do not show ads, and we do not build advertising profiles.</p>
+</div>
+
+<div id="privacy-share" lang="en">
+  <h2>Sharing</h2>
+  <p>
+    Anyone who has a link can open the page and download the files behind it. Treat every link as public: do not upload
+    files containing passwords, identity documents or other sensitive personal data. We share data with service providers
+    only as needed to run the service (Cloudflare for hosting, storage and DNS; Vercel for the website; Google for Drive
+    when you choose it), or if required by law or to protect against abuse.
+  </p>
+</div>
+
+<div id="privacy-retention" lang="en">
+  <h2>Retention and deletion</h2>
+  <ul>
+    <li><strong>Server files</strong> are deleted automatically when they expire. KV records follow shortly after.</li>
+    <li><strong>Short links and Drive links</strong> remain until you delete them. Deleting a link in
+      <a href="/short/">go.thatako.net</a> removes our record immediately.</li>
+    <li><strong>Google Drive files</strong> are yours. Deleting a link does not delete the file from your Drive; delete it in
+      Drive if you want it gone. Moving the file to the trash or removing sharing stops the download page from working.</li>
+    <li>To revoke this app's access to your Google account at any time, visit
+      <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>.</li>
+    <li>To have a record removed and you no longer have your secret key, email us and tell us the link.</li>
+  </ul>
+</div>
+
+<div id="privacy-security" lang="en">
+  <h2>Security</h2>
+  <p>
+    All traffic uses HTTPS. Upload tokens are signed and short-lived, file downloads are served as attachments with
+    content-sniffing disabled, and the download page runs under a strict Content Security Policy. No system is perfectly
+    secure, so we cannot guarantee absolute security.
+  </p>
+</div>
+
+<div id="privacy-children" lang="en">
+  <h2>Children and students</h2>
+  <p>
+    The service is intended for students and teachers of a secondary school. We do not knowingly collect personal
+    information beyond what is described above. Google accounts are subject to Google's own minimum age requirements.
+  </p>
+</div>
+
+<div id="privacy-rights" lang="en">
+  <h2>Your rights</h2>
+  <p>
+    Under Thailand's Personal Data Protection Act (PDPA) and similar laws you may request access to, correction of, or
+    deletion of personal data we hold about you. Because we do not collect names or emails, we may ask you to prove control
+    of the relevant secret key or link before acting on a request.
+  </p>
+</div>
+
+<div id="privacy-changes" lang="en">
+  <h2>Changes</h2>
+  <p>
+    We may update this policy. The effective date at the top shows the latest version, and material changes will be
+    announced on <a href="https://thatako.net">thatako.net</a>. Continuing to use the service means you accept the updated policy.
+  </p>
+</div>
+
+<div id="privacy-contact" lang="en">
+  <h2>Contact</h2>
+  <p>
+    Questions or requests about privacy: <a href="mailto:aitji@duck.com">aitji@duck.com</a> ·
+    <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener">GitHub Issues</a>
+  </p>
+</div>

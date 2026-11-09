@@ -64,12 +64,13 @@ const setBusy = v => {
 
 /** @param {any} l */
 const fileInfo = l => {
-    if (l.type === "drive") return `<i class="fa-solid fa-hard-drive" aria-hidden="true"></i> ${l.name}<br>
-        <small class="muted">Google Drive · ${l.kind === "folder" ? "โฟลเดอร์" : "ไฟล์"}</small>`
-    const dead = l.exp && l.exp < Date.now()
-    const day = l.exp ? new Date(l.exp).toLocaleDateString("th-TH", { dateStyle: "medium" }) : ""
-    return `<i class="fa-solid fa-file" aria-hidden="true"></i> ${l.count} ไฟล์ · ${fmtSize(l.total)}<br>
-        <small class="${dead ? "file-dead" : "muted"}">${!l.exp ? "ไม่หมดอายุ" : (dead ? "หมดอายุแล้ว" : "หมดอายุ") + " " + day}</small>`
+    const icon = l.type === "drive" ? "fa-brands fa-google-drive" : "fa-solid fa-file"
+    const head = `<i class="${icon}" aria-hidden="true"></i> ${l.count} ไฟล์ · ${fmtSize(l.total)}<br>`
+    if (l.type === "drive") return head + `<small class="muted">Google Drive · ไม่หมดอายุ</small>`
+    if (!(l.exp > 0)) return head + `<small class="muted">ไม่ทราบวันหมดอายุ</small>`
+    const dead = l.exp < Date.now()
+    const day = new Date(l.exp).toLocaleDateString("th-TH", { dateStyle: "medium" })
+    return head + `<small class="${dead ? "file-dead" : "muted"}">${dead ? "หมดอายุแล้ว" : "หมดอายุ"} ${day}</small>`
 }
 
 /** @param {any[]} links */

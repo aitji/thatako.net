@@ -25,6 +25,16 @@
             "id": "subdomain-abuse",
             "path": "/subdomain/abuse",
             "file": "/docs/subdomain/3.abuse.html"
+        },
+        {
+            "id": "privacy",
+            "path": "/privacy",
+            "file": "/docs/privacy.html"
+        },
+        {
+            "id": "terms",
+            "path": "/terms",
+            "file": "/docs/terms.html"
         }
     ],
     "_note": "more routes here with any id (subfolders '/docs/nested/page')"
