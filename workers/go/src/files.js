@@ -1,11 +1,13 @@
+import CSS from './page.css'
+import CLIENT from './page.client.js'
 const GB = 1024 ** 3
 const DAY = 86_400_000
 export const CHUNK = 32 * 1024 * 1024
 
 const cfg = env => ({
-	perUpload: +(env.MAX_UPLOAD_GB ?? 4) * GB, // one upload
-	perKey: +(env.MAX_KEY_GB ?? 5) * GB, // all live files of one secret key
-	total: +(env.MAX_TOTAL_GB ?? 9) * GB, // whole bucket kept margin
+	perUpload: +(env.MAX_UPLOAD_GB ?? 4) * GB,
+	perKey: +(env.MAX_KEY_GB ?? 5) * GB,
+	total: +(env.MAX_TOTAL_GB ?? 9) * GB,
 	maxFiles: +(env.MAX_FILES ?? 20),
 	maxDays: +(env.MAX_DAYS ?? 90),
 })
@@ -73,9 +75,9 @@ export async function sweepExpired(env) {
 	do {
 		const l = await env.FILES.list({ prefix: 'u/', cursor, include: ['customMetadata'] })
 		for (const o of l.objects) {
-				const e = +o.customMetadata?.exp
-				if (e ? e < Date.now() : o.uploaded.getTime() < Date.now() - (cfg(env).maxDays + 10) * DAY) dead.push(o.key)
-			}
+			const e = +o.customMetadata?.exp
+			if (e ? e < Date.now() : o.uploaded.getTime() < Date.now() - (cfg(env).maxDays + 10) * DAY) dead.push(o.key)
+		}
 		cursor = l.truncated ? l.cursor : undefined
 	} while (cursor)
 	for (let i = 0; i < dead.length; i += 1000) await env.FILES.delete(dead.slice(i, i + 1000))
@@ -198,6 +200,16 @@ async function abort(req, env, h) {
 	return h.j({ ok: true })
 }
 
+const TEXT = 'text/plain; charset=utf-8'
+const KINDS = {
+	image: { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', avif: 'image/avif', bmp: 'image/bmp' },
+	video: { mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', ogv: 'video/ogg' },
+	audio: { mp3: 'audio/mpeg', wav: 'audio/wav', ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', m4a: 'audio/mp4', aac: 'audio/aac', flac: 'audio/flac', weba: 'audio/webm' },
+	text: Object.fromEntries('txt md csv tsv json log yml yaml toml ini js mjs ts py c h cpp java go rs sh sql css'.split(' ').map(e => [e, TEXT])),
+}
+const INLINE = new Map(Object.values(KINDS).flatMap(m => Object.entries(m)))
+const KIND_EXTS = Object.fromEntries(Object.entries(KINDS).map(([k, m]) => [k, Object.keys(m)]))
+
 // download
 const disp = name => {
 	const ascii = name.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_')
@@ -219,16 +231,20 @@ async function download(req, env, path) {
 	}
 	if (!(exp > Date.now())) return new Response('gone', { status: 410 })
 
+	const safe = cleanName(name), dot = safe.lastIndexOf('.')
+	const mime = new URL(req.url).searchParams.has('inline') && dot > 0 ? INLINE.get(safe.slice(dot + 1).toLowerCase()) : null
+
 	const hd = new Headers({
-		'content-type': 'application/octet-stream',
-		'content-disposition': disp(cleanName(name)),
+		'content-type': mime || 'application/octet-stream',
+		'content-disposition': mime ? 'inline' : disp(safe),
 		'x-content-type-options': 'nosniff',
 		'accept-ranges': 'bytes',
 		etag: o.httpEtag,
-		'cache-control': 'private, no-cache',
+		'cache-control': mime ? 'private, max-age=3600' : 'private, no-cache',
 		'access-control-allow-origin': '*',
 		'access-control-expose-headers': 'content-length, content-range, content-disposition',
 	})
+	if (mime) hd.set('content-security-policy', "default-src 'none'; sandbox")
 	if (!o.body) return new Response(null, { status: 304, headers: hd })
 
 	let status = 200
@@ -250,7 +266,7 @@ const PAGE_HEADERS = {
 	'content-type': 'text/html; charset=utf-8',
 	'cache-control': 'no-store',
 	'referrer-policy': 'no-referrer',
-	'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src data: https://thatako.net; base-uri 'none'; form-action 'none'",
+	'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: https://thatako.net https://lh3.googleusercontent.com https://drive.google.com https://*.googleusercontent.com; media-src 'self' https://drive.usercontent.google.com https://drive.google.com https://*.googleusercontent.com; base-uri 'none'; form-action 'none'",
 }
 
 async function repair(env, slug, data, m) {
@@ -269,17 +285,16 @@ async function repair(env, slug, data, m) {
 }
 
 const gone = () => new Response(shell('<div class="card"><div class="hd"><h1>ลิงก์หมดอายุแล้ว</h1><p>ไฟล์ชุดนี้ถูกลบออกจากระบบแล้ว กรุณาติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</p></div></div>'), { status: 410, headers: PAGE_HEADERS })
-
 export async function filePage(env, data, slug) {
 	let m = await env.LINKS.get('f:' + data.fid, 'json')
 	if (!m) return gone()
 	const drive = data.type === 'drive'
 	if (!drive && (!m.exp || m.files.some(f => !f?.name))) m = await repair(env, slug, data, m)
 	if (!m || (!drive && m.exp < Date.now())) return gone()
-	const json = JSON.stringify({ id: data.fid, ...m, drive }).replace(/</g, '\\u003c')
+	const json = JSON.stringify({ id: data.fid, ...m, drive, kinds: KIND_EXTS }).replace(/</g, '\\u003c')
 	return new Response(shell(`<div class="card" id="app"></div>
 <div class="ft"><span>ไฟล์ถูกแชร์โดยผู้ใช้ ไม่ได้ตรวจสอบโดยทางโรงเรียน</span><a href="mailto:aitji@duck.com?subject=report%20go.thatako.net">รายงานไฟล์ไม่เหมาะสม</a></div>
-<script type="application/json" id="m">${json}</script><script>${CLIENT}</script>`), { headers: PAGE_HEADERS })
+<script type="application/json" id="m">${json}</script><script>${CLIENT}</script>`, drive ? PRECONNECT : ''), { headers: PAGE_HEADERS })
 }
 
 // google drive link
@@ -314,48 +329,5 @@ async function driveLink(req, env, h) {
 	return h.j({ ok: true, slug })
 }
 
-const shell = body => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><title>ดาวน์โหลดไฟล์ · go.thatako.net</title><link rel="icon" href="https://thatako.net/img/icon/favicon.ico"><style>${CSS}</style></head><body><main><div class="top"><b>thatako.net</b> / go.thatako.net</div>${body}</main></body></html>`
-const CSS = `:root{--bg:#f6f7fb;--card:#fff;--fg:#1c2033;--mut:#6b7190;--bd:#dfe2ee;--ac:#4f5d97;--acf:#fff}
-@media(prefers-color-scheme:dark){:root{--bg:#12141d;--card:#1a1d2a;--fg:#e6e8f2;--mut:#8f94b3;--bd:#2a2e42;--ac:#7b8bd6;--acf:#10121a}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,"Noto Sans Thai",sans-serif}
-main{max-width:640px;margin:0 auto;padding:24px 16px 48px}.top{font-size:12px;color:var(--mut);margin-bottom:16px}.top b{color:var(--ac)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
-.hd{padding:16px;border-bottom:1px solid var(--bd)}.hd h1{margin:0 0 4px;font-size:18px}.hd p{margin:0;color:var(--mut);font-size:13px}
-.bar{display:flex;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--bd);font-size:13px}.bar label{display:flex;gap:8px;align-items:center;flex:1;cursor:pointer}
-ul{list-style:none;margin:0;padding:0}li{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd)}li:last-child{border:0}
-.ext{flex:none;width:40px;height:40px;border-radius:8px;background:var(--bg);border:1px solid var(--bd);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--ac);text-transform:uppercase}
-.nm{flex:1;min-width:0}.nm b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nm small{color:var(--mut)}
-.btn{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--bd);background:none;color:var(--fg);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
-.pri{background:var(--ac);border-color:var(--ac);color:var(--acf)}.btn:disabled{opacity:.4;cursor:not-allowed}
-input[type=checkbox]{width:18px;height:18px;accent-color:var(--ac);flex:none}
-.ft{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;font-size:12px;color:var(--mut)}.ft a{color:var(--mut)}`
-
-const CLIENT = `
-var M=JSON.parse(document.getElementById('m').textContent),app=document.getElementById('app');
-M.files=(M.files||[]).map(function(f,i){f=f||{};return{name:String(f.name||'file-'+(i+1)),size:+f.size||0,id:f.id}});
-var sel=new Set(M.files.map(function(_,i){return i}));
-function fmt(b){var u=['B','KB','MB','GB','TB'],i=0;while(b>=1024&&i<4){b/=1024;i++}return(b>=100||!i?Math.round(b):b.toFixed(1))+' '+u[i]}
-function h(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
-function href(i){return M.drive?'https://drive.google.com/uc?export=download&id='+encodeURIComponent(M.files[i].id):'/api/dl/'+M.id+'/'+i}
-function dl(i){var a=document.createElement('a');a.href=href(i);if(M.drive)a.target='_blank';else a.download='';document.body.appendChild(a);a.click();a.remove()}
-var days=Math.max(1,Math.ceil((M.exp-Date.now())/864e5));
-var life=M.drive?'ไม่หมดอายุ · เก็บใน Google Drive ของผู้ส่ง':(M.exp>0?'หมดอายุใน '+days+' วัน':'ไม่ทราบวันหมดอายุ');
-var hd=h('div','hd');hd.appendChild(h('h1',0,M.files.length+' ไฟล์ พร้อมดาวน์โหลด'));
-hd.appendChild(h('p',0,'ขนาดรวม '+fmt(M.total||0)+' · '+life));app.appendChild(hd);
-var bar=h('div','bar'),lab=h('label'),all=h('input');all.type='checkbox';all.checked=true;lab.appendChild(all);var cnt=h('span');lab.appendChild(cnt);bar.appendChild(lab);
-var cp=h('button','btn','คัดลอกลิงก์');cp.onclick=function(){navigator.clipboard.writeText(location.href).then(function(){cp.textContent='คัดลอกแล้ว'})};bar.appendChild(cp);
-var dlAll=h('button','btn pri');bar.appendChild(dlAll);app.appendChild(bar);
-var ul=h('ul'),cbs=[];
-M.files.forEach(function(f,i){var li=h('li'),cb=h('input');cb.type='checkbox';cb.checked=true;cbs.push(cb);
-cb.onchange=function(){cb.checked?sel.add(i):sel.delete(i);upd()};
-var parts=f.name.split('.'),ext=(parts.length>1?parts.pop():'file').slice(0,4);
-var nm=h('div','nm');nm.appendChild(h('b',0,f.name)).title=f.name;nm.appendChild(h('small',0,fmt(f.size)));
-var a=h('a','btn','↓ โหลด');a.href=href(i);if(M.drive)a.target='_blank';else a.setAttribute('download','');
-li.appendChild(cb);li.appendChild(h('div','ext',ext));li.appendChild(nm);li.appendChild(a);ul.appendChild(li)});
-app.appendChild(ul);
-function upd(){var n=sel.size,s=0;sel.forEach(function(i){s+=M.files[i].size});all.checked=n==M.files.length;
-cnt.textContent='เลือก '+n+' / '+M.files.length+' ไฟล์';dlAll.disabled=!n;dlAll.textContent='ดาวน์โหลด '+n+' ไฟล์ ('+fmt(s)+')'}
-all.onchange=function(){sel.clear();cbs.forEach(function(c,i){c.checked=all.checked;if(all.checked)sel.add(i)});upd()};
-dlAll.onclick=async function(){dlAll.disabled=true;var ix=Array.from(sel).sort(function(a,b){return a-b});
-for(var k=0;k<ix.length;k++){dl(ix[k]);await new Promise(function(r){setTimeout(r,800)})}upd()};
-upd();`
+const PRECONNECT = '<link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin><link rel="dns-prefetch" href="https://drive.usercontent.google.com">'
+const shell = (body, head = '') => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><title>ดาวน์โหลดไฟล์ · go.thatako.net</title><link rel="icon" href="https://thatako.net/img/icon/favicon.ico">${head}<style>${CSS}</style></head><body><main><div class="top"><b>thatako.net</b> / go.thatako.net</div>${body}</main></body></html>`

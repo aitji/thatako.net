@@ -13,6 +13,16 @@
     "compatibility_flags": [
         "nodejs_compat"
     ],
+    "rules": [
+        {
+            "type": "Text",
+            "globs": [
+                "**/page.css",
+                "**/*.client.js"
+            ],
+            "fallthrough": false
+        }
+    ],
     "r2_buckets": [
         {
             "binding": "FILES",
@@ -24,7 +34,14 @@
             "17 3 * * *"
         ]
     },
-    "vars": { "MAX_UPLOAD_GB": "2", "MAX_KEY_GB": "5", "MAX_TOTAL_GB": "9", "MAX_FILES": "20", "MAX_DAYS": "90", "GOOGLE_CLIENT_ID": "75693672630-gr50jjupmq0pge4r4na6ck4j2l0k6s23.apps.googleusercontent.com" },
+    "vars": {
+        "MAX_UPLOAD_GB": "2",
+        "MAX_KEY_GB": "5",
+        "MAX_TOTAL_GB": "9",
+        "MAX_FILES": "20",
+        "MAX_DAYS": "90",
+        "GOOGLE_CLIENT_ID": "75693672630-gr50jjupmq0pge4r4na6ck4j2l0k6s23.apps.googleusercontent.com"
+    },
     "kv_namespaces": [
         {
             "binding": "LINKS",
