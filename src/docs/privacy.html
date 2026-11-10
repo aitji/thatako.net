@@ -1,302 +1,558 @@
 <style>
-    .bi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .bi-grid > div { min-width: 0; }
-    @media (max-width: 720px) { .bi-grid { grid-template-columns: 1fr; gap: 8px; } }
+  .bi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .bi-grid > div { min-width: 0; }
+  @media (max-width: 720px) {
+    .bi-grid { grid-template-columns: 1fr; gap: 8px; }
+  }
 </style>
 
 <div class="hero">
-    <div class="hero-eyebrow">thatako.net</div>
-    <h1>นโยบายความเป็นส่วนตัว</h1>
-    <div class="page-meta">
-        <span title="Suriya Inchoo">aitji</span>
-        <span class="dot">·</span>
-        <span>มีผลตั้งแต่วันที่ 10 พฤศจิกายน 2569</span>
-    </div>
-    <p>
-        นโยบายนี้อธิบายว่า <code>thatako.net</code>, <code>go.thatako.net</code> และ
-        <code>id.thatako.net</code> เก็บข้อมูลใดบ้าง ใช้ข้อมูลอย่างไร และคุณมีทางเลือกใดบ้าง
-        รวมถึงกรณีที่คุณเชื่อมต่อ Google Drive
+  <div class="hero-eyebrow">thatako.net</div>
+  <h1>นโยบายความเป็นส่วนตัว · Privacy Policy</h1>
+  <div class="page-meta">
+    <span title="Suriya Inchoo">aitji</span>
+    <span class="dot">·</span>
+    <span>มีผล 10 พฤศจิกายน 2569 · Effective November 10, 2026</span>
+  </div>
+  <div class="bi-grid">
+    <p lang="th">
+      นโยบายนี้อธิบายว่า <code>thatako.net</code>, <code>go.thatako.net</code> และ
+      <code>id.thatako.net</code> เก็บข้อมูลใดบ้าง ใช้ข้อมูลอย่างไร และคุณมีทางเลือกใดบ้าง
+      รวมถึงกรณีที่คุณเชื่อมต่อ Google Drive
     </p>
-    <div class="hero-actions">
-        <a href="/terms/" class="btn btn-primary" title="ข้อกำหนดการใช้งาน">
-            <i class="fa-solid fa-file-contract" aria-hidden="true"></i> ข้อกำหนดการใช้งาน
-        </a>
-        <a href="mailto:privacy@thatako.net?subject=Privacy%20-%20thatako.net"
-            class="btn btn-ghost" title="ติดต่อเรื่องความเป็นส่วนตัว">
-            <i class="fa-solid fa-envelope" aria-hidden="true"></i> ติดต่อ
-        </a>
-    </div>
+    <p lang="en">
+      This policy explains what <code>thatako.net</code>, <code>go.thatako.net</code> and
+      <code>id.thatako.net</code> collect, how we use it, and what choices you have, including
+      when you connect Google Drive.
+    </p>
+  </div>
+  <div class="hero-actions">
+    <a href="/terms/" class="btn btn-primary" title="Terms of Service">
+      <i class="fa-solid fa-file-contract" aria-hidden="true"></i> ข้อกำหนดการใช้งาน · Terms
+    </a>
+    <a href="mailto:privacy@thatako.net?subject=Privacy%20-%20thatako.net"
+       class="btn btn-ghost" title="Contact about privacy">
+      <i class="fa-solid fa-envelope" aria-hidden="true"></i> ติดต่อ · Contact
+    </a>
+  </div>
 </div>
 
 <div id="privacy-who">
-    <h2>เราคือใคร</h2>
-    <p>
+  <h2>เราคือใคร · Who we are</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         thatako.net เป็นโครงการอาสาสมัครสำหรับนักเรียนและครูโรงเรียนท่าตะโกพิทยาคม ประเทศไทย
         ดำเนินงานโดยนักพัฒนาซึ่งเป็นนักเรียนชื่อ
         <a href="https://github.com/aitji" target="_blank" rel="noopener">aitji</a>
         (สุริยะ อินชู) ซึ่งทำหน้าที่เป็นผู้ควบคุมข้อมูลตามนโยบายนี้
-    </p>
-    <p>
         บริการที่ครอบคลุม ได้แก่ บริการย่อลิงก์ แชร์ไฟล์ และสร้าง QR code ที่
         <a href="/short/">go.thatako.net</a> รวมถึงบริการ subdomain ฟรีที่
         <code>id.thatako.net</code>
-    </p>
-    <p>
         ซอร์สโค้ดเผยแพร่สาธารณะที่
         <a href="https://github.com/aitji/thatako.net" target="_blank" rel="noopener">github.com/aitji/thatako.net</a>
         และ
         <a href="https://github.com/aitji/id.thatako.net" target="_blank" rel="noopener">github.com/aitji/id.thatako.net</a>
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        thatako.net is a volunteer project for students and teachers of Thatakophittayakom School in Thailand.
+        It is run by a student developer,
+        <a href="https://github.com/aitji" target="_blank" rel="noopener">aitji</a>
+        (Suriya Inchoo), who is the data controller for this policy. The services covered include the URL
+        shortener, file sharing and QR code generator at
+        <a href="/short/">go.thatako.net</a>, and the free subdomains at <code>id.thatako.net</code>.
+        The source code is public at
+        <a href="https://github.com/aitji/thatako.net" target="_blank" rel="noopener">github.com/aitji/thatako.net</a>
+        and
+        <a href="https://github.com/aitji/id.thatako.net" target="_blank" rel="noopener">github.com/aitji/id.thatako.net</a>.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-collect">
-    <h2>ข้อมูลที่เราเก็บ</h2>
+  <h2>ข้อมูลที่เราเก็บ · Information we collect</h2>
 
-    <h3 id="privacy-collect.links">ลิงก์และไฟล์</h3>
-    <p>
+  <h3 id="privacy-collect.links">ลิงก์และไฟล์ · Links and files</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         เมื่อคุณสร้างลิงก์ เราจะจัดเก็บ slug (ชื่อท้ายลิงก์) ปลายทาง วันที่สร้าง และ secret key
         ที่สุ่มขึ้นในเบราว์เซอร์ของคุณไว้ในฐานข้อมูล Cloudflare KV
-    </p>
-    <p>
         <strong>secret key จัดเก็บเป็นข้อความธรรมดา ไม่ได้ผ่านการแฮช</strong>
         เราทำเช่นนี้เพื่อช่วยครูกู้คืนลิงก์ในกรณีที่ทำ key หาย ซึ่งหมายความว่าผู้ดูแลระบบสามารถเห็น key ได้
-    </p>
-    <p>
         เราไม่ขอชื่อ อีเมล หรือรหัสผ่าน และไม่บันทึกว่าใครคลิกลิงก์
         ระบบอาจแคชลิงก์ที่มีผู้ใช้บ่อยเพื่อให้เปลี่ยนเส้นทางได้รวดเร็ว โดยแคชดังกล่าวไม่มีข้อมูลผู้เข้าชม
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        When you create a link, we store its slug, destination, creation date and a random secret key
+        generated in your browser in our database (Cloudflare KV).
+        <strong>The secret key is stored as plain text, not hashed.</strong>
+        This lets us help teachers recover links if they lose a key, but it also means the operator can see
+        the keys. We do not ask for your name, email address or password, and we do not record who clicks a
+        link. The system may cache frequently used links to redirect them quickly; this cache contains no
+        visitor information.
+      </p>
+    </div>
+  </div>
 
-    <h3 id="privacy-collect.server">ไฟล์ที่จัดเก็บบนเซิร์ฟเวอร์ของเรา</h3>
-    <p>
+  <h3 id="privacy-collect.server">ไฟล์บนเซิร์ฟเวอร์ · Files on our server</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         หากคุณเลือกจัดเก็บไฟล์บนเซิร์ฟเวอร์ เราจะเก็บเนื้อหาไฟล์ ชื่อไฟล์ ขนาด และ MIME type
         ไว้ใน Cloudflare R2 โดยระบบจะกำหนดภูมิภาคจัดเก็บให้อัตโนมัติ
         ไฟล์จะถูกเก็บไว้จนถึงวันหมดอายุที่คุณเลือก ซึ่งอยู่ระหว่าง 7–90 วัน
         จากนั้นระบบจะลบไฟล์โดยอัตโนมัติ
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        If you choose server storage, we keep the file contents, name, size and MIME type in Cloudflare R2.
+        The storage region is assigned automatically. Files remain there until your selected expiry date
+        (7–90 days), after which they are deleted automatically.
+      </p>
+    </div>
+  </div>
 
-    <h3 id="privacy-collect.drive">ไฟล์ใน Google Drive ของคุณ</h3>
-    <p>
+  <h3 id="privacy-collect.drive">ไฟล์ใน Google Drive ของคุณ · Files on your Google Drive</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         เนื้อหาไฟล์จะส่งจากเบราว์เซอร์ของคุณไปยัง Google Drive ของคุณโดยตรง โดยไม่ผ่านเซิร์ฟเวอร์ของเรา
         เราจัดเก็บเฉพาะ Drive file ID ชื่อไฟล์ ขนาด และ MIME type เพื่อใช้แสดงหน้าดาวน์โหลด
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        File contents go directly from your browser to your own Google Drive and never pass through our
+        servers. We store only the Drive file ID, name, size and MIME type so we can display the download page.
+      </p>
+    </div>
+  </div>
 
-    <h3 id="privacy-collect.subdomain">Subdomain ฟรี</h3>
-    <p>
-        การลงทะเบียนใช้การเข้าสู่ระบบด้วย GitHub เราจัดเก็บชื่อผู้ใช้และ ID ของ GitHub สำหรับเจ้าของหลักและเจ้าของร่วม
-        ชื่อ subdomain และ DNS record ที่คุณตั้งค่าไว้
-    </p>
-    <p>
+  <h3 id="privacy-collect.subdomain">Subdomain ฟรี · Free subdomains</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
+        การลงทะเบียนใช้การเข้าสู่ระบบด้วย GitHub เราจัดเก็บชื่อผู้ใช้และ ID ของ GitHub
+        สำหรับเจ้าของหลักและเจ้าของร่วม ชื่อ subdomain และ DNS record ที่คุณตั้งค่าไว้
         <strong>ข้อมูลเหล่านี้อยู่ใน repository สาธารณะ ทุกคนจึงสามารถดูได้</strong>
         โปรดอย่าใส่ข้อมูลส่วนตัวไว้ใน record เช่น ค่า TXT เราไม่จัดเก็บรหัสผ่านหรืออีเมล GitHub ของคุณ
         และ DNS record จะถูกส่งไปยัง Cloudflare ซึ่งเป็นผู้ให้บริการ DNS ของเรา
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Registration uses GitHub sign-in. We store the GitHub usernames and IDs of owners and co-owners,
+        the subdomain name, and the DNS records you set.
+        <strong>This data is in a public repository, so anyone can see it.</strong>
+        Do not put personal information in DNS records, including TXT values. We do not store your GitHub
+        password or email address. DNS records are sent to Cloudflare, our DNS provider.
+      </p>
+    </div>
+  </div>
 
-    <h3 id="privacy-collect.technical">ข้อมูลทางเทคนิค</h3>
-    <p>
+  <h3 id="privacy-collect.technical">ข้อมูลทางเทคนิค · Technical data</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         เราไม่เก็บบันทึกคำขอใช้งานหรือจำกัดอัตราการใช้งานแยกตาม IP ในโค้ดของเราเอง
         อย่างไรก็ตาม Cloudflare และ Vercel ประมวลผลข้อมูลคำขอมาตรฐาน เช่น ที่อยู่ IP
         ประเภทเบราว์เซอร์ และเวลาใช้งาน เพื่อรักษาความปลอดภัย ป้องกันการใช้งานในทางที่ไม่เหมาะสม
         รองรับการแคช และจัดทำสถิติภาพรวม ซึ่งรวมถึง Cloudflare Web Analytics/RUM
-        และเครื่องมือสังเกตการณ์ระบบของ Vercel
-    </p>
-    <p>
-        ระยะเวลาจัดเก็บข้อมูลเป็นไปตามนโยบายของผู้ให้บริการแต่ละราย
+        และเครื่องมือสังเกตการณ์ระบบของ Vercel ระยะเวลาจัดเก็บข้อมูลเป็นไปตามนโยบายของผู้ให้บริการ
         เราไม่นำข้อมูลดังกล่าวไปใช้เพื่อการโฆษณา
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Our own code does not keep request logs or apply per-IP rate limits. However, Cloudflare and Vercel
+        process standard request data, such as IP address, browser type and timestamps, for security, abuse
+        prevention, caching and aggregate statistics. This includes Cloudflare Web Analytics/RUM and Vercel’s
+        observability tools. Retention follows each provider’s policies. We do not use this data for advertising.
+      </p>
+    </div>
+  </div>
 
-    <h3 id="privacy-collect.browser">ข้อมูลที่จัดเก็บในเบราว์เซอร์</h3>
-    <p>
+  <h3 id="privacy-collect.browser">ที่เก็บในเบราว์เซอร์ · Browser storage</h3>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         secret key และธีมที่คุณเลือกจะจัดเก็บไว้ใน local storage ของเบราว์เซอร์
         เราไม่ใช้คุกกี้เพื่อการโฆษณา
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Your secret key and theme preference are stored in your browser’s local storage.
+        We do not use advertising cookies.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-google">
-    <h2>ข้อมูลผู้ใช้ Google</h2>
-    <p>
-        ฟีเจอร์ Google Drive เป็นฟีเจอร์ที่เลือกใช้ได้ โดยใช้ Google Sign-In และขอสิทธิ์ 3 รายการ ได้แก่
-    </p>
-    <ul>
+  <h2>ข้อมูลผู้ใช้ Google · Google user data</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>ฟีเจอร์ Google Drive เป็นฟีเจอร์ที่เลือกใช้ได้ โดยใช้ Google Sign-In และขอสิทธิ์ 3 รายการ ได้แก่</p>
+      <ul>
         <li>
-            <code>https://www.googleapis.com/auth/drive.file</code> — ดูและจัดการได้เฉพาะไฟล์หรือโฟลเดอร์
-            ที่แอปสร้างขึ้น หรือที่คุณเปิดผ่านแอปเท่านั้น
-            <strong>สิทธิ์นี้ไม่อนุญาตให้แอปเข้าถึงไฟล์อื่นใน Drive ของคุณ</strong>
+          <code>https://www.googleapis.com/auth/drive.file</code> — ดูและจัดการได้เฉพาะไฟล์หรือโฟลเดอร์
+          ที่แอปสร้างขึ้น หรือที่คุณเปิดผ่านแอปเท่านั้น
+          <strong>สิทธิ์นี้ไม่อนุญาตให้แอปเข้าถึงไฟล์อื่นใน Drive ของคุณ</strong>
         </li>
         <li>
-            <code>openid</code> และ <code>https://www.googleapis.com/auth/userinfo.email</code>
-            — ใช้ดูอีเมลของบัญชีที่เชื่อมต่อ
+          <code>openid</code> และ <code>https://www.googleapis.com/auth/userinfo.email</code>
+          — ใช้ดูอีเมลของบัญชีที่เชื่อมต่อ
         </li>
-    </ul>
-    <p>เราไม่ขอสิทธิ์เข้าถึงรายชื่อติดต่อ ปฏิทิน กล่องจดหมาย หรือข้อมูล Google อื่น ๆ</p>
+      </ul>
+      <p>เราไม่ขอสิทธิ์เข้าถึงรายชื่อติดต่อ ปฏิทิน กล่องจดหมาย หรือข้อมูล Google อื่น ๆ</p>
 
-    <h3>เราใช้สิทธิ์ดังกล่าวทำอะไรบ้าง</h3>
-    <ul>
+      <h3>เราใช้สิทธิ์ดังกล่าวทำอะไรบ้าง</h3>
+      <ul>
         <li>สร้างหรือใช้โฟลเดอร์ชื่อ <code>go.thatako.net</code> ที่มีอยู่แล้วใน Drive ของคุณ</li>
         <li>อัปโหลดไฟล์ที่คุณเลือกไปยังโฟลเดอร์นั้น</li>
-        <li>ตั้งค่าไฟล์ให้เป็น "ทุกคนที่มีลิงก์สามารถดูได้" เพื่อให้ผู้ที่คุณแชร์ลิงก์ด้วยดาวน์โหลดไฟล์ได้</li>
+        <li>ตั้งค่าไฟล์เป็น “ทุกคนที่มีลิงก์สามารถดูได้” เพื่อให้ผู้ที่คุณแชร์ลิงก์ด้วยดาวน์โหลดไฟล์ได้</li>
         <li>อ่านชื่อ ขนาด ประเภท และข้อมูลเจ้าของไฟล์ เพื่อตรวจสอบไฟล์และแสดงหน้าดาวน์โหลด</li>
         <li>
-            อ่านอีเมลและโควตาพื้นที่จัดเก็บ แล้วแสดงข้อมูลดังกล่าวให้คุณเห็นในเบราว์เซอร์ของคุณเท่านั้น
-            เพื่อแจ้งว่ากำลังเชื่อมต่อบัญชีใดและมีพื้นที่เพียงพอหรือไม่
+          อ่านอีเมลและโควตาพื้นที่จัดเก็บ แล้วแสดงข้อมูลให้คุณเห็นในเบราว์เซอร์ของคุณเท่านั้น
+          เพื่อแจ้งว่ากำลังเชื่อมต่อบัญชีใดและมีพื้นที่เพียงพอหรือไม่
         </li>
-    </ul>
+      </ul>
 
-    <h3>Access token</h3>
-    <p>
+      <h3>Access token</h3>
+      <p>
         token จะอยู่ในหน่วยความจำของเบราว์เซอร์และหมดอายุภายในประมาณ 1 ชั่วโมง
         เมื่ออัปโหลดเสร็จ token จะถูกส่งผ่าน HTTPS ไปยังเซิร์ฟเวอร์ของเรา
         (<code>go.thatako.net</code>) หนึ่งครั้ง เพื่อยืนยันกับ Google ว่าไฟล์ที่ระบุมีอยู่จริง
         ไม่อยู่ในถังขยะ และเป็นของคุณ จากนั้นเซิร์ฟเวอร์จะใช้ token เพื่อตรวจสอบครั้งนั้นแล้วทิ้งไป
-    </p>
-    <p>
         <strong>เราไม่จัดเก็บ ไม่บันทึกการใช้งาน หรือนำ token กลับมาใช้ซ้ำ และเราไม่ได้รับ refresh token</strong>
-        นอกจากนี้ เราไม่จัดเก็บอีเมลหรือข้อมูลโปรไฟล์ Google ของคุณบนเซิร์ฟเวอร์
-    </p>
-
-    <div class="callout">
-        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-        <p>
-            การใช้และการส่งต่อข้อมูลที่ได้รับจาก Google APIs เป็นไปตาม
-            <a href="https://developers.google.com/terms/api-services-user-data-policy"
-                target="_blank" rel="noopener">Google API Services User Data Policy</a>
-            รวมถึงข้อกำหนด Limited Use เราใช้ข้อมูลผู้ใช้ Google เพื่อให้บริการฟีเจอร์อัปโหลดที่คุณร้องขอเท่านั้น
-            และจะไม่ส่งต่อให้ผู้อื่น เว้นแต่จำเป็นต่อการให้บริการหรือปฏิบัติตามกฎหมาย
-            เราไม่ใช้ข้อมูลดังกล่าวเพื่อการโฆษณา และไม่มีบุคคลเข้าถึงข้อมูล เว้นแต่คุณให้ความยินยอม
-            จำเป็นต่อการรักษาความปลอดภัยหรือสอบสวนการใช้งานในทางที่ไม่เหมาะสม หรือกฎหมายกำหนด
-        </p>
+        เราไม่จัดเก็บอีเมลหรือข้อมูลโปรไฟล์ Google ของคุณบนเซิร์ฟเวอร์
+      </p>
     </div>
+    <div lang="en">
+      <p>The optional Google Drive feature uses Google Sign-In and requests three scopes:</p>
+      <ul>
+        <li>
+          <code>https://www.googleapis.com/auth/drive.file</code> — lets the app see and manage only files
+          and folders it created or that you opened with it. It <strong>does not</strong> give the app access
+          to your other Drive files.
+        </li>
+        <li>
+          <code>openid</code> and <code>https://www.googleapis.com/auth/userinfo.email</code>
+          — let us see the email address of the connected account.
+        </li>
+      </ul>
+      <p>We do not request access to your contacts, calendar, mailbox or any other Google data.</p>
+
+      <h3>What we do with that access</h3>
+      <ul>
+        <li>Create or reuse a folder named <code>go.thatako.net</code> in your Drive.</li>
+        <li>Upload the files you select into that folder.</li>
+        <li>Set files to “Anyone with the link can view” so people you share the link with can download them.</li>
+        <li>Read each file’s name, size, type and ownership to verify it and show the download page.</li>
+        <li>
+          Read your email address and storage quota, displaying them only in your browser so you can see
+          which account is connected and whether you have enough space.
+        </li>
+      </ul>
+
+      <h3>Access tokens</h3>
+      <p>
+        The token stays in your browser’s memory and expires after about one hour. When an upload finishes,
+        it is sent once over HTTPS to our server (<code>go.thatako.net</code>) so we can confirm with Google
+        that the listed files exist, are not in the trash and belong to you. The server uses the token for
+        that single check and then discards it.
+        <strong>We never store, log or reuse tokens, and we never receive a refresh token.</strong>
+        We do not store your Google email address or profile data on our servers.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+    <div class="bi-grid">
+      <p lang="th">
+        การใช้และการส่งต่อข้อมูลที่ได้รับจาก Google APIs เป็นไปตาม
+        <a href="https://developers.google.com/terms/api-services-user-data-policy"
+           target="_blank" rel="noopener">Google API Services User Data Policy</a>
+        รวมถึงข้อกำหนด Limited Use เราใช้ข้อมูลผู้ใช้ Google เพื่อให้บริการฟีเจอร์อัปโหลดที่คุณร้องขอเท่านั้น
+        และจะไม่ส่งต่อให้ผู้อื่น เว้นแต่จำเป็นต่อการให้บริการหรือปฏิบัติตามกฎหมาย
+        เราไม่ใช้ข้อมูลดังกล่าวเพื่อการโฆษณา และไม่มีบุคคลเข้าถึงข้อมูล เว้นแต่คุณให้ความยินยอม
+        จำเป็นต่อการรักษาความปลอดภัยหรือสอบสวนการใช้งานในทางที่ไม่เหมาะสม หรือกฎหมายกำหนด
+      </p>
+      <p lang="en">
+        Our use and transfer of information received from Google APIs complies with the
+        <a href="https://developers.google.com/terms/api-services-user-data-policy"
+           target="_blank" rel="noopener">Google API Services User Data Policy</a>,
+        including its Limited Use requirements. We use Google user data only to provide the upload feature
+        you request. We do not transfer it to others except as needed to provide that feature or comply with
+        the law, and we do not use it for advertising. No person reads the data except with your consent,
+        when necessary for security or to investigate abuse, or when required by law.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-use">
-    <h2>เราใช้ข้อมูลอย่างไร</h2>
-    <ul>
+  <h2>เราใช้ข้อมูลอย่างไร · How we use information</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <ul>
         <li>เปลี่ยนเส้นทางลิงก์ย่อและแสดงหน้าดาวน์โหลดไฟล์</li>
         <li>ให้คุณดู แก้ไข และลบลิงก์ที่สร้างด้วย key ของคุณ</li>
         <li>จัดการข้อจำกัดด้านพื้นที่จัดเก็บ และป้องกันการใช้งานในทางที่ไม่เหมาะสม ฟิชชิง และมัลแวร์</li>
         <li>จัดการ DNS ของ subdomain ที่คุณลงทะเบียน</li>
         <li>ดูแลความปลอดภัยและให้บริการทำงานได้ตามปกติ</li>
-    </ul>
-    <p>
+      </ul>
+      <p>
         <strong>ฐานทางกฎหมายตาม PDPA:</strong> ความยินยอมของคุณ เช่น เมื่อเชื่อมต่อ Google หรือสร้างลิงก์
         การให้บริการตามที่คุณร้องขอ และประโยชน์โดยชอบด้วยกฎหมายของเราในการรักษาความปลอดภัย
         และป้องกันการใช้งานในทางที่ไม่เหมาะสม
-    </p>
-    <p>เราไม่ขายข้อมูลส่วนบุคคล ไม่แสดงโฆษณา และไม่สร้างโปรไฟล์เพื่อใช้ในการโฆษณา</p>
+      </p>
+      <p>เราไม่ขายข้อมูลส่วนบุคคล ไม่แสดงโฆษณา และไม่สร้างโปรไฟล์เพื่อใช้ในการโฆษณา</p>
+    </div>
+    <div lang="en">
+      <ul>
+        <li>Redirect short links and serve file download pages.</li>
+        <li>Let you view, edit and delete links created with your key.</li>
+        <li>Enforce storage limits and prevent abuse, phishing and malware.</li>
+        <li>Manage DNS for subdomains you register.</li>
+        <li>Keep the service secure and working.</li>
+      </ul>
+      <p>
+        <strong>Legal bases under the PDPA:</strong> your consent (for example, when you connect Google or
+        create a link), providing the service you request, and our legitimate interest in security and
+        preventing abuse.
+      </p>
+      <p>We do not sell personal information, show ads or build advertising profiles.</p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-share">
-    <h2>การเปิดเผยและการโอนข้อมูลไปต่างประเทศ</h2>
-    <p>
-        ผู้ที่มีลิงก์สามารถเปิดหน้าและดาวน์โหลดไฟล์ที่อยู่ในลิงก์นั้นได้
-        โปรดถือว่าลิงก์ทุกลิงก์เป็นลิงก์สาธารณะ
-    </p>
-    <p>
-        เราเปิดเผยข้อมูลให้ผู้ให้บริการเท่าที่จำเป็นต่อการให้บริการ ได้แก่ Cloudflare
-        (โฮสต์ พื้นที่จัดเก็บ และ DNS), Vercel (เว็บไซต์), GitHub (ทะเบียน subdomain และการเข้าสู่ระบบ)
-        และ Google (เมื่อคุณเลือกใช้ Drive) นอกจากนี้ เราอาจเปิดเผยข้อมูลเมื่อกฎหมายกำหนด
-        หรือเพื่อป้องกันการใช้งานในทางที่ไม่เหมาะสม
-    </p>
-    <p>
+  <h2>การเปิดเผยและการโอนข้อมูลไปต่างประเทศ · Sharing and international transfers</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
+        ผู้ที่มีลิงก์สามารถเปิดหน้าและดาวน์โหลดไฟล์ที่อยู่ในลิงก์นั้นได้ โปรดถือว่าลิงก์ทุกลิงก์เป็นลิงก์สาธารณะ
+        เราเปิดเผยข้อมูลให้ผู้ให้บริการเท่าที่จำเป็นต่อการให้บริการ ได้แก่ Cloudflare (โฮสต์ พื้นที่จัดเก็บ และ DNS),
+        Vercel (เว็บไซต์), GitHub (ทะเบียน subdomain และการเข้าสู่ระบบ) และ Google (เมื่อคุณเลือกใช้ Drive)
+        นอกจากนี้ เราอาจเปิดเผยข้อมูลเมื่อกฎหมายกำหนดหรือเพื่อป้องกันการใช้งานในทางที่ไม่เหมาะสม
+      </p>
+      <p>
         ผู้ให้บริการเหล่านี้ตั้งอยู่หรือประมวลผลข้อมูลนอกประเทศไทย เช่น ในสหรัฐอเมริกา
         การใช้บริการถือว่าคุณรับทราบว่าข้อมูลอาจถูกโอนไปต่างประเทศ
         เราเลือกใช้ผู้ให้บริการที่มีแนวปฏิบัติด้านการคุ้มครองข้อมูลตามมาตรฐานที่เป็นที่ยอมรับในระดับสากล
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Anyone with a link can open its page and download the files behind it. Treat every link as public.
+        We share data with providers only as needed to run the service: Cloudflare (hosting, storage and DNS),
+        Vercel (website), GitHub (subdomain registry and sign-in), and Google (when you choose Drive).
+        We may also disclose data when required by law or to prevent abuse.
+      </p>
+      <p>
+        These providers are located or process data outside Thailand, including in the United States.
+        By using the service, you acknowledge that this cross-border transfer may take place.
+        We choose providers with internationally recognised data protection practices.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-retention">
-    <h2>การเก็บรักษาและการลบข้อมูล</h2>
-    <ul>
+  <h2>การเก็บรักษาและการลบข้อมูล · Retention and deletion</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <ul>
+        <li><strong>ไฟล์บนเซิร์ฟเวอร์:</strong> ระบบจะลบไฟล์โดยอัตโนมัติเมื่อหมดอายุ ส่วนระเบียนในฐานข้อมูลจะถูกลบตามหลังในเวลาไม่นาน</li>
         <li>
-            <strong>ไฟล์บนเซิร์ฟเวอร์:</strong> ระบบจะลบไฟล์โดยอัตโนมัติเมื่อหมดอายุ
-            ส่วนระเบียนในฐานข้อมูลจะถูกลบตามหลังในเวลาไม่นาน
+          <strong>ลิงก์ย่อและลิงก์ Drive:</strong> จะคงอยู่จนกว่าคุณจะลบ
+          เมื่อลบที่ <a href="/short/">go.thatako.net</a> ระเบียนของเราจะถูกลบทันที
         </li>
         <li>
-            <strong>ลิงก์ย่อและลิงก์ Drive:</strong> จะคงอยู่จนกว่าคุณจะลบ
-            เมื่อลบที่ <a href="/short/">go.thatako.net</a> ระเบียนของเราจะถูกลบทันที
+          <strong>ไฟล์ใน Google Drive:</strong> ไฟล์เป็นของคุณ การลบลิงก์ไม่ได้ลบไฟล์ออกจาก Drive
+          หากต้องการลบไฟล์ โปรดลบจาก Drive โดยตรง การย้ายไฟล์ไปยังถังขยะหรือยกเลิกการแชร์
+          จะทำให้หน้าดาวน์โหลดใช้งานไม่ได้
         </li>
         <li>
-            <strong>ไฟล์ใน Google Drive:</strong> ไฟล์เป็นของคุณ การลบลิงก์ไม่ได้ลบไฟล์ออกจาก Drive
-            หากต้องการลบไฟล์ โปรดลบจาก Drive โดยตรง การย้ายไฟล์ไปยังถังขยะหรือยกเลิกการแชร์
-            จะทำให้หน้าดาวน์โหลดใช้งานไม่ได้
+          <strong>Subdomain:</strong> คุณลบได้จากหน้าจัดการ ระบบจะลบระเบียนปัจจุบันออก
+          แต่ประวัติ commit ใน GitHub อาจยังมีชื่อผู้ใช้และ record เดิมอยู่
         </li>
         <li>
-            <strong>Subdomain:</strong> คุณลบได้จากหน้าจัดการ ระบบจะลบระเบียนปัจจุบันออก
-            แต่ประวัติ commit ใน GitHub อาจยังมีชื่อผู้ใช้และ record เดิมอยู่
+          คุณเพิกถอนสิทธิ์แอปจากบัญชี Google ได้ที่
+          <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>
         </li>
         <li>
-            คุณเพิกถอนสิทธิ์แอปจากบัญชี Google ได้ที่
-            <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">
-                myaccount.google.com/permissions
-            </a>
+          หากต้องการลบระเบียนแต่ไม่มี key แล้ว โปรดส่งอีเมลพร้อมลิงก์ที่เกี่ยวข้อง
+          เราจะพิจารณาจากข้อมูลที่ตรวจสอบได้
+        </li>
+      </ul>
+    </div>
+    <div lang="en">
+      <ul>
+        <li><strong>Server files:</strong> Files are deleted automatically when they expire; database records are removed shortly afterward.</li>
+        <li>
+          <strong>Short links and Drive links:</strong> They remain until you delete them. Deleting a link at
+          <a href="/short/">go.thatako.net</a> removes our record immediately.
         </li>
         <li>
-            หากต้องการลบระเบียนแต่ไม่มี key แล้ว โปรดส่งอีเมลพร้อมลิงก์ที่เกี่ยวข้อง
-            เราจะพิจารณาจากข้อมูลที่ตรวจสอบได้
+          <strong>Google Drive files:</strong> The files are yours. Deleting a link does not delete a file from
+          Drive; delete it there if you want it removed. Moving a file to the trash or removing its sharing
+          settings will make the download page stop working.
         </li>
-    </ul>
+        <li>
+          <strong>Subdomains:</strong> You can delete them from the management page. The current record will be
+          removed, but GitHub commit history may still contain the previous username and records.
+        </li>
+        <li>
+          Revoke the app’s access to your Google account at
+          <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>.
+        </li>
+        <li>
+          If you want a record removed but no longer have your key, email us the link.
+          We will consider your request based on what we can verify.
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-security">
-    <h2>ความปลอดภัย</h2>
-    <p>
+  <h2>ความปลอดภัย · Security</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         การรับส่งข้อมูลทั้งหมดใช้ HTTPS โทเค็นอัปโหลดมีลายเซ็นและมีอายุสั้น
         ไฟล์ดาวน์โหลดจะถูกส่งในรูปแบบไฟล์แนบโดยปิดการตรวจจับประเภทเนื้อหาอัตโนมัติ
         และหน้าดาวน์โหลดทำงานภายใต้ Content Security Policy ที่เข้มงวด
-    </p>
-    <p>
         อย่างไรก็ตาม ไม่มีระบบใดปลอดภัยได้อย่างสมบูรณ์ เราจึงรับประกันความปลอดภัยอย่างเด็ดขาดไม่ได้
         นอกจากนี้ secret key จัดเก็บเป็นข้อความธรรมดาตามที่อธิบายไว้ข้างต้น
         หากฐานข้อมูลรั่วไหล key ก็อาจรั่วไหลไปด้วย
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        All traffic uses HTTPS. Upload tokens are signed and short-lived. Downloads are served as attachments
+        with content sniffing disabled, and the download page runs under a strict Content Security Policy.
+        No system is perfectly secure, so we cannot guarantee absolute security. Also, because secret keys
+        are stored as plain text as described above, a database leak could expose them.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-children">
-    <h2>เด็กและนักเรียน</h2>
-    <p>
+  <h2>เด็กและนักเรียน · Children and students</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         บริการเปิดให้ทุกคนใช้งาน และผู้ใช้ส่วนใหญ่เป็นนักเรียนระดับมัธยม
         เราไม่ได้ตรวจสอบอายุผู้ใช้ และไม่มีเจตนาเก็บข้อมูลส่วนบุคคลนอกเหนือจากที่ระบุไว้ในนโยบายนี้
         บริการนี้ไม่ได้ออกแบบมาสำหรับเด็กอายุต่ำกว่า 13 ปี
-    </p>
-    <p>
         หากคุณยังเป็นผู้เยาว์ โปรดให้ผู้ปกครอง ผู้ปกครองตามกฎหมาย หรือครูรับทราบว่าคุณใช้บริการนี้
         หากเชื่อว่าเด็กส่งข้อมูลส่วนบุคคลมาโดยไม่เหมาะสม โปรดแจ้งเราที่
         <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> เพื่อให้เราลบข้อมูล
         บัญชี Google อยู่ภายใต้ข้อกำหนดอายุขั้นต่ำของ Google
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        The service is open to everyone, and most users are secondary-school students. We do not verify users’
+        ages and do not knowingly collect personal information beyond what is described in this policy.
+        The service is not intended for children under 13. If you are a minor, please make sure a parent,
+        guardian or teacher knows you are using the service. If you believe a child has submitted personal
+        information inappropriately, contact us at
+        <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> and we will delete it.
+        Google accounts remain subject to Google’s minimum-age requirements.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-rights">
-    <h2>สิทธิของคุณ</h2>
-    <p>
+  <h2>สิทธิของคุณ · Your rights</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         ภายใต้พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA) คุณมีสิทธิขอเข้าถึง แก้ไข ลบ
         หรือระงับการใช้ข้อมูลส่วนบุคคลที่เราเก็บไว้ คัดค้านการประมวลผล ขอรับสำเนาข้อมูล
-        และถอนความยินยอมได้ทุกเมื่อ
-    </p>
-    <p>
-        ติดต่อเราได้ที่
+        และถอนความยินยอมได้ทุกเมื่อ ติดต่อเราได้ที่
         <a href="mailto:privacy@thatako.net">privacy@thatako.net</a>
         เนื่องจากเราไม่ได้เก็บชื่อหรืออีเมล เราอาจขอให้คุณยืนยันว่าคุณเป็นผู้ถือ key หรือลิงก์ที่เกี่ยวข้อง
         หรือเป็นเจ้าของบัญชี GitHub ที่ใช้กับ subdomain ก่อนดำเนินการ
-    </p>
-    <p>
-        หากคุณไม่พอใจต่อการดำเนินการของเรา คุณมีสิทธิร้องเรียนต่อสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล
-        (สคส./PDPC)
-    </p>
+        หากคุณไม่พอใจต่อการดำเนินการของเรา คุณมีสิทธิร้องเรียนต่อสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (สคส./PDPC)
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Under Thailand’s Personal Data Protection Act (PDPA), you may request access to, correction, deletion
+        or restriction of personal data we hold about you; object to processing; request a copy; and withdraw
+        consent at any time. Contact us at
+        <a href="mailto:privacy@thatako.net">privacy@thatako.net</a>.
+        Because we do not collect names or email addresses, we may ask you to prove that you control the
+        relevant key or link, or own the GitHub account for a subdomain, before acting on your request.
+        If you are not satisfied, you may complain to Thailand’s Personal Data Protection Committee (PDPC).
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-changes">
-    <h2>การเปลี่ยนแปลงนโยบาย</h2>
-    <p>
+  <h2>การเปลี่ยนแปลงนโยบาย · Changes</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         เราอาจปรับปรุงนโยบายนี้เป็นครั้งคราว วันที่มีผลที่แสดงไว้ด้านบนคือวันที่ของฉบับล่าสุด
         เราจะแจ้งการเปลี่ยนแปลงสำคัญที่ <a href="https://thatako.net">thatako.net</a>
         การใช้บริการต่อหลังจากนโยบายมีการปรับปรุง ถือว่าคุณยอมรับนโยบายฉบับที่ปรับปรุงแล้ว
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        We may update this policy from time to time. The effective date at the top shows the latest version.
+        We will announce material changes at <a href="https://thatako.net">thatako.net</a>.
+        If you continue using the service after an update, you accept the revised policy.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="privacy-contact">
-    <h2>ติดต่อ</h2>
-    <p>
-        <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> ·
-        <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener">GitHub Issues</a>
-    </p>
+  <h2>ติดต่อ · Contact</h2>
+  <p>
+    <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> ·
+    <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener">GitHub Issues</a>
+  </p>
 </div>
+
+<aside class="toc-inline" style="display: none;">
+  <div class="toc-label">on this page</div>
+  <a href="#privacy-who" class="toc-link">เราคือใคร · Who we are</a>
+  <a href="#privacy-collect" class="toc-link">ข้อมูลที่เราเก็บ · Information we collect</a>
+  <div class="toc-sub">
+    <a href="#privacy-collect.links" class="toc-link sub">ลิงก์และไฟล์ · Links and files</a>
+    <a href="#privacy-collect.server" class="toc-link sub">ไฟล์บนเซิร์ฟเวอร์ · Server files</a>
+    <a href="#privacy-collect.drive" class="toc-link sub">ไฟล์ใน Google Drive · Google Drive files</a>
+    <a href="#privacy-collect.subdomain" class="toc-link sub">Subdomain ฟรี · Free subdomains</a>
+    <a href="#privacy-collect.technical" class="toc-link sub">ข้อมูลทางเทคนิค · Technical data</a>
+    <a href="#privacy-collect.browser" class="toc-link sub">ที่เก็บในเบราว์เซอร์ · Browser storage</a>
+  </div>
+  <a href="#privacy-google" class="toc-link">ข้อมูลผู้ใช้ Google · Google user data</a>
+  <a href="#privacy-use" class="toc-link">การใช้ข้อมูล · How we use information</a>
+  <a href="#privacy-share" class="toc-link">การเปิดเผยและโอนข้ามประเทศ · Sharing and transfers</a>
+  <a href="#privacy-retention" class="toc-link">การเก็บรักษาและลบ · Retention and deletion</a>
+  <a href="#privacy-security" class="toc-link">ความปลอดภัย · Security</a>
+  <a href="#privacy-children" class="toc-link">เด็กและนักเรียน · Children and students</a>
+  <a href="#privacy-rights" class="toc-link">สิทธิของคุณ · Your rights</a>
+  <a href="#privacy-changes" class="toc-link">การเปลี่ยนแปลง · Changes</a>
+  <a href="#privacy-contact" class="toc-link">ติดต่อ · Contact</a>
+</aside>
