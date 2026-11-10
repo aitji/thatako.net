@@ -1,251 +1,475 @@
-```html
+<style>
+  .bi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .bi-grid > div { min-width: 0; }
+  @media (max-width: 720px) {
+    .bi-grid { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+
 <div class="hero">
-    <div class="hero-eyebrow">thatako.net</div>
-    <h1>ข้อกำหนดการใช้งาน</h1>
-    <div class="page-meta">
-        <span title="Suriya Inchoo">aitji</span>
-        <span class="dot">·</span>
-        <span>มีผลตั้งแต่วันที่ 10 พฤศจิกายน 2569</span>
-    </div>
-    <p>
-        ข้อกำหนดนี้ครอบคลุม <code>thatako.net</code>, <code>go.thatako.net</code>
-        (บริการย่อลิงก์ สร้าง QR code และแชร์ไฟล์ รวมถึงฟีเจอร์อัปโหลดไปยัง Google Drive ซึ่งเลือกใช้ได้)
-        และ <code>[name].id.thatako.net</code> (บริการ subdomain ฟรี)
-        การใช้บริการถือว่าคุณยอมรับข้อกำหนดนี้
+  <div class="hero-eyebrow">thatako.net</div>
+  <h1>ข้อกำหนดการใช้งาน · Terms of Service</h1>
+  <div class="page-meta">
+    <span title="Suriya Inchoo">aitji</span>
+    <span class="dot">·</span>
+    <span>มีผล 10 พฤศจิกายน 2569 · Effective November 10, 2026</span>
+  </div>
+  <div class="bi-grid">
+    <p lang="th">
+      ข้อกำหนดนี้ครอบคลุม <code>thatako.net</code>, <code>go.thatako.net</code>
+      (บริการย่อลิงก์ สร้าง QR code และแชร์ไฟล์ รวมถึงฟีเจอร์อัปโหลดไปยัง Google Drive ซึ่งเลือกใช้ได้)
+      และ <code>[name].id.thatako.net</code> (บริการ subdomain ฟรี)
+      การใช้บริการถือว่าคุณยอมรับข้อกำหนดนี้
     </p>
-    <div class="hero-actions">
-        <a href="/privacy/" class="btn btn-primary" title="นโยบายความเป็นส่วนตัว">
-            <i class="fa-solid fa-user-shield" aria-hidden="true"></i> นโยบายความเป็นส่วนตัว
-        </a>
-        <a href="mailto:abuse@thatako.net?subject=Abuse%20report"
-            class="btn btn-ghost" title="รายงานการใช้งานในทางที่ไม่เหมาะสม">
-            <i class="fa-solid fa-flag" aria-hidden="true"></i> รายงานการใช้งานที่ไม่เหมาะสม
-        </a>
-    </div>
+    <p lang="en">
+      These terms cover <code>thatako.net</code>, <code>go.thatako.net</code> (URL shortening, QR codes
+      and file sharing, including the optional Google Drive upload) and
+      <code>[name].id.thatako.net</code> (free subdomains). By using these services, you agree to these terms.
+    </p>
+  </div>
+  <div class="hero-actions">
+    <a href="/privacy/" class="btn btn-primary" title="Privacy Policy">
+      <i class="fa-solid fa-user-shield" aria-hidden="true"></i> นโยบายความเป็นส่วนตัว · Privacy Policy
+    </a>
+    <a href="mailto:abuse@thatako.net?subject=Abuse%20report" class="btn btn-ghost" title="Report abuse">
+      <i class="fa-solid fa-flag" aria-hidden="true"></i> รายงานการใช้งานที่ไม่เหมาะสม · Report abuse
+    </a>
+  </div>
 </div>
 
 <div id="terms-service">
-    <h2>บริการนี้คืออะไร</h2>
-    <p>
+  <h2>บริการนี้คืออะไร · The service</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         thatako.net เป็นโครงการอาสาสมัครที่ให้บริการโดยไม่คิดค่าใช้จ่าย สร้างและดูแลโดยนักเรียน
         (<a href="https://github.com/aitji" target="_blank" rel="noopener">aitji</a>)
         สำหรับนักเรียนและครูโรงเรียนท่าตะโกพิทยาคม โรงเรียนให้ครูสนับสนุนชื่อโดเมนดังกล่าว
         (ดู<a href="/about#dev">หน้าเกี่ยวกับ</a>) แต่โครงการนี้
-        <strong>ไม่ใช่บริการอย่างเป็นทางการของโรงเรียน</strong>
-        เว้นแต่จะระบุไว้เป็นอย่างอื่นในหน้าใดหน้าหนึ่ง
-    </p>
-    <div class="callout warn">
-        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-        <p>บริการนี้จัดให้ "ตามสภาพที่เป็นอยู่" และอาจมีการเปลี่ยนแปลง จำกัดการใช้งาน หรือยุติได้ทุกเมื่อ</p>
+        <strong>ไม่ใช่บริการอย่างเป็นทางการของโรงเรียน</strong> เว้นแต่จะระบุไว้เป็นอย่างอื่นในหน้าใดหน้าหนึ่ง
+      </p>
     </div>
+    <div lang="en">
+      <p>
+        thatako.net is a free volunteer project built and run by a student
+        (<a href="https://github.com/aitji" target="_blank" rel="noopener">aitji</a>) for students and teachers
+        of Thatakophittayakom School. A teacher provided the domain (see the
+        <a href="/about#dev">About page</a>), but the project is
+        <strong>not an official school service</strong> unless a page specifically says otherwise.
+      </p>
+    </div>
+  </div>
+  <div class="callout warn">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    <div class="bi-grid">
+      <p lang="th">บริการนี้จัดให้ “ตามสภาพที่เป็นอยู่” และอาจมีการเปลี่ยนแปลง จำกัดการใช้งาน หรือยุติได้ทุกเมื่อ</p>
+      <p lang="en">The service is provided “as is” and may change, be limited or stop at any time.</p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-eligibility">
-    <h2>ใครใช้บริการได้บ้าง</h2>
-    <p>
+  <h2>ใครใช้บริการได้บ้าง · Who can use it</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         ทุกคนสามารถใช้บริการได้ ไม่จำเป็นต้องเป็นสมาชิกของโรงเรียน อย่างไรก็ตาม
         บริการนี้จัดทำขึ้นเพื่อการเรียนรู้และงานของโรงเรียนเป็นหลัก
-        เราอาจจำกัดหรือปฏิเสธการใช้งานที่ไม่เกี่ยวข้องกับวัตถุประสงค์ดังกล่าว
-        หรือก่อภาระต่อระบบ
-    </p>
-    <p>
+        เราอาจจำกัดหรือปฏิเสธการใช้งานที่ไม่เกี่ยวข้องกับวัตถุประสงค์ดังกล่าว หรือก่อภาระต่อระบบ
+      </p>
+      <p>
         หากคุณอายุต่ำกว่า 18 ปี โปรดให้ผู้ปกครอง ผู้ปกครองตามกฎหมาย หรือครูรับทราบก่อนใช้งาน
-        และอย่าใส่ข้อมูลส่วนตัวของคุณหรือผู้อื่นไว้ในเนื้อหา
-        บริการนี้ไม่ได้ออกแบบมาสำหรับเด็กอายุต่ำกว่า 13 ปี
-    </p>
+        และอย่าใส่ข้อมูลส่วนตัวของคุณหรือผู้อื่นไว้ในเนื้อหา บริการนี้ไม่ได้ออกแบบมาสำหรับเด็กอายุต่ำกว่า 13 ปี
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        Anyone can use the service, whether or not they are part of the school. It is intended mainly for
+        learning and school work, so we may limit or refuse use that is unrelated to those purposes or puts
+        an undue load on the system.
+      </p>
+      <p>
+        If you are under 18, please make sure a parent, guardian or teacher knows you are using the service.
+        Do not include personal information about yourself or others in your content. The service is not
+        intended for children under 13.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-accounts">
-    <h2>Secret key (รหัสลับ)</h2>
-    <p>
+  <h2>Secret key · รหัสลับ</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         คุณไม่จำเป็นต้องสมัครบัญชี ลิงก์จะจัดการด้วย secret key ที่เก็บไว้ในเบราว์เซอร์ของคุณ
         ผู้ที่มี key สามารถแก้ไขหรือลบลิงก์ของคุณได้ โปรดเก็บ key ไว้เป็นความลับและ
         <strong>สำรอง key ด้วยตนเอง</strong>
-    </p>
-    <p>
+      </p>
+      <p>
         หากคุณทำ key หาย อาจไม่สามารถกู้คืนลิงก์ได้ เราอาจช่วยกู้คืนให้ตามดุลยพินิจ
         แต่ไม่มีวิธียืนยันตัวตนอย่างเป็นทางการ จึงอาจปฏิเสธคำขอหากไม่สามารถตรวจสอบได้อย่างสมเหตุสมผล
         ว่าลิงก์นั้นเป็นของคุณ โปรดอย่าพึ่งพาการกู้คืน key
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        You do not need an account. Links are managed with a secret key stored in your browser.
+        Anyone with the key can edit or delete your links, so keep it private and
+        <strong>keep your own backup</strong>.
+      </p>
+      <p>
+        If you lose your key, you may not be able to recover your links. We may help at our discretion,
+        but we have no formal way to verify identity and may refuse if we cannot reasonably confirm that
+        a link is yours. Do not rely on recovery.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-content">
-    <h2>เนื้อหาและลิงก์ของคุณ</h2>
-    <p>
+  <h2>เนื้อหาและลิงก์ของคุณ · Your content and links</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         คุณยังคงเป็นเจ้าของไฟล์และลิงก์ที่ส่งเข้ามา และเป็นผู้รับผิดชอบต่อเนื้อหาดังกล่าวแต่เพียงผู้เดียว
         คุณยืนยันว่ามีสิทธิ์แชร์เนื้อหานั้น และอนุญาตให้เราจัดเก็บ ส่งต่อ และแสดงเนื้อหา
         เท่าที่จำเป็นต่อการให้บริการเท่านั้น
-    </p>
-    <p>
+      </p>
+      <p>
         <strong>ทุกอย่างแชร์ผ่านลิงก์</strong> ผู้ที่มีลิงก์ไฟล์สามารถดาวน์โหลดไฟล์ได้
         และผู้อื่นอาจคาดเดา slug ที่คุณกำหนดเองได้ อย่าอัปโหลดรหัสผ่าน เอกสารระบุตัวตน
         ข้อสอบที่ยังไม่เผยแพร่ หรือข้อมูลส่วนตัวและข้อมูลอ่อนไหวอื่น ๆ
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        You retain ownership of the files and links you submit and are solely responsible for them.
+        You confirm that you have the right to share them. You allow us to store, transmit and display
+        your content only as needed to provide the service.
+      </p>
+      <p>
+        <strong>Everything is shared by link.</strong> Anyone with a file link can download the file,
+        and custom slugs may be guessed. Do not upload passwords, identity documents, unreleased exam papers
+        or other private or sensitive information.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-storage">
-    <h2>ตัวเลือกการจัดเก็บไฟล์</h2>
-    <ul>
+  <h2>ตัวเลือกการจัดเก็บไฟล์ · Storage options</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <ul>
         <li>
-            <strong>จัดเก็บบนเซิร์ฟเวอร์ของเรา:</strong>
-            มีข้อจำกัดด้านขนาด จำนวนไฟล์ และระยะเวลาจัดเก็บ (7–90 วัน)
-            เมื่อไฟล์หมดอายุ ระบบจะลบอย่างถาวรและไม่สามารถกู้คืนได้ เราไม่มีระบบสำรองข้อมูลไฟล์
+          <strong>เซิร์ฟเวอร์ของเรา:</strong> มีข้อจำกัดด้านขนาด จำนวนไฟล์ และระยะเวลาจัดเก็บ (7–90 วัน)
+          เมื่อไฟล์หมดอายุ ระบบจะลบอย่างถาวรและไม่สามารถกู้คืนได้ เราไม่มีระบบสำรองข้อมูลไฟล์
         </li>
         <li>
-            <strong>จัดเก็บใน Google Drive:</strong>
-            ไฟล์จะอยู่ใน Drive ของคุณภายใต้บัญชีและข้อกำหนดของ Google
-            และจะไม่หมดอายุจนกว่าคุณจะลบ ยกเลิกการแชร์ หรือย้ายไฟล์ไปยังถังขยะ
-            เราไม่ได้เป็นผู้โฮสต์ไฟล์เหล่านี้ และไม่รับผิดชอบต่อบริการ โควตาพื้นที่
-            หรือความพร้อมใช้งานของ Google แอปจะตั้งค่าไฟล์เป็น "ทุกคนที่มีลิงก์สามารถดูได้"
-            คุณเปลี่ยนการตั้งค่าหรือยกเลิกการแชร์ได้ทุกเมื่อใน Drive
-            บัญชี Google ของโรงเรียนอาจบล็อกแอปจากผู้ให้บริการภายนอก ซึ่งอยู่นอกเหนือการควบคุมของเรา
+          <strong>Google Drive:</strong> ไฟล์จะอยู่ใน Drive ของคุณภายใต้บัญชีและข้อกำหนดของ Google
+          และจะไม่หมดอายุจนกว่าคุณจะลบ ยกเลิกการแชร์ หรือย้ายไฟล์ไปยังถังขยะ
+          เราไม่ได้เป็นผู้โฮสต์ไฟล์เหล่านี้ และไม่รับผิดชอบต่อบริการ โควตาพื้นที่ หรือความพร้อมใช้งานของ Google
+          แอปจะตั้งค่าไฟล์เป็น “ทุกคนที่มีลิงก์สามารถดูได้” คุณเปลี่ยนการตั้งค่าหรือยกเลิกการแชร์ได้ทุกเมื่อใน Drive
+          บัญชี Google ของโรงเรียนอาจบล็อกแอปจากผู้ให้บริการภายนอก ซึ่งอยู่นอกเหนือการควบคุมของเรา
         </li>
-    </ul>
+      </ul>
+    </div>
+    <div lang="en">
+      <ul>
+        <li>
+          <strong>Our server:</strong> Storage is limited by file size, file count and retention time
+          (7–90 days). Expired files are permanently deleted and cannot be recovered. We do not back up files.
+        </li>
+        <li>
+          <strong>Google Drive:</strong> Files stay in your Drive under your Google account and Google’s terms.
+          They do not expire unless you delete them, unshare them or move them to the trash. We do not host
+          these files and are not responsible for Google’s service, storage quotas or availability.
+          The app sets files to “Anyone with the link can view”; you can change or remove sharing in Drive
+          at any time. School Google accounts may block third-party apps, which we cannot control.
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div id="terms-subdomain">
-    <h2>Subdomain ฟรี (id.thatako.net)</h2>
-    <ul>
+  <h2>Subdomain ฟรี · Free subdomains (id.thatako.net)</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <ul>
         <li>
-            ลงทะเบียนด้วยบัญชี GitHub ได้ ชื่อ subdomain ใช้ได้เฉพาะ a–z, 0–9 และเครื่องหมาย
-            <code>-</code> บางชื่อสงวนไว้สำหรับระบบหรือโรงเรียน เช่น
-            <code>council</code>, <code>pr</code>, <code>go</code>, <code>api</code> และ <code>status</code>
+          ลงทะเบียนด้วยบัญชี GitHub ได้ ชื่อ subdomain ใช้ได้เฉพาะ a–z, 0–9 และเครื่องหมาย
+          <code>-</code> บางชื่อสงวนไว้สำหรับระบบหรือโรงเรียน เช่น <code>council</code>,
+          <code>pr</code>, <code>go</code>, <code>api</code> และ <code>status</code>
         </li>
         <li>
-            คุณเป็นเจ้าของหลัก (Primary Owner) และเพิ่มเจ้าของร่วม (Co-owner) ได้
-            เจ้าของหลักหรือเจ้าของร่วมสามารถแก้ไข DNS record ได้
-            แต่เฉพาะเจ้าของหลักเท่านั้นที่ลบโดเมนหรือเปลี่ยนเจ้าของได้
+          คุณเป็นเจ้าของหลัก (Primary Owner) และเพิ่มเจ้าของร่วม (Co-owner) ได้
+          เจ้าของหลักหรือเจ้าของร่วมสามารถแก้ไข DNS record ได้
+          แต่เฉพาะเจ้าของหลักเท่านั้นที่ลบโดเมนหรือเปลี่ยนเจ้าของได้
         </li>
         <li>
-            รองรับ record ประเภท CNAME, A, AAAA, TXT และ MX
-            คุณเป็นผู้รับผิดชอบต่ออีเมลที่ได้รับผ่านโดเมนดังกล่าว
+          รองรับ record ประเภท CNAME, A, AAAA, TXT และ MX
+          คุณเป็นผู้รับผิดชอบต่ออีเมลที่ได้รับผ่านโดเมนดังกล่าว
         </li>
         <li>
-            <strong>ข้อมูลการลงทะเบียนเป็นสาธารณะ:</strong> ชื่อ subdomain, DNS record
-            และชื่อผู้ใช้ GitHub ของเจ้าของหลักและเจ้าของร่วมจัดเก็บอยู่ใน repository สาธารณะ
-            ทุกคนจึงสามารถดูได้
+          <strong>ข้อมูลการลงทะเบียนเป็นสาธารณะ:</strong> ชื่อ subdomain, DNS record
+          และชื่อผู้ใช้ GitHub ของเจ้าของหลักและเจ้าของร่วมจัดเก็บอยู่ใน repository สาธารณะ
+          ทุกคนจึงสามารถดูได้
         </li>
         <li>
-            ห้ามจองชื่อไว้โดยไม่มีการใช้งานจริง ห้ามแอบอ้างว่าเป็นเว็บไซต์ทางการของโรงเรียน
-            และห้ามใช้โดเมนฟรีนี้เป็นฐานของบริการที่สร้างรายได้
-            อย่างไรก็ตาม คุณสามารถลงโฆษณาบนเว็บไซต์ของคุณเองได้ เช่น AdSense
+          ห้ามจองชื่อไว้โดยไม่มีการใช้งานจริง ห้ามแอบอ้างว่าเป็นเว็บไซต์ทางการของโรงเรียน
+          และห้ามใช้โดเมนฟรีนี้เป็นฐานของบริการที่สร้างรายได้
+          อย่างไรก็ตาม คุณสามารถลงโฆษณาบนเว็บไซต์ของคุณเองได้ เช่น AdSense
         </li>
         <li>
-            เราอาจระงับหรือเรียกคืน subdomain ที่ละเมิดข้อกำหนด มีผู้รายงานว่าไม่เหมาะสม
-            ปลายทางใช้งานไม่ได้เป็นเวลานานและติดต่อเจ้าของไม่ได้ หรือเป็นชื่อที่โรงเรียนจำเป็นต้องใช้
+          เราอาจระงับหรือเรียกคืน subdomain ที่ละเมิดข้อกำหนด มีผู้รายงานว่าไม่เหมาะสม
+          ปลายทางใช้งานไม่ได้เป็นเวลานานและติดต่อเจ้าของไม่ได้ หรือเป็นชื่อที่โรงเรียนจำเป็นต้องใช้
         </li>
-    </ul>
+      </ul>
+    </div>
+    <div lang="en">
+      <ul>
+        <li>
+          Register with a GitHub account. Names may contain only a–z, 0–9 and <code>-</code>.
+          Some names are reserved for the system or school, such as <code>council</code>,
+          <code>pr</code>, <code>go</code>, <code>api</code> and <code>status</code>.
+        </li>
+        <li>
+          You are the Primary Owner and may add Co-owners. Either may edit DNS records, but only the
+          Primary Owner can delete the domain or transfer ownership.
+        </li>
+        <li>
+          CNAME, A, AAAA, TXT and MX records are supported. You are responsible for any email you receive
+          through the domain.
+        </li>
+        <li>
+          <strong>Registration data is public:</strong> the subdomain name, DNS records and GitHub usernames
+          of owners and co-owners are stored in a public repository, where anyone can see them.
+        </li>
+        <li>
+          Do not reserve names without real use, impersonate the school’s official websites, or use this free
+          domain as the basis for a paid service. Ads on your own site, such as AdSense, are allowed.
+        </li>
+        <li>
+          We may suspend or reclaim a subdomain that violates these terms, is reported, has had a non-working
+          destination for a long time with no response from its owner, or uses a name the school needs.
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div id="terms-acceptable">
-    <h2>การใช้งานที่ห้าม</h2>
-    <p>ห้ามใช้บริการเพื่อสร้าง จัดเก็บ หรือเชื่อมโยงไปยังเนื้อหาต่อไปนี้:</p>
-    <ul>
+  <h2>การใช้งานที่ห้าม · Acceptable use</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>ห้ามใช้บริการเพื่อสร้าง จัดเก็บ หรือเชื่อมโยงไปยังเนื้อหาต่อไปนี้:</p>
+      <ul>
         <li>เนื้อหาลามกอนาจาร (NSFW) หรือเนื้อหาที่แสวงหาประโยชน์จากหรือเป็นอันตรายต่อผู้เยาว์</li>
         <li>เนื้อหาที่ผิดกฎหมายในประเทศไทยหรือในประเทศที่คุณอยู่ รวมถึงเนื้อหาที่ละเมิดลิขสิทธิ์</li>
         <li>ฟิชชิง มัลแวร์ สปายแวร์ ช่องโหว่ที่ใช้โจมตีระบบ (exploit) หรือไฟล์อันตรายอื่น ๆ</li>
         <li>
-            การคุกคาม การกลั่นแกล้ง วาจาสร้างความเกลียดชัง การข่มขู่
-            การเปิดเผยข้อมูลส่วนตัวของผู้อื่นโดยไม่ได้รับอนุญาต (doxxing)
-            หรือเนื้อหาที่มุ่งโจมตีบุคคล รวมถึงนักเรียนและครู
+          การคุกคาม การกลั่นแกล้ง วาจาสร้างความเกลียดชัง การข่มขู่
+          การเปิดเผยข้อมูลส่วนตัวของผู้อื่นโดยไม่ได้รับอนุญาต (doxxing)
+          หรือเนื้อหาที่มุ่งโจมตีบุคคล รวมถึงนักเรียนและครู
         </li>
         <li>การแอบอ้างเป็นครู เจ้าหน้าที่ หรือเว็บไซต์ทางการของโรงเรียน</li>
         <li>ข้อสอบหรือเนื้อหาที่นำไปใช้ทุจริตในการสอบ</li>
         <li>สแปม หรือลิงก์ที่ซ่อนปลายทางเพื่อหลอกลวงผู้อื่น</li>
-    </ul>
-    <p>
+      </ul>
+      <p>
         นอกจากนี้ ห้ามรบกวนหรือโจมตีระบบ ดึงข้อมูลในปริมาณมาก หลีกเลี่ยงข้อจำกัด
         เจาะเข้าระบบ หรือใช้บริการนี้เพื่อหลบเลี่ยงกฎของบริการอื่น
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>You must not use the service to create, store or link to:</p>
+      <ul>
+        <li>Sexually explicit (NSFW) content, or content that exploits or endangers minors.</li>
+        <li>Content that is illegal in Thailand or where you are, including copyright infringement.</li>
+        <li>Phishing, malware, spyware, exploits or other harmful files.</li>
+        <li>
+          Harassment, bullying, hate speech, threats, doxxing or content targeting individuals,
+          including students and teachers.
+        </li>
+        <li>Impersonation of teachers, staff or the school’s official websites.</li>
+        <li>Exam papers or material intended to facilitate cheating.</li>
+        <li>Spam or links that hide their destination to deceive people.</li>
+      </ul>
+      <p>
+        You must not disrupt or attack the service, scrape it at scale, bypass its limits, break into it,
+        or use it to evade another service’s rules.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-enforcement">
-    <h2>การรายงานและการดำเนินการ</h2>
-    <p>
+  <h2>การรายงานและการดำเนินการ · Reports and enforcement</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         เราตรวจสอบเนื้อหา <strong>เมื่อมีผู้รายงานเท่านั้น</strong> และไม่ได้สแกนไฟล์หรือเว็บไซต์ล่วงหน้า
         คุณรายงานได้ที่ <a href="mailto:abuse@thatako.net">abuse@thatako.net</a>
         หรือผ่าน<a href="/subdomain/abuse/">หน้ารายงานการใช้งานที่ไม่เหมาะสม</a>
-        โดยระบุ URL หลักฐาน และเหตุผล
-    </p>
-    <p>
-        เนื่องจากโครงการดำเนินงานโดยอาสาสมัคร โดยทั่วไปเราจะตอบกลับภายในไม่กี่วัน
-        แต่อาจใช้เวลานานขึ้นในช่วงสอบหรือวันหยุด กรณีฟิชชิง มัลแวร์
-        หรือเนื้อหาที่เป็นอันตรายอย่างชัดเจนจะได้รับการจัดการก่อน
-    </p>
-    <p>
+        โดยระบุ URL หลักฐาน และเหตุผล เนื่องจากโครงการดำเนินงานโดยอาสาสมัคร
+        โดยทั่วไปเราจะตอบกลับภายในไม่กี่วัน แต่อาจใช้เวลานานขึ้นในช่วงสอบหรือวันหยุด
+        กรณีฟิชชิง มัลแวร์ หรือเนื้อหาที่เป็นอันตรายอย่างชัดเจนจะได้รับการจัดการก่อน
+      </p>
+      <p>
         เราอาจปิดใช้งานหรือลบลิงก์ ไฟล์ หรือ subdomain รวมถึงบล็อก key หรือที่อยู่ใด ๆ
         ได้ทุกเมื่อโดยไม่ต้องแจ้งล่วงหน้า และอาจรายงานเนื้อหาที่ผิดกฎหมายต่อหน่วยงานที่เกี่ยวข้อง
         หากเป็นไฟล์ที่โฮสต์บน Drive โปรดรายงานไปยัง Google ด้วย
         หากคุณเห็นว่าเราตัดสินใจไม่ถูกต้อง สามารถยื่นอุทธรณ์ได้ที่
         <a href="mailto:abuse@thatako.net">abuse@thatako.net</a>
-    </p>
-    <p>
+      </p>
+      <p>
         <strong>ลิขสิทธิ์:</strong> หากเนื้อหาละเมิดผลงานของคุณ โปรดส่งอีเมลพร้อม
         (1) ลิงก์ไปยังเนื้อหาที่ละเมิด (2) ผลงานต้นฉบับหรือหลักฐานแสดงความเป็นเจ้าของ
         (3) ชื่อและช่องทางติดต่อ และ (4) คำยืนยันว่าคุณแจ้งโดยสุจริต
         เราอาจลบเนื้อหาหรือปิดการเข้าถึงเป็นการชั่วคราว และขอให้เจ้าของลิงก์ชี้แจง
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        We review content <strong>only when it is reported</strong>; we do not scan files or websites in advance.
+        Report an issue at <a href="mailto:abuse@thatako.net">abuse@thatako.net</a> or through the
+        <a href="/subdomain/abuse/">abuse report page</a>. Include the URL, supporting evidence and reason.
+        As a volunteer project, we usually reply within a few days, though responses may take longer during
+        exams and holidays. Clear cases involving phishing, malware or dangerous content are prioritised.
+      </p>
+      <p>
+        We may disable or delete any link, file or subdomain, or block any key or address, at any time without
+        notice. We may report illegal content to the relevant authorities. For files hosted on Drive, please
+        also report them to Google. If you believe we made the wrong decision, appeal at
+        <a href="mailto:abuse@thatako.net">abuse@thatako.net</a>.
+      </p>
+      <p>
+        <strong>Copyright:</strong> If content infringes your work, email us with (1) the link to the
+        infringing content, (2) the original work or proof of ownership, (3) your name and contact details,
+        and (4) a statement that you are reporting in good faith. We may remove the content or temporarily
+        disable access and ask the link owner to respond.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-google">
-    <h2>บริการของ Google</h2>
-    <p>
+  <h2>บริการของ Google · Google services</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         หากคุณเชื่อมต่อ Google Drive คุณต้องยอมรับข้อกำหนดในการให้บริการของ Google ด้วย
-        แอปขอสิทธิ์ <code>drive.file</code>, <code>openid</code> และ
-        <code>userinfo.email</code> ตามที่อธิบายไว้ใน
-        <a href="/privacy/">นโยบายความเป็นส่วนตัว</a>
-    </p>
-    <p>
+        แอปขอสิทธิ์ <code>drive.file</code>, <code>openid</code> และ <code>userinfo.email</code>
+        ตามที่อธิบายไว้ใน<a href="/privacy/">นโยบายความเป็นส่วนตัว</a>
         คุณเพิกถอนสิทธิ์ได้ทุกเมื่อที่
-        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">
-            myaccount.google.com/permissions
-        </a>
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>
         โครงการนี้ไม่มีส่วนเกี่ยวข้องกับ Google และไม่ได้รับการรับรองจาก Google
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        If you connect Google Drive, you also agree to Google’s Terms of Service. The app requests the
+        <code>drive.file</code>, <code>openid</code> and <code>userinfo.email</code> scopes, as described in
+        the <a href="/privacy/">Privacy Policy</a>. You can revoke access at any time at
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>.
+        This project is not affiliated with or endorsed by Google.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-disclaimer">
-    <h2>ไม่มีการรับประกันและข้อจำกัดความรับผิด</h2>
-    <p>
-        บริการนี้ให้บริการ "ตามสภาพที่เป็นอยู่" และ "ตามที่มีให้บริการ" โดยไม่มีการรับประกันใด ๆ
-        ไม่ว่าจะเป็นเรื่องความพร้อมใช้งาน ความถูกต้อง ความคงอยู่ของไฟล์
-        หรือความเหมาะสมต่อวัตถุประสงค์เฉพาะ
-    </p>
-    <p>
+  <h2>ไม่มีการรับประกันและข้อจำกัดความรับผิด · No warranty and limitation of liability</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
+        บริการนี้ให้บริการ “ตามสภาพที่เป็นอยู่” และ “ตามที่มีให้บริการ” โดยไม่มีการรับประกันใด ๆ
+        ไม่ว่าจะเป็นเรื่องความพร้อมใช้งาน ความถูกต้อง ความคงอยู่ของไฟล์ หรือความเหมาะสมต่อวัตถุประสงค์เฉพาะ
         ภายใต้ขอบเขตสูงสุดที่กฎหมายอนุญาต ผู้ดูแลไม่รับผิดชอบต่อการสูญหายของข้อมูล
         การไม่สามารถเข้าถึงบริการ หรือความเสียหายทางอ้อมหรือความเสียหายสืบเนื่อง
-        โปรดเก็บสำเนาของข้อมูลสำคัญไว้ด้วยตนเอง
-        เนื้อหาที่อยู่ในลิงก์และ subdomain เป็นความรับผิดชอบของเจ้าของ
-        เราไม่ได้ตรวจสอบหรือรับรองเนื้อหาดังกล่าว
-    </p>
+        โปรดเก็บสำเนาของข้อมูลสำคัญไว้ด้วยตนเอง เนื้อหาที่อยู่ในลิงก์และ subdomain
+        เป็นความรับผิดชอบของเจ้าของ เราไม่ได้ตรวจสอบหรือรับรองเนื้อหาดังกล่าว
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        The service is provided “as is” and “as available”, without warranties of any kind, including
+        warranties of availability, accuracy, file durability or fitness for a particular purpose.
+        To the fullest extent permitted by law, the operator is not liable for data loss, loss of access,
+        or indirect or consequential damages. Keep your own copies of anything important.
+        Content on links and subdomains is the owner’s responsibility; we do not review or endorse it.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-termination">
-    <h2>การยุติการใช้งาน</h2>
-    <p>
+  <h2>การยุติการใช้งาน · Ending your use</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         คุณหยุดใช้บริการและลบลิงก์ได้ทุกเมื่อที่ <a href="/short/">go.thatako.net</a>
         ส่วน subdomain สามารถลบได้จาก<a href="/subdomain/register/">หน้าจัดการ</a>
         เราอาจระงับหรือยุติการเข้าถึงบริการเมื่อจำเป็นเพื่อปกป้องบริการหรือบุคคลอื่น
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        You can stop using the service and delete your links at <a href="/short/">go.thatako.net</a>.
+        You can delete a subdomain from the <a href="/subdomain/register/">management page</a>.
+        We may suspend or end access when needed to protect the service or other people.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-law">
-    <h2>กฎหมายที่ใช้บังคับและการเปลี่ยนแปลง</h2>
-    <p>
+  <h2>กฎหมายที่ใช้บังคับและการเปลี่ยนแปลง · Governing law and changes</h2>
+  <div class="bi-grid">
+    <div lang="th">
+      <p>
         ข้อกำหนดนี้อยู่ภายใต้กฎหมายไทย เราอาจปรับปรุงข้อกำหนดเป็นครั้งคราว
-        วันที่มีผลที่แสดงไว้ด้านบนคือวันที่ของฉบับปัจจุบัน
-        และเราจะแจ้งการเปลี่ยนแปลงสำคัญที่ <a href="https://thatako.net">thatako.net</a>
+        วันที่มีผลที่แสดงไว้ด้านบนคือวันที่ของฉบับปัจจุบัน และเราจะแจ้งการเปลี่ยนแปลงสำคัญที่
+        <a href="https://thatako.net">thatako.net</a>
         การใช้บริการต่อหลังจากมีการเปลี่ยนแปลง ถือว่าคุณยอมรับข้อกำหนดฉบับที่ปรับปรุงแล้ว
-    </p>
+      </p>
+    </div>
+    <div lang="en">
+      <p>
+        These terms are governed by the laws of Thailand. We may update them from time to time.
+        The effective date above shows the current version, and significant changes will be announced at
+        <a href="https://thatako.net">thatako.net</a>. If you continue using the service after a change,
+        you accept the revised terms.
+      </p>
+    </div>
+  </div>
 </div>
 
 <div id="terms-contact">
-    <h2>ติดต่อ</h2>
-    <p>
-        <a href="mailto:abuse@thatako.net">abuse@thatako.net</a> (รายงาน/อุทธรณ์) ·
-        <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> (ความเป็นส่วนตัว) ·
-        <a href="https://aitji.is-a.dev/discord" target="_blank" rel="noopener">Discord @aitji</a> ·
-        <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener">GitHub Issues</a>
-    </p>
+  <h2>ติดต่อ · Contact</h2>
+  <p>
+    <a href="mailto:abuse@thatako.net">abuse@thatako.net</a> (รายงาน/อุทธรณ์ · reports/appeals) ·
+    <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> (ความเป็นส่วนตัว · privacy) ·
+    <a href="https://aitji.is-a.dev/discord" target="_blank" rel="noopener">Discord @aitji</a> ·
+    <a href="https://github.com/aitji/thatako.net/issues" target="_blank" rel="noopener">GitHub Issues</a>
+  </p>
 </div>
-```
+
+<aside class="toc-inline" style="display: none;">
+  <div class="toc-label">on this page</div>
+  <a href="#terms-service" class="toc-link">บริการนี้คืออะไร · The service</a>
+  <a href="#terms-eligibility" class="toc-link">ใครใช้ได้บ้าง · Who can use it</a>
+  <a href="#terms-accounts" class="toc-link">Secret key · รหัสลับ</a>
+  <a href="#terms-content" class="toc-link">เนื้อหาและลิงก์ของคุณ · Your content and links</a>
+  <a href="#terms-storage" class="toc-link">ตัวเลือกการเก็บไฟล์ · Storage options</a>
+  <a href="#terms-subdomain" class="toc-link">Subdomain ฟรี · Free subdomains</a>
+  <a href="#terms-acceptable" class="toc-link">การใช้งานที่ห้าม · Acceptable use</a>
+  <a href="#terms-enforcement" class="toc-link">รายงานและการดำเนินการ · Reports and enforcement</a>
+  <a href="#terms-google" class="toc-link">บริการของ Google · Google services</a>
+  <a href="#terms-disclaimer" class="toc-link">ไม่มีการรับประกัน · No warranty</a>
+  <a href="#terms-termination" class="toc-link">การยุติการใช้งาน · Ending your use</a>
+  <a href="#terms-law" class="toc-link">กฎหมายและการเปลี่ยนแปลง · Law and changes</a>
+  <a href="#terms-contact" class="toc-link">ติดต่อ · Contact</a>
+</aside>
