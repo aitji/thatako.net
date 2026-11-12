@@ -2,7 +2,7 @@
 	'use strict'
 	const M = JSON.parse(document.getElementById('m').textContent)
 	const app = document.getElementById('app')
-	const files = (M.files || []).map((f, i) => ({ i, name: String(f?.name || 'file-' + (i + 1)), size: +f?.size || 0, id: f?.id, type: String(f?.type || '') }))
+	const files = (M.files || []).map((f, i) => ({ i, k: f?.i ?? i, name: String(f?.name || 'file-' + (i + 1)), size: +f?.size || 0, id: f?.id, type: String(f?.type || '') }))
 	const sel = new Set(files.map(f => f.i))
 
 	// helpers
@@ -25,8 +25,8 @@
 	files.forEach(f => f.kind = kindOf(f))
 
 	const R2_TILE_MAX = 6 * 1024 * 1024
-	const dlUrl = f => M.drive ? 'https://drive.google.com/uc?export=download&id=' + enc(f.id) : '/api/dl/' + M.id + '/' + f.i
-	const rawUrl = f => M.drive ? 'https://drive.usercontent.google.com/download?id=' + enc(f.id) + '&export=download&confirm=t' : '/api/dl/' + M.id + '/' + f.i + '?inline=1'
+	const dlUrl = f => M.drive ? 'https://drive.google.com/uc?export=download&id=' + enc(f.id) : '/api/dl/' + M.id + '/' + f.k
+	const rawUrl = f => M.drive ? 'https://drive.usercontent.google.com/download?id=' + enc(f.id) + '&export=download&confirm=t' : '/api/dl/' + M.id + '/' + f.k + '?inline=1'
 	const pic = (f, w, crop) => M.drive
 		? ['https://lh3.googleusercontent.com/d/' + enc(f.id) + '=w' + w + (crop ? '-h' + w + '-c' : ''), 'https://drive.google.com/thumbnail?id=' + enc(f.id) + '&sz=w' + w]
 		: f.kind === 'image' ? [rawUrl(f)] : []

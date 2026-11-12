@@ -20,6 +20,9 @@ const rand = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => ALP
 const cleanName = n => String(n || 'file').replace(/[\u0000-\u001f\u007f\\/:*?"<>|]+/g, '_').trim().slice(0, 200) || 'file'
 const rkey = (fid, i) => `u/${fid}/${i}`
 
+const NAMES_MAX = 20
+const nameList = files => files.slice(0, NAMES_MAX).map(f => f.name)
+
 // signed token
 const mac = async (env, d) => b64u(await crypto.subtle.sign('HMAC',
 	await crypto.subtle.importKey('raw', enc.encode(env.UPLOAD_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']),
@@ -57,7 +60,55 @@ async function keyUsage(env, key, h) {
 	return sum
 }
 
-// delete / expire
+const metaCache = new Map()
+const META_TTL = 10_000
+
+async function getMeta(env, fid, fresh = false) {
+	const c = metaCache.get(fid)
+	if (!fresh && c && Date.now() - c.at < META_TTL) return c.m
+	const m = await env.LINKS.get('f:' + fid, 'json')
+	if (metaCache.size > 500) metaCache.clear()
+	metaCache.set(fid, { m, at: Date.now() })
+	return m
+}
+
+const normMeta = m => {
+	const files = (m.files || []).map((f, i) => ({ ...f, i: f?.i ?? i }))
+	return { ...m, files, next: Math.max(+m.next || 0, ...files.map(f => f.i + 1)) }
+}
+
+async function putMeta(env, data, m) {
+	const total = m.files.reduce((a, f) => a + (+f.size || 0), 0)
+	const meta = { files: m.files, total, exp: data.type === 'file' ? m.exp : 0, next: m.next }
+	await env.LINKS.put('f:' + data.fid, JSON.stringify(meta), data.type === 'file' ? { expiration: Math.floor((meta.exp + 7 * DAY) / 1000) } : undefined)
+	metaCache.set(data.fid, { m: meta, at: Date.now() })
+	return meta
+}
+
+// meta link
+async function saveLink(env, slug, data, m) {
+	const meta = await putMeta(env, data, m)
+	await env.LINKS.put('l:' + slug, JSON.stringify({ ...data, count: m.files.length, total: meta.total, exp: meta.exp, names: nameList(m.files) }))
+	cache.at = 0
+	return meta
+}
+
+async function own(env, h, key, rawSlug) {
+	const slug = h.norm(String(rawSlug || ''))
+	if (!key || !slug) return null
+	const data = await env.LINKS.get('l:' + slug, 'json')
+	if (!data || data.key !== key || (data.type !== 'file' && data.type !== 'drive')) return null
+	return { slug, data }
+}
+
+async function live(env, data) {
+	const raw = await getMeta(env, data.fid, true)
+	if (!raw) return { msg: 'expired' }
+	const m = normMeta(raw)
+	if (data.type === 'file' && !(m.exp > Date.now())) return { msg: 'expired' }
+	return { m }
+}
+
 export async function purge(env, fid) {
 	let cursor
 	do {
@@ -95,6 +146,12 @@ export async function handleFile(req, env, path, h) {
 		if (req.method === 'POST' && path === 'api/file/done') return await done(req, env, h)
 		if (req.method === 'POST' && path === 'api/file/abort') return await abort(req, env, h)
 		if (req.method === 'POST' && path === 'api/file/drive') return await driveLink(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/info') return await info(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/rename') return await rename(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/remove') return await remove(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/add-init') return await addInit(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/add-done') return await addDone(req, env, h)
+		if (req.method === 'POST' && path === 'api/file/drive-add') return await driveAdd(req, env, h)
 	} catch (e) {
 		console.error('[files]', path, e?.message)
 		return h.j({ ok: false, msg: 'upload failed' })
@@ -171,7 +228,7 @@ async function done(req, env, h) {
 			const o = await env.FILES.resumeMultipartUpload(rkey(t.f, t.i), t.u).complete(parts)
 			if (o.size !== t.s) throw new Error('size mismatch')
 			exp = t.e || +o.customMetadata?.exp || Date.now() + 30 * DAY
-			list.push({ name: t.n || o.customMetadata?.name || `file-${t.i + 1}`, size: o.size, type: String(f.type || '').slice(0, 100) })
+			list.push({ i: t.i, name: t.n || o.customMetadata?.name || `file-${t.i + 1}`, size: o.size, type: String(f.type || '').slice(0, 100) })
 		}
 		if (await env.LINKS.get('l:' + slug)) throw Object.assign(new Error('dup'), { dup: true })
 	} catch (e) {
@@ -181,8 +238,8 @@ async function done(req, env, h) {
 
 	const total = list.reduce((a, f) => a + f.size, 0)
 
-	await env.LINKS.put('f:' + fid, JSON.stringify({ files: list, total, exp }), { expiration: Math.floor((exp + 7 * DAY) / 1000) })
-	await env.LINKS.put('l:' + slug, JSON.stringify({ to: `https://go.thatako.net/${slug}`, key, type: 'file', fid, count: list.length, total, exp }))
+	await putMeta(env, { type: 'file', fid }, { files: list, exp, next: list.length })
+	await env.LINKS.put('l:' + slug, JSON.stringify({ to: `https://go.thatako.net/${slug}`, key, type: 'file', fid, count: list.length, total, exp, names: nameList(list) }))
 	const ul = await h.getUserList(env.LINKS, key)
 	if (!ul.includes(slug)) ul.push(slug)
 	await h.setUserList(env.LINKS, key, ul)
@@ -198,6 +255,144 @@ async function abort(req, env, h) {
 		if (t) try { await env.FILES.resumeMultipartUpload(rkey(t.f, t.i), t.u).abort() } catch { }
 	}
 	return h.j({ ok: true })
+}
+
+async function info(req, env, h) {
+	const { key, slug } = await req.json()
+	const o = await own(env, h, key, slug)
+	if (!o) return h.j({ ok: false, msg: 'not found' })
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const c = cfg(env)
+	return h.j({
+		ok: true, type: o.data.type, exp: r.m.exp || 0, maxFiles: c.maxFiles, perUpload: c.perUpload,
+		files: r.m.files.map(f => ({ k: f.i, name: f.name, size: f.size, type: f.type || '' })),
+	})
+}
+
+async function rename(req, env, h) {
+	const { key, slug, k, name } = await req.json()
+	const o = await own(env, h, key, slug)
+	if (!o) return h.j({ ok: false, msg: 'not found' })
+	if (!String(name || '').trim()) return h.j({ ok: false, msg: 'bad name' })
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const f = r.m.files.find(x => x.i === +k)
+	if (!f) return h.j({ ok: false, msg: 'no such file' })
+	f.name = cleanName(name)
+	await saveLink(env, o.slug, o.data, r.m)
+	return h.j({ ok: true, name: f.name })
+}
+
+async function remove(req, env, h) {
+	const { key, slug, k } = await req.json()
+	const o = await own(env, h, key, slug)
+	if (!o) return h.j({ ok: false, msg: 'not found' })
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const f = r.m.files.find(x => x.i === +k)
+	if (!f) return h.j({ ok: false, msg: 'no such file' })
+	if (r.m.files.length <= 1) return h.j({ ok: false, msg: 'last file' })
+
+	r.m.files = r.m.files.filter(x => x !== f)
+	await saveLink(env, o.slug, o.data, r.m)
+	if (o.data.type === 'file') await env.FILES.delete(rkey(o.data.fid, f.i)).catch(e => console.error('[files] remove', e?.message))
+	cache.at = 0
+	return h.j({ ok: true })
+}
+
+async function addInit(req, env, h) {
+	const { key, slug, files } = await req.json()
+	const c = cfg(env)
+	const o = await own(env, h, key, slug)
+	if (!o || o.data.type !== 'file') return h.j({ ok: false, msg: 'not found' })
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const m = r.m
+
+	if (!Array.isArray(files) || !files.length) return h.j({ ok: false, msg: 'bad files' })
+	if (m.files.length + files.length > c.maxFiles) return h.j({ ok: false, msg: 'too many files' })
+	const sizes = files.map(f => Math.floor(+f.size))
+	if (sizes.some(s => !(s > 0))) return h.j({ ok: false, msg: 'bad files' })
+	const total = sizes.reduce((a, b) => a + b, 0)
+	if (total > c.perUpload) return h.j({ ok: false, msg: 'too big' })
+
+	const [u, mine] = await Promise.all([usage(env), keyUsage(env, key, h)])
+	if (u.bytes + total > c.total) return h.j({ ok: false, msg: 'storage full' })
+	if (mine + total > c.perKey) return h.j({ ok: false, msg: 'key quota' })
+
+	const start = m.next
+	m.next += files.length
+	await putMeta(env, o.data, m)
+
+	const out = await Promise.all(files.map(async (f, n) => {
+		const name = cleanName(f.name), i = start + n
+		const mp = await env.FILES.createMultipartUpload(rkey(o.data.fid, i), { customMetadata: { name, exp: String(m.exp) } })
+		return { token: await sign(env, { f: o.data.fid, i, u: mp.uploadId, s: sizes[n], n: name, e: m.exp, x: Date.now() + DAY }) }
+	}))
+	return h.j({ ok: true, chunk: CHUNK, files: out })
+}
+
+async function addDone(req, env, h) {
+	const { key, slug, files } = await req.json()
+	const o = await own(env, h, key, slug)
+	if (!o || o.data.type !== 'file') return h.j({ ok: false, msg: 'not found' })
+	if (!Array.isArray(files) || !files.length) return h.j({ ok: false, msg: 'bad files' })
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const m = r.m
+
+	const jobs = []
+	for (const f of files) {
+		const t = await verify(env, f.token)
+		if (!t || t.f !== o.data.fid) return h.j({ ok: false, msg: 'bad token' })
+		if (m.files.some(x => x.i === t.i) || jobs.some(x => x.t.i === t.i)) return h.j({ ok: false, msg: 'duplicate' })
+		jobs.push({ t, f })
+	}
+
+	const added = []
+	try {
+		for (const { t, f } of jobs) {
+			const parts = [...f.parts].sort((a, b) => a.partNumber - b.partNumber)
+			const obj = await env.FILES.resumeMultipartUpload(rkey(t.f, t.i), t.u).complete(parts)
+			if (obj.size !== t.s) throw new Error('size mismatch')
+			added.push({ i: t.i, name: t.n || obj.customMetadata?.name || `file-${t.i + 1}`, size: obj.size, type: String(f.type || '').slice(0, 100) })
+		}
+	} catch (e) {
+		for (const { t } of jobs) {
+			try { await env.FILES.resumeMultipartUpload(rkey(t.f, t.i), t.u).abort() } catch { }
+			try { await env.FILES.delete(rkey(t.f, t.i)) } catch { }
+		}
+		cache.at = 0
+		return h.j({ ok: false, msg: 'upload failed' })
+	}
+
+	m.files.push(...added)
+	await saveLink(env, o.slug, o.data, m)
+	return h.j({ ok: true, count: m.files.length })
+}
+
+async function driveAdd(req, env, h) {
+	const { key, slug, token, files } = await req.json()
+	const c = cfg(env)
+	const o = await own(env, h, key, slug)
+	if (!o || o.data.type !== 'drive') return h.j({ ok: false, msg: 'not found' })
+	if (!token || !Array.isArray(files) || !files.length) return h.j({ ok: false, msg: 'bad files' })
+
+	const ids = files.map(f => String(f?.id || ''))
+	if (ids.some(id => !/^[\w-]{10,100}$/.test(id)) || new Set(ids).size !== ids.length) return h.j({ ok: false, msg: 'bad files' })
+
+	const r = await live(env, o.data)
+	if (!r.m) return h.j({ ok: false, msg: r.msg })
+	const m = r.m
+	if (m.files.length + ids.length > c.maxFiles) return h.j({ ok: false, msg: 'too many files' })
+	if (ids.some(id => m.files.some(f => f.id === id))) return h.j({ ok: false, msg: 'duplicate' })
+
+	const list = await driveVerify(ids, token)
+	if (!list) return h.j({ ok: false, msg: 'drive denied' })
+	for (const f of list) m.files.push({ i: m.next++, ...f })
+	await saveLink(env, o.slug, o.data, m)
+	return h.j({ ok: true, count: m.files.length })
 }
 
 const TEXT = 'text/plain; charset=utf-8'
@@ -223,12 +418,11 @@ async function download(req, env, path) {
 	const o = await env.FILES.get(rkey(fid, i), { range: req.headers, onlyIf: req.headers })
 	if (!o) return new Response('gone', { status: 410 })
 
-	let name = o.customMetadata?.name, exp = +o.customMetadata?.exp
-	if (!name || !exp) {
-		const m = await env.LINKS.get('f:' + fid, 'json')
-		name ||= m?.files?.[i]?.name
-		exp ||= +m?.exp
-	}
+	const m = await getMeta(env, fid)
+	const entry = m?.files?.find((f, n) => (f?.i ?? n) === +i)
+	if (m && !entry) return new Response('gone', { status: 410 })
+	const name = entry?.name || o.customMetadata?.name
+	const exp = +o.customMetadata?.exp || +m?.exp
 	if (!(exp > Date.now())) return new Response('gone', { status: 410 })
 
 	const safe = cleanName(name), dot = safe.lastIndexOf('.')
@@ -272,15 +466,17 @@ const PAGE_HEADERS = {
 async function repair(env, slug, data, m) {
 	const files = []
 	let exp = +m.exp || 0
-	for (const [i, f] of (m.files || []).entries()) {
-		const h = await env.FILES.head(rkey(data.fid, i)).catch(() => null)
+	for (const [n, f] of (m.files || []).entries()) {
+		const k = f?.i ?? n
+		const h = await env.FILES.head(rkey(data.fid, k)).catch(() => null)
 		exp ||= +h?.customMetadata?.exp || (h ? h.uploaded.getTime() + 30 * DAY : 0)
-		files.push({ name: f?.name || h?.customMetadata?.name || `file-${i + 1}`, size: f?.size || h?.size || 0, type: f?.type || '' })
+		files.push({ i: k, name: f?.name || h?.customMetadata?.name || `file-${k + 1}`, size: f?.size || h?.size || 0, type: f?.type || '' })
 	}
 	if (!exp) return null
-	const fixed = { files, total: files.reduce((a, f) => a + f.size, 0), exp }
+	const fixed = { files, total: files.reduce((a, f) => a + f.size, 0), exp, next: Math.max(+m.next || 0, ...files.map(f => f.i + 1)) }
 	await env.LINKS.put('f:' + data.fid, JSON.stringify(fixed), { expiration: Math.floor((exp + 7 * DAY) / 1000) })
-	if (slug) await env.LINKS.put('l:' + slug, JSON.stringify({ ...data, count: files.length, total: fixed.total, exp }))
+	metaCache.delete(data.fid)
+	if (slug) await env.LINKS.put('l:' + slug, JSON.stringify({ ...data, count: files.length, total: fixed.total, exp, names: nameList(files) }))
 	return fixed
 }
 
@@ -298,6 +494,18 @@ export async function filePage(env, data, slug) {
 }
 
 // google drive link
+async function driveVerify(ids, token) {
+	const list = []
+	for (const id of ids) {
+		const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=id,name,size,mimeType,ownedByMe,trashed`, { headers: { authorization: 'Bearer ' + token } })
+		if (!r.ok) return null
+		const d = await r.json()
+		if (!d.ownedByMe || d.trashed) return null
+		list.push({ id: d.id, name: cleanName(d.name), size: +d.size || 0, type: String(d.mimeType || '').slice(0, 100) })
+	}
+	return list
+}
+
 async function driveLink(req, env, h) {
 	const { key, slug: raw, token, files } = await req.json()
 	const c = cfg(env)
@@ -310,19 +518,14 @@ async function driveLink(req, env, h) {
 	if (!h.validSlug(slug)) return h.j({ ok: false, msg: 'bad slug' })
 	if (await env.LINKS.get('l:' + slug)) return h.j({ ok: false, msg: 'duplicate' })
 
-	const list = []
-	for (const id of ids) {
-		const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=id,name,size,mimeType,ownedByMe,trashed`, { headers: { authorization: 'Bearer ' + token } })
-		if (!r.ok) return h.j({ ok: false, msg: 'drive denied' })
-		const d = await r.json()
-		if (!d.ownedByMe || d.trashed) return h.j({ ok: false, msg: 'drive denied' })
-		list.push({ id: d.id, name: cleanName(d.name), size: +d.size || 0, type: String(d.mimeType || '').slice(0, 100) })
-	}
+	const list = await driveVerify(ids, token)
+	if (!list) return h.j({ ok: false, msg: 'drive denied' })
+	list.forEach((f, i) => f.i = i)
 
 	const fid = rand(12), total = list.reduce((a, f) => a + f.size, 0)
 	if (await env.LINKS.get('l:' + slug)) return h.j({ ok: false, msg: 'duplicate' })
-	await env.LINKS.put('f:' + fid, JSON.stringify({ files: list, total, exp: 0 }))
-	await env.LINKS.put('l:' + slug, JSON.stringify({ to: `https://go.thatako.net/${slug}`, key, type: 'drive', fid, count: list.length, total, exp: 0 }))
+	await env.LINKS.put('f:' + fid, JSON.stringify({ files: list, total, exp: 0, next: list.length }))
+	await env.LINKS.put('l:' + slug, JSON.stringify({ to: `https://go.thatako.net/${slug}`, key, type: 'drive', fid, count: list.length, total, exp: 0, names: nameList(list) }))
 	const ul = await h.getUserList(env.LINKS, key)
 	if (!ul.includes(slug)) ul.push(slug)
 	await h.setUserList(env.LINKS, key, ul)

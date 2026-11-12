@@ -9,7 +9,7 @@ window.ModalManager = { // modal manager
     }
 }
 
-;['editModal', 'qrModal'].forEach(id => { // overlay
+;['editModal', 'qrModal', 'filesModal'].forEach(id => { // overlay
     const overlay = document.getElementById(id)
     if (!overlay) return
     overlay.addEventListener('click', e => {
@@ -28,11 +28,14 @@ const bindClose = (btnId, modalId) => {
 bindClose('editModalClose', 'editModal')
 bindClose('editModalCancel', 'editModal')
 bindClose('qrModalClose', 'qrModal')
+bindClose('filesModalClose', 'filesModal')
+bindClose('filesModalDone', 'filesModal')
 
 document.addEventListener('keydown', e => { // esc
     if (e.key === 'Escape') {
         ModalManager.close('editModal')
         ModalManager.close('qrModal')
+        ModalManager.close('filesModal')
     }
 })
 
@@ -80,86 +83,4 @@ window.bootstrap = {
     },
 
     Tooltip: class { constructor() {} }
-}
-
-// list rendering
-const listEl = document.getElementById('list')
-if (listEl) {
-    const listDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
-
-    Object.defineProperty(listEl, 'innerHTML', {
-        set(html) {
-            if (!html) return listDescriptor.set.call(this, html)
-
-            if (html.includes('btn-outline-danger') ||
-                html.includes('btn-outline-secondary') ||
-                html.includes('data-edit')) {
-
-                const tmp = document.createElement('tbody')
-                listDescriptor.set.call(tmp, html)
-
-                const rows = tmp.querySelectorAll('tr')
-                let newHtml = ''
-
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td')
-                    if (cells.length < 3) {
-                        newHtml += row.outerHTML
-                        return
-                    }
-
-                    const slugCell = cells[0].innerHTML
-                    const toCell = cells[1].textContent.trim()
-                    const btns = cells[2].querySelectorAll('button')
-
-                    let actions = ''
-                    btns.forEach(btn => {
-                        if (btn.dataset.edit !== undefined)
-                            actions += `<button class="btn btn-ghost" data-edit="${btn.dataset.edit}" data-to="${btn.dataset.to}">
-                                <i class="fa-solid fa-pen" aria-hidden="true"></i> แก้ไข
-                            </button>`
-                        else if (btn.dataset.qr !== undefined)
-                            actions += `<button class="btn btn-ghost" data-qr="${btn.dataset.qr}">
-                                <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
-                            </button>`
-                        else if (btn.dataset.revoke !== undefined)
-                            actions += `<button class="btn btn-danger" data-revoke="${btn.dataset.revoke}">
-                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                            </button>`
-                    })
-
-                    newHtml += `
-                    <tr>
-                        <td class="link-slug">${slugCell}</td>
-                        <td class="link-to" title="${toCell}">${toCell}</td>
-                        <td><div class="link-actions">${actions}</div></td>
-                    </tr>`
-                })
-
-                listDescriptor.set.call(this, newHtml)
-            }
-            else if (html.includes('ยังไม่มีลิงก์')) {
-                listDescriptor.set.call(this, `
-                    <tr>
-                        <td colspan="3">
-                            <div class="empty-state">
-                                <div style="display:flex;justify-content:center">
-                                    <i class="fa-solid fa-link-slash"
-                                       aria-hidden="true"
-                                       style="font-size:24px;opacity:0.3"></i>
-                                </div>
-                                ยังไม่มีลิงก์ - สร้างลิงก์แรกได้เลย
-                            </div>
-                        </td>
-                    </tr>
-                `)
-            }
-            else {
-                listDescriptor.set.call(this, html)
-            }
-        },
-        get() {
-            return listDescriptor.get.call(this)
-        }
-    })
 }

@@ -95,8 +95,7 @@
     <link rel="stylesheet" href="../zStyles/page/helper.css">
     <link rel="stylesheet" href="../zStyles/theme.css">
 
-    <!-- qr-lib -->
-    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <!-- qr-code-styling is loaded on demand by qrui.js (first time the qr dialog opens) -->
 </head>
 
 <body>
@@ -221,6 +220,10 @@
                                 <button type="button" class="btn btn-ghost" id="driveConnect">
                                     <i class="fa-brands fa-google" aria-hidden="true"></i> <span id="driveBtnText">เชื่อมต่อ Google Drive</span>
                                 </button>
+                                <button type="button" class="btn btn-ghost" id="driveLogout" hidden
+                                    title="ออกจากบัญชี Google และยกเลิกสิทธิ์ที่ให้เว็บนี้">
+                                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> ออกจากระบบ
+                                </button>
                                 <div class="muted" id="driveStatus"></div>
                             </div>
                             <div class="field" id="ageField">
@@ -267,6 +270,32 @@
                     </button>
                 </div>
 
+                <div class="list-tools">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" id="search" autocomplete="off" spellcheck="false"
+                            placeholder="ค้นหาลิงก์ย่อ, URL หรือชื่อไฟล์"
+                            aria-label="ค้นหาลิงก์" title="ค้นหาจากลิงก์ย่อ URL ปลายทาง และชื่อไฟล์ (กด / เพื่อค้นหา)">
+                        <button type="button" id="searchClear" class="search-clear" hidden aria-label="ล้างคำค้นหา"
+                            title="ล้างคำค้นหา">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="filter-chips" id="filters" role="group" aria-label="กรองตามประเภท">
+                        <button type="button" class="chip active" data-filter="all" aria-pressed="true">
+                            ทั้งหมด <span class="chip-n" data-count="all">0</span>
+                        </button>
+                        <button type="button" class="chip" data-filter="url" aria-pressed="false">
+                            <i class="fa-solid fa-link" aria-hidden="true"></i> URL <span class="chip-n" data-count="url">0</span>
+                        </button>
+                        <button type="button" class="chip" data-filter="file" aria-pressed="false">
+                            <i class="fa-solid fa-file" aria-hidden="true"></i> ไฟล์ <span class="chip-n" data-count="file">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result-count" id="resultCount" hidden aria-live="polite"></div>
+
                 <table class="links-table" aria-label="ตารางลิงก์">
                     <thead>
                         <tr>
@@ -307,7 +336,7 @@
                     </div>
                     <input type="text" id="newSlug" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
-                <div class="field">
+                <div class="field" id="newToField">
                     <div class="field-label">ลิงก์เต็มใหม่ <span
                             style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
                     </div>
@@ -325,27 +354,155 @@
 
     <!-- qr-code modal -->
     <div class="modal-overlay" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrModalLabel">
-        <div class="modal-box">
+        <div class="modal-box modal-wide">
             <div class="modal-header">
                 <span id="qrModalLabel">สร้าง QR Code</span>
                 <button class="modal-close" id="qrModalClose" aria-label="ปิด">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="qr-preview" id="qrPreview"></div>
-                <div class="field">
-                    <div class="field-label">URL</div>
-                    <input type="url" id="qrcodeText" value="">
+            <div class="modal-body qr-layout">
+                <div class="qr-side">
+                    <div class="qr-preview" id="qrPreview"></div>
+                    <div class="qr-info" id="qrInfo"></div>
+                    <div id="qrWarn" aria-live="polite"></div>
+                </div>
+
+                <div class="qr-controls">
+                    <div class="field">
+                        <div class="field-label">URL หรือข้อความ</div>
+                        <input type="text" id="qrcodeText" value="" spellcheck="false" autocomplete="off">
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">การแก้ไขข้อผิดพลาด (ECC)</div>
+                        <div class="mode-tabs seg" id="eccTabs" role="group" aria-label="ระดับ ECC">
+                            <button type="button" data-ecc="auto" title="ให้ระบบเลือกระดับที่เหมาะที่สุดให้">อัตโนมัติ</button>
+                            <button type="button" data-ecc="L" title="L · กู้คืนได้ ~7% · โค้ดเล็กที่สุด">L</button>
+                            <button type="button" data-ecc="M" title="M · กู้คืนได้ ~15%">M</button>
+                            <button type="button" data-ecc="Q" title="Q · กู้คืนได้ ~25%">Q</button>
+                            <button type="button" data-ecc="H" title="H · กู้คืนได้ ~30% · เหมาะกับใส่โลโก้">H</button>
+                        </div>
+                        <p class="muted" id="eccHint"></p>
+                    </div>
+
+                    <div class="grid2">
+                        <div class="field">
+                            <div class="field-label">ลายจุด</div>
+                            <select id="qrDots">
+                                <option value="square">สี่เหลี่ยม</option>
+                                <option value="rounded">มน</option>
+                                <option value="extra-rounded">มนมาก</option>
+                                <option value="dots">จุดกลม</option>
+                                <option value="classy">Classy</option>
+                                <option value="classy-rounded">Classy มน</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">มุมสแกน</div>
+                            <select id="qrCorner">
+                                <option value="square">เหลี่ยม</option>
+                                <option value="rounded">มน</option>
+                                <option value="circle">กลม</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid3">
+                        <div class="field">
+                            <div class="field-label">สีจุด</div>
+                            <input type="color" id="qrFg" value="#000000">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">พื้นหลัง</div>
+                            <input type="color" id="qrBg" value="#ffffff">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">ขอบ</div>
+                            <select id="qrQuiet" title="ขอบว่างรอบ QR ตามมาตรฐานคือ 4 ช่อง">
+                                <option value="2">เล็ก</option>
+                                <option value="4">ปกติ</option>
+                                <option value="6">กว้าง</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label class="opt-check">
+                        <input type="checkbox" id="qrLogo">
+                        <span>ใส่โลโก้ตรงกลาง <span class="muted">· ใช้ ECC สูงสุดให้อัตโนมัติ</span></span>
+                    </label>
+
+                    <div class="grid2">
+                        <div class="field">
+                            <div class="field-label">ขนาดไฟล์</div>
+                            <select id="qrSize">
+                                <option value="512">512 px</option>
+                                <option value="1024">1024 px</option>
+                                <option value="2048">2048 px (พิมพ์)</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">รูปแบบ</div>
+                            <select id="qrFmt">
+                                <option value="png">PNG</option>
+                                <option value="svg">SVG (เวกเตอร์)</option>
+                                <option value="jpeg">JPEG</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-ghost" id="qrReset" style="margin-right:auto" title="กลับไปใช้ค่าเริ่มต้น">
+                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> รีเซ็ต
+                </button>
                 <button class="btn btn-ghost" id="copyQR">
                     <i class="fa-solid fa-copy" aria-hidden="true"></i> คัดลอก
                 </button>
                 <button class="btn btn-primary" id="downloadQR">
                     <i class="fa-solid fa-download" aria-hidden="true"></i> ดาวน์โหลด
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- manage files modal -->
+    <div class="modal-overlay" id="filesModal" role="dialog" aria-modal="true" aria-labelledby="filesModalLabel">
+        <div class="modal-box modal-wide fm-box">
+            <div class="modal-header">
+                <span id="filesModalLabel">จัดการไฟล์</span>
+                <button class="modal-close" id="filesModalClose" aria-label="ปิด">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="muted" id="fmMeta"></p>
+                <ul class="fm-list" id="fmList" aria-live="polite"></ul>
+
+                <div class="field fm-add">
+                    <div class="field-label">เพิ่มไฟล์</div>
+                    <label class="dropzone dz-sm" id="fmDrop" for="fmFiles">
+                        <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                        <b>ลากไฟล์มาวาง หรือกดเพื่อเลือก</b>
+                        <span class="muted" id="fmLimits"></span>
+                    </label>
+                    <input type="file" id="fmFiles" multiple hidden>
+                    <ul class="up-list" id="fmPicked"></ul>
+                    <div class="up-prog" id="fmProg" hidden>
+                        <div class="usage-track"><i id="fmBar"></i></div>
+                        <div class="up-prog-row">
+                            <span class="muted" id="fmText"></span>
+                            <button type="button" class="btn btn-ghost" id="fmCancel">ยกเลิก</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-full" id="fmUpload" disabled>
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        <span id="fmUploadLabel">เพิ่มไฟล์</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="filesModalDone">เสร็จสิ้น</button>
             </div>
         </div>
     </div>

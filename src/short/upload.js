@@ -10,7 +10,7 @@ const DRIVE_UP = 'https://www.googleapis.com/upload/drive/v3/files'
 const DRIVE_CHUNK = 16 * 1024 * 1024 // must be a multiple of 256 KiB
 const FOLDER = 'go.thatako.net'
 
-let ctx, mode = 'link', store = 'server', picked = [], busy = false, ctl = null, lim = null
+let ctx, mode = 'link', store = 'server', picked = [], busy = false, adding = false, ctl = null, lim = null
 let gisP = null, tok = null, tokExp = 0, me = null
 
 export const isFileMode = () => mode === 'file'
@@ -22,7 +22,8 @@ export const fmtSize = b => {
     return `${b >= 100 || !i ? Math.round(b) : b.toFixed(1)} ${u[i]}`
 }
 
-const errText = m => ({
+export const uploadErr = (m, fallback = 'อัปโหลดล้มเหลว กรุณาลองใหม่') => errText(m, fallback)
+const errText = (m, fallback = 'อัปโหลดล้มเหลว กรุณาลองใหม่') => ({
     'key quota': 'โควตาของรหัสลับนี้เต็มแล้ว กรุณาลบไฟล์เก่าก่อน',
     'too big': 'ขนาดไฟล์รวมเกินกำหนดต่อครั้ง',
     'bad files': 'จำนวนหรือขนาดไฟล์ไม่ถูกต้อง',
@@ -34,7 +35,15 @@ const errText = m => ({
     'drive denied': 'ตรวจสอบไฟล์ใน Google Drive ไม่ผ่าน กรุณาลองใหม่',
     'drive quota': 'พื้นที่ Google Drive ของคุณเต็ม',
     'drive failed': 'อัปโหลดไป Google Drive ล้มเหลว กรุณาลองใหม่',
-}[m] || 'อัปโหลดล้มเหลว กรุณาลองใหม่')
+    'expired': 'ลิงก์นี้หมดอายุแล้ว แก้ไขไม่ได้',
+    'too many files': 'จำนวนไฟล์ในลิงก์เกินกำหนด',
+    'last file': 'ต้องเหลืออย่างน้อย 1 ไฟล์ ถ้าไม่ต้องการแล้วให้ลบทั้งลิงก์',
+    'not found': 'ไม่พบลิงก์นี้ หรือรหัสลับไม่ตรงกัน',
+    'no such file': 'ไม่พบไฟล์นี้ในลิงก์ (อาจถูกเอาออกไปแล้ว)',
+    'bad name': 'ชื่อไฟล์ไม่ถูกต้อง',
+    'cancelled': 'ยกเลิกการอัปโหลดแล้ว',
+    'busy': 'กำลังอัปโหลดอยู่ กรุณารอให้เสร็จก่อน',
+}[m] || fallback)
 
 const post = async (path, body) => (await fetch(ctx.api + path, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body)
@@ -122,7 +131,7 @@ const lock = v => {
     $('create').disabled = v
     $('files').disabled = v
     $('modeLink').disabled = $('modeFile').disabled = v
-    $('store').disabled = $('driveConnect').disabled = v
+    $('store').disabled = $('driveConnect').disabled = $('driveLogout').disabled = v
 }
 
 // upload engine
@@ -181,8 +190,8 @@ const loadGIS = () => gisP ??= new Promise((res, rej) => {
     document.head.appendChild(s)
 })
 
-const getToken = async () => {
-    if (tok && Date.now() < tokExp - 60_000) return tok
+const getToken = async (pickAccount = false) => {
+    if (!pickAccount && tok && Date.now() < tokExp - 60_000) return tok
     if (!lim?.driveClientId) throw new Error('drive off')
     await loadGIS()
     return new Promise((res, rej) => {
@@ -196,7 +205,7 @@ const getToken = async () => {
                 res(tok)
             },
             error_callback: () => rej(new Error('drive auth')),
-        }).requestAccessToken({ include_granted_scopes: true })
+        }).requestAccessToken(pickAccount ? { prompt: 'select_account' } : { include_granted_scopes: true })
     })
 }
 
@@ -212,20 +221,40 @@ const driveErr = async r => {
     return new Error(r.status === 401 ? 'drive auth' : 'drive failed')
 }
 
+const showDrive = () => {
+    const on = !!me
+    $('driveBtnText').textContent = on ? 'เปลี่ยนบัญชี' : 'เชื่อมต่อ Google Drive'
+    $('driveLogout').hidden = !on
+    if (!on) return
+    const q = me.storageQuota
+    const free = q?.limit ? ` · ว่าง ${fmtSize(q.limit - q.usage)}` : ''
+    $('driveStatus').textContent = `เชื่อมต่อแล้ว: ${me.user?.emailAddress || me.user?.displayName || 'Google'}${free}`
+}
+
 const connectDrive = async () => {
+    const switching = !!me
+    const prev = { tok, tokExp, me }
     try {
         $('driveStatus').textContent = 'กำลังเชื่อมต่อ...'
-        await getToken()
+        if (switching) tok = null
+        await getToken(switching)
         const r = await gfetch(`${DRIVE}/about?fields=user(displayName,emailAddress),storageQuota(limit,usage)`)
         if (!r.ok) throw await driveErr(r)
         me = await r.json()
-        const q = me.storageQuota
-        const free = q?.limit ? ` · ว่าง ${fmtSize(q.limit - q.usage)}` : ''
-        $('driveStatus').textContent = `เชื่อมต่อแล้ว: ${me.user?.emailAddress || me.user?.displayName || 'Google'}${free}`
-        $('driveBtnText').textContent = 'เชื่อมต่อใหม่ / เปลี่ยนบัญชี'
+        showDrive()
     } catch (e) {
+        if (switching) ({ tok, tokExp, me } = prev)
         $('driveStatus').textContent = errText(e.message)
+        if (switching) setTimeout(showDrive, 2500)
     }
+}
+
+const disconnectDrive = async () => {
+    const old = tok
+    tok = null; tokExp = 0; me = null
+    if (old && window.google?.accounts?.oauth2) await new Promise(res => google.accounts.oauth2.revoke(old, res))
+    showDrive()
+    $('driveStatus').textContent = 'ออกจาก Google Drive แล้ว'
 }
 
 const ensureFolder = async () => {
@@ -344,6 +373,7 @@ const startDriveUpload = async () => {
 
 export const startUpload = async () => {
     if (busy) return
+    if (adding) return ctx.toast(errText('busy'), false)
     if (store === 'drive') return startDriveUpload()
     const key = ctx.key(), slug = $('slug').value.trim()
     const total = picked.reduce((a, f) => a + f.size, 0)
@@ -400,12 +430,71 @@ export const startUpload = async () => {
     loadUsage()
 }
 
+/**
+ * add files to a link that already exists (used by the file manager dialog)
+ * server links go through the same multipart flow as a new upload and share the link's expiry;
+ * drive links upload from the browser to the owner's drive and the worker then verifies the ids
+ * @param {{ slug: string, type: 'file'|'drive', files: File[], onProgress: (sent: number, total: number, seconds: number) => void }} o
+ */
+export const uploadMore = async ({ slug, type, files, onProgress }) => {
+    if (busy || adding) throw new Error('busy')
+    const key = ctx.key()
+    const total = files.reduce((a, f) => a + f.size, 0)
+
+    ctl = { stop: false, cancelled: false, xhrs: new Set() }
+    adding = true
+    let tokens = []
+    let sent = 0
+    const t0 = Date.now()
+    const onBytes = d => { sent += d; onProgress(sent, total, Math.max(1, (Date.now() - t0) / 1000)) }
+
+    try {
+        if (type === 'drive') {
+            if (!lim) await loadUsage()
+            if (!lim?.driveClientId) throw new Error('drive off')
+            await getToken()
+            const folder = await ensureFolder()
+            const ids = []
+            for (const f of files) ids.push({ id: await uploadToDrive(f, folder, onBytes) })
+            const fin = await post('/file/drive-add', { key, slug, token: await getToken(), files: ids })
+            if (!fin.ok) throw new Error(fin.msg)
+            return fin
+        }
+
+        const init = await post('/file/add-init', { key, slug, files: files.map(f => ({ name: f.name, size: f.size, type: f.type })) })
+        if (!init.ok) throw new Error(init.msg)
+        tokens = init.files.map(f => f.token)
+
+        const done = []
+        for (const [i, f] of files.entries()) {
+            const parts = await uploadFile(f, tokens[i], init.chunk, onBytes)
+            done.push({ token: tokens[i], type: f.type, parts })
+        }
+        const fin = await post('/file/add-done', { key, slug, files: done })
+        if (!fin.ok) throw new Error(fin.msg)
+        return fin
+    } catch (e) {
+        if (tokens.length) post('/file/abort', { tokens }).catch(() => { })
+        throw ctl.cancelled ? new Error('cancelled') : e
+    } finally {
+        adding = false
+        loadUsage()
+    }
+}
+
+export const cancelMore = () => {
+    if (!ctl) return
+    ctl.cancelled = ctl.stop = true
+    ctl.xhrs.forEach(x => x.abort())
+}
+
 export const initUpload = c => {
     ctx = c
     $('modeLink').onclick = () => setMode('link')
     $('modeFile').onclick = () => setMode('file')
     $('store').onchange = e => setStore(e.target.value)
     $('driveConnect').onclick = connectDrive
+    $('driveLogout').onclick = disconnectDrive
     $('files').onchange = e => { addFiles(e.target.files); e.target.value = '' }
     $('upCancel').onclick = () => { ctl.cancelled = ctl.stop = true; ctl.xhrs.forEach(x => x.abort()) }
 
@@ -414,5 +503,5 @@ export const initUpload = c => {
     drop.ondragleave = () => drop.classList.remove('over')
     drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); if (!busy) addFiles(e.dataTransfer.files) }
 
-    window.addEventListener('beforeunload', e => { if (busy) e.preventDefault() })
+    window.addEventListener('beforeunload', e => { if (busy || adding) e.preventDefault() })
 }

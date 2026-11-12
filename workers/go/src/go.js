@@ -104,7 +104,6 @@ const setUserList = (kv, key, list) => kv.put('u:' + key, JSON.stringify(list))
 const fileHelpers = { j, norm, validSlug, getUserList, setUserList }
 
 async function api(req, env, path, ctx) {
-	// file upload / download / usage (r2)
 	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/'))
 		return handleFile(req, env, path, fileHelpers)
 
@@ -176,7 +175,8 @@ async function api(req, env, path, ctx) {
 			if (await env.LINKS.get('l:' + newSlug))
 				return j({ ok: false, msg: 'duplicate' })
 
-		const updated = { ...data, to: to || data.to }
+		const isFile = data.type === 'file' || data.type === 'drive'
+		const updated = { ...data, to: isFile ? `https://go.thatako.net/${finalSlug}` : to || data.to }
 		await env.LINKS.put('l:' + finalSlug, JSON.stringify(updated))
 
 		const list = await getUserList(env.LINKS, key)
