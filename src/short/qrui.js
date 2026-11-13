@@ -2,13 +2,19 @@ import { planQr, snapSize, colorIssue } from './qr.js'
 import { $, esc, icon, dims, SEP, joinHtml } from './ui.js'
 
 const LIB = 'https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js'
-const LOGO = '/img/icon/logo.svg'
 const STORE = 'short-qr'
 const PREVIEW = 220
 const MAX_BYTES = 2953
 
-const DEFAULTS = { ecc: 'auto', dots: 'square', corner: 'square', fg: '#000000', bg: '#ffffff', quiet: 4, size: 1024, fmt: 'png', logo: false }
+const DEFAULTS = { ecc: 'auto', dots: 'square', corner: 'square', fg: '#000000', bg: '#ffffff', eye: '', quiet: 4, size: 1024, fmt: 'png' }
 const CORNERS = { square: ['square', 'square'], rounded: ['extra-rounded', 'dot'], circle: ['dot', 'dot'] }
+const PRESETS = {
+    classic: { dots: 'square', corner: 'square', fg: '#000000', bg: '#ffffff', eye: '' },
+    soft: { dots: 'rounded', corner: 'rounded', fg: '#111827', bg: '#ffffff', eye: '' },
+    dots: { dots: 'dots', corner: 'circle', fg: '#000000', bg: '#ffffff', eye: '' },
+    school: { dots: 'extra-rounded', corner: 'rounded', fg: '#4f5d97', bg: '#ffffff', eye: '#2f3a6b' }
+}
+const LOOK = ['dots', 'corner', 'fg', 'bg', 'eye']
 const ALLOWED = {
     ecc: ['auto', 'L', 'M', 'Q', 'H'],
     dots: ['square', 'rounded', 'extra-rounded', 'dots', 'classy', 'classy-rounded'],
@@ -28,8 +34,7 @@ let notify = () => { }
 const sanitize = o => {
     const s = { ...DEFAULTS }
     for (const k in ALLOWED) if (ALLOWED[k].includes(o?.[k])) s[k] = o[k]
-    for (const k of ['fg', 'bg']) if (/^#[0-9a-f]{6}$/i.test(o?.[k])) s[k] = o[k].toLowerCase()
-    s.logo = o?.logo === true
+    for (const k of ['fg', 'bg', 'eye']) if (/^#[0-9a-f]{6}$/i.test(o?.[k])) s[k] = o[k].toLowerCase()
     return s
 }
 
@@ -49,16 +54,9 @@ const loadLib = () => libP ??= new Promise((res, rej) => {
     document.head.appendChild(s)
 })
 
-let logoP = null
-const logoOk = () => logoP ??= new Promise(res => {
-    const i = new Image()
-    i.onload = () => res(true)
-    i.onerror = () => { logoP = null; res(false) }
-    i.src = LOGO
-})
-
-const plan = () => planQr($('qrcodeText').value.trim(), { ecc: st.ecc, logo: st.logo })
-const options = (p, size, logo = st.logo, preview = false) => {
+const plan = () => planQr($('qrcodeText').value.trim(), { ecc: st.ecc })
+const eyeColor = () => st.eye || st.fg
+const options = (p, size, preview = false) => {
     const snap = preview ? null : snapSize(size, p.modules, st.quiet)
     const px = snap ? snap.size : size
     const margin = snap ? snap.margin : Math.round(size * st.quiet / (p.modules + 2 * st.quiet))
@@ -70,11 +68,9 @@ const options = (p, size, logo = st.logo, preview = false) => {
         margin,
         qrOptions: { typeNumber: 0, mode: p.mode, errorCorrectionLevel: p.ecc },
         dotsOptions: { type: st.dots, color: st.fg },
-        cornersSquareOptions: { type: CORNERS[st.corner][0], color: st.fg },
-        cornersDotOptions: { type: CORNERS[st.corner][1], color: st.fg },
-        backgroundOptions: { color: st.bg },
-        image: logo ? LOGO : undefined,
-        imageOptions: { crossOrigin: 'anonymous', hideBackgroundDots: true, margin: Math.max(1, Math.round(px / 120)) }
+        cornersSquareOptions: { type: CORNERS[st.corner][0], color: eyeColor() },
+        cornersDotOptions: { type: CORNERS[st.corner][1], color: eyeColor() },
+        backgroundOptions: { color: st.bg }
     }
 }
 
@@ -89,7 +85,6 @@ const chip = (html, title) => {
 
 const eccText = p => ({
     auto: 'เลือกให้อัตโนมัติ',
-    logo: 'มีโลโก้ จึงใช้ระดับสูงสุด',
     manual: 'เลือกเอง',
     fallback: 'ข้อมูลยาวเกินระดับที่เลือก จึงลดให้อัตโนมัติ'
 }[p.why])
@@ -111,7 +106,11 @@ const renderInfo = p => {
     if (ci === 'inverted') issues.push('สีจุดอ่อนกว่าพื้นหลัง เครื่องสแกนหลายรุ่นอ่านไม่ได้ ควรใช้จุดเข้มบนพื้นอ่อน')
     if (ci === 'low') issues.push('สีจุดกับพื้นหลังตัดกันน้อย อาจสแกนยาก')
     if (st.quiet < 4) issues.push('ขอบขาวน้อยกว่ามาตรฐาน (4 ช่อง) อาจสแกนยากเมื่อพิมพ์ติดกับสิ่งอื่น')
-    if (p && !p.tooLong && st.logo && p.recover < 25) issues.push('โลโก้บังจุดบางส่วน แนะนำใช้ ECC ระดับ Q หรือ H')
+    if (st.eye) {
+        const ei = colorIssue(st.eye, st.bg)
+        if (ei === 'inverted') issues.push('สีมุมสแกนอ่อนกว่าพื้นหลัง เครื่องสแกนอาจหาตำแหน่ง QR ไม่เจอ')
+        else if (ei === 'low') issues.push('สีมุมสแกนกับพื้นหลังตัดกันน้อย อาจสแกนยาก')
+    }
 
     let tooLong = false
     if (!p) info.append(chip('ใส่ URL หรือข้อความเพื่อสร้าง QR'))
@@ -155,12 +154,10 @@ const render = async () => {
 
     try {
         const Lib = await loadLib()
-        const logo = st.logo && await logoOk()
-        if (st.logo && !logo) notify('โหลดโลโก้ไม่สำเร็จ จึงสร้าง QR แบบไม่มีโลโก้', false)
         if (plan()?.data !== p.data) return
-        if (qr) qr.update(options(p, PREVIEW, logo, true))
+        if (qr) qr.update(options(p, PREVIEW, true))
         else {
-            qr = new Lib(options(p, PREVIEW, logo, true))
+            qr = new Lib(options(p, PREVIEW, true))
             box.replaceChildren()
             qr.append(box)
         }
@@ -181,10 +178,15 @@ const syncControls = () => {
     $('qrCorner').value = st.corner
     $('qrFg').value = st.fg
     $('qrBg').value = st.bg
+    $('qrEye').value = eyeColor()
     $('qrQuiet').value = st.quiet
     $('qrSize').value = st.size
     $('qrFmt').value = st.fmt
-    $('qrLogo').checked = st.logo
+    $('qrPresets').querySelectorAll('button').forEach(b => {
+        const on = LOOK.every(k => PRESETS[b.dataset.preset][k] === st[k])
+        b.classList.toggle('active', on)
+        b.setAttribute('aria-pressed', on)
+    })
 }
 
 const change = patch => {
@@ -204,7 +206,7 @@ const exporter = async () => {
     const p = plan()
     if (!p || p.tooLong) throw new Error('empty')
     const Lib = await loadLib()
-    return new Lib(options(p, st.size, st.logo && await logoOk()))
+    return new Lib(options(p, st.size))
 }
 
 const downloadQR = async () => {
@@ -221,6 +223,22 @@ const copyQR = async () => {
         await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
         notify('คัดลอก QR แล้ว')
     } catch { notify('ไม่สามารถคัดลอกได้', false) }
+}
+
+const canShareFiles = () => {
+    try { return !!navigator.canShare?.({ files: [new File([''], 'qr.png', { type: 'image/png' })] }) }
+    catch { return false }
+}
+
+const shareQR = async () => {
+    try {
+        const q = await exporter()
+        const blob = await q.getRawData('png')
+        const file = new File([blob], `${fileName()}.png`, { type: 'image/png' })
+        await navigator.share({ files: [file], title: 'QR Code', text: $('qrcodeText').value.trim() })
+    } catch (e) {
+        if (e?.name !== 'AbortError') notify('ไม่สามารถแชร์ได้', false)
+    }
 }
 
 export const openQR = url => {
@@ -248,8 +266,14 @@ export const initQR = ctx => {
     $('qrQuiet').onchange = e => change({ quiet: +e.target.value })
     $('qrSize').onchange = e => change({ size: +e.target.value })
     $('qrFmt').onchange = e => change({ fmt: e.target.value })
-    $('qrLogo').onchange = e => change({ logo: e.target.checked })
+    $('qrEye').oninput = e => change({ eye: e.target.value })
+    $('qrPresets').onclick = e => {
+        const b = e.target.closest('button[data-preset]')
+        if (b) change(PRESETS[b.dataset.preset])
+    }
     $('qrReset').onclick = e => { e.preventDefault(); change({ ...DEFAULTS }) }
     $('downloadQR').onclick = e => { e.preventDefault(); downloadQR() }
     $('copyQR').onclick = e => { e.preventDefault(); copyQR() }
+    $('shareQR').hidden = !canShareFiles()
+    $('shareQR').onclick = e => { e.preventDefault(); shareQR() }
 }

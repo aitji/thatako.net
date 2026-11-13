@@ -47,7 +47,7 @@ const versions = (data) => {
     return { mode, len, ver: Object.fromEntries(ORDER.map(e => [e, minVersion(mode, e, len)])) }
 }
 
-export const planQr = (text, { ecc = 'auto', logo = false } = {}) => {
+export const planQr = (text, { ecc = 'auto' } = {}) => {
     let data = toQrData(text || '')
     if (!data) return null
 
@@ -64,7 +64,6 @@ export const planQr = (text, { ecc = 'auto', logo = false } = {}) => {
     let pick, why
     if (ecc !== 'auto' && ver[ecc]) [pick, why] = [ecc, 'manual']
     else if (ecc !== 'auto') [pick, why] = [fits[0], 'fallback']
-    else if (logo) [pick, why] = [fits[0], 'logo']
     else [pick, why] = [fits.find(e => ver[e] === ver.L), 'auto']
 
     const version = ver[pick]

@@ -190,8 +190,14 @@
                         <div class="field" id="urlField">
                             <div class="field-label">ลิงก์เต็ม</div>
                             <p class="muted">ผู้ใช้จะถูกพาไปที่นี่ เช่น https://example.com</p>
-                            <input type="url" id="to" placeholder="https://example.com"
-                                title="ลิงก์เต็มที่ลิงก์ย่อจะพาผู้ใช้ไป" required>
+                            <div class="input-row">
+                                <input type="url" id="to" placeholder="https://example.com" style="flex:1;min-width:0"
+                                    title="ลิงก์เต็มที่ลิงก์ย่อจะพาผู้ใช้ไป" required>
+                                <button type="button" class="btn btn-ghost attached" id="toReset" disabled
+                                    title="ล้างลิงก์เต็ม">
+                                    <i class="fa-solid fa-xmark" aria-hidden="true"></i> ล้าง
+                                </button>
+                            </div>
                         </div>
 
                         <!-- file upload -->
@@ -391,9 +397,19 @@
                             <button type="button" data-ecc="L" title="L: กู้คืนได้ ~7%, โค้ดเล็กที่สุด">L</button>
                             <button type="button" data-ecc="M" title="M: กู้คืนได้ ~15%">M</button>
                             <button type="button" data-ecc="Q" title="Q: กู้คืนได้ ~25%">Q</button>
-                            <button type="button" data-ecc="H" title="H: กู้คืนได้ ~30%, เหมาะกับใส่โลโก้">H</button>
+                            <button type="button" data-ecc="H" title="H: กู้คืนได้ ~30%, ทนต่อรอยเปื้อนหรือความเสียหายได้มากที่สุด">H</button>
                         </div>
                         <p class="muted" id="eccHint">&nbsp;</p>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">สไตล์สำเร็จรูป</div>
+                        <div class="mode-tabs seg" id="qrPresets" role="group" aria-label="สไตล์สำเร็จรูป">
+                            <button type="button" data-preset="classic" title="สี่เหลี่ยมดำบนขาว สแกนง่ายที่สุด">ดั้งเดิม</button>
+                            <button type="button" data-preset="soft" title="จุดมนนุ่มนวล">นุ่มนวล</button>
+                            <button type="button" data-preset="dots" title="จุดกลมและมุมกลม">จุดกลม</button>
+                            <button type="button" data-preset="school" title="โทนสีม่วงน้ำเงินของท่าตะโกพิทยาคม">โรงเรียน</button>
+                        </div>
                     </div>
 
                     <div class="grid2">
@@ -418,7 +434,7 @@
                         </div>
                     </div>
 
-                    <div class="grid3">
+                    <div class="grid2">
                         <div class="field">
                             <div class="field-label">สีจุด</div>
                             <input type="color" id="qrFg" value="#000000">
@@ -426,6 +442,13 @@
                         <div class="field">
                             <div class="field-label">พื้นหลัง</div>
                             <input type="color" id="qrBg" value="#ffffff">
+                        </div>
+                    </div>
+
+                    <div class="grid2">
+                        <div class="field">
+                            <div class="field-label">สีมุมสแกน</div>
+                            <input type="color" id="qrEye" value="#000000" title="ปกติใช้สีเดียวกับสีจุด กดรีเซ็ตเพื่อกลับไปใช้สีเดียวกัน">
                         </div>
                         <div class="field">
                             <div class="field-label">ขอบ</div>
@@ -436,18 +459,6 @@
                             </select>
                         </div>
                     </div>
-
-                    <label class="switch-row" for="qrLogo">
-                        <span class="switch-text">
-                            <b>ใส่โลโก้ตรงกลาง</b>
-                            <small>ใช้ ECC สูงสุดให้อัตโนมัติ</small>
-                        </span>
-                        <input type="checkbox" id="qrLogo" class="switch-input" role="switch">
-                        <span class="switch-ico" aria-hidden="true">
-                            <i class="fa-solid fa-toggle-off sw-off"></i>
-                            <i class="fa-solid fa-toggle-on sw-on"></i>
-                        </span>
-                    </label>
 
                     <div class="grid2">
                         <div class="field">
@@ -473,6 +484,9 @@
             <div class="modal-footer">
                 <button class="btn btn-ghost push-left" id="qrReset" title="กลับไปใช้ค่าเริ่มต้น">
                     <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> รีเซ็ต
+                </button>
+                <button class="btn btn-ghost" id="shareQR" hidden title="แชร์รูป QR ไปยังแอปอื่น เช่น LINE">
+                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> แชร์
                 </button>
                 <button class="btn btn-ghost" id="copyQR">
                     <i class="fa-solid fa-copy" aria-hidden="true"></i> คัดลอก

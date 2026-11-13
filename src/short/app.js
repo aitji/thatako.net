@@ -60,6 +60,8 @@ const setBusy = v => {
     $("saveEdit").disabled = v
 }
 
+const syncToReset = () => { $("toReset").disabled = !$("to").value }
+
 /** @param {any} l */
 const fileInfo = l => {
     const drive = l.type === "drive"
@@ -190,6 +192,7 @@ const createLink = async () => {
         toast("สร้างลิงก์สำเร็จ")
         $("slug").value = ""
         $("to").value = ""
+        syncToReset()
         await loadLinks()
     } catch { toast("การสร้างลิงก์ล้มเหลว", false) }
     setBusy(false)
@@ -373,11 +376,20 @@ const initEvents = () => {
     $("to").onkeydown = e => {
         if (e.key === "Enter") createLink()
     }
+
+    $("to").oninput = syncToReset
+    $("toReset").onclick = e => {
+        e.preventDefault()
+        $("to").value = ""
+        syncToReset()
+        $("to").focus()
+    }
 }
 
 const init = () => {
     new bootstrap.Tooltip(document.body, { selector: '[data-bs-toggle="tooltip"]' })
     initEvents()
+    syncToReset()
     initKey()
     initQR({ toast })
     initUpload({ api: API_URL, key: () => $("key").value.trim(), validSlug, toast, reload: loadLinks })
