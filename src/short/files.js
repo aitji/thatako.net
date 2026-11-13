@@ -1,6 +1,5 @@
-import { fmtSize, uploadMore, cancelMore, uploadErr } from './upload.js'
-
-const $ = id => document.getElementById(id)
+import { uploadMore, cancelMore, uploadErr } from './upload.js'
+import { $, esc, icon, meta, fmtSize, fmtEta } from './ui.js'
 const FAIL = 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่'
 
 /** @type {{ slug: string, type: 'file'|'drive', exp: number, maxFiles: number, perUpload: number, files: { k: number, name: string, size: number, isNew?: boolean }[] } | null} */
@@ -16,12 +15,12 @@ const h = (tag, cls, text) => {
     return e
 }
 
-const iconBtn = (icon, title, cls = 'btn-ghost') => {
+const iconBtn = (name, title, cls = 'btn-ghost') => {
     const b = h('button', `btn ${cls}`)
     b.type = 'button'
     b.title = title
     b.setAttribute('aria-label', title)
-    b.innerHTML = `<i class="fa-solid ${icon}" aria-hidden="true"></i>`
+    b.innerHTML = icon(name)
     return b
 }
 
@@ -47,8 +46,8 @@ const renameRow = (li, f) => {
     input.value = f.name
     input.maxLength = 200
     input.setAttribute('aria-label', 'ชื่อไฟล์ใหม่')
-    const ok = iconBtn('fa-check', 'บันทึกชื่อ', 'btn-primary')
-    const no = iconBtn('fa-xmark', 'ยกเลิก')
+    const ok = iconBtn('check', 'บันทึกชื่อ', 'btn-primary')
+    const no = iconBtn('xmark', 'ยกเลิก')
     li.replaceChildren(input, ok, no)
     input.focus()
     input.setSelectionRange(0, f.name.lastIndexOf('.') > 0 ? f.name.lastIndexOf('.') : f.name.length)
@@ -74,7 +73,7 @@ const renameRow = (li, f) => {
     no.onclick = render
     input.onkeydown = e => {
         if (e.key === 'Enter') { e.preventDefault(); save() }
-        else if (e.key === 'Escape') { e.stopPropagation(); render() } // only leave the rename, not the whole dialog
+        else if (e.key === 'Escape') { e.stopPropagation(); render() }
     }
 }
 
@@ -95,15 +94,16 @@ const fileRow = (f, only) => {
     const li = h('li', f.isNew ? 'fm-new' : '')
     const name = h('span', 'fm-name', f.name)
     name.title = f.name
-    const ren = iconBtn('fa-pen', 'เปลี่ยนชื่อ')
-    const del = iconBtn('fa-trash', 'เอาออกจากลิงก์', 'btn-danger')
+    const badge = f.isNew ? h('span', 'badge-new', 'ใหม่') : null
+    const ren = iconBtn('pen', 'เปลี่ยนชื่อ')
+    const del = iconBtn('trash', 'เอาออกจากลิงก์', 'btn-danger')
     ren.onclick = () => renameRow(li, f)
     del.onclick = () => removeFile(f)
     if (only) {
         del.disabled = true
         del.title = 'ต้องเหลืออย่างน้อย 1 ไฟล์ ถ้าไม่ต้องการแล้วให้ลบทั้งลิงก์จากรายการหลัก'
     }
-    li.append(name, h('small', 0, fmtSize(f.size)), ren, del)
+    li.append(...[name, badge, h('small', 0, fmtSize(f.size)), ren, del].filter(Boolean))
     return li
 }
 
@@ -112,9 +112,11 @@ const renderPicked = () => {
     ul.replaceChildren()
     picked.forEach((f, i) => {
         const li = h('li')
-        const rm = h('button', 'up-rm', '×')
+        const rm = h('button', 'up-rm')
         rm.type = 'button'
         rm.title = 'เอาออก'
+        rm.setAttribute('aria-label', `เอา ${f.name} ออก`)
+        rm.innerHTML = icon('xmark')
         rm.onclick = () => { if (!busy) { picked.splice(i, 1); render() } }
         const n = h('span', 'up-name', f.name)
         n.title = f.name
@@ -123,28 +125,57 @@ const renderPicked = () => {
     })
 }
 
+const setStatus = html => { $('fmText').innerHTML = html }
+const idleStatus = () => {
+    const size = picked.reduce((a, f) => a + f.size, 0)
+    setStatus(picked.length ? meta([`เลือกแล้ว ${picked.length} ไฟล์`, fmtSize(size)]) : 'ยังไม่ได้เลือกไฟล์')
+}
+
 const render = () => {
     if (!cur) return
     const drive = cur.type === 'drive'
     const total = cur.files.reduce((a, f) => a + f.size, 0)
-    $('filesModalLabel').textContent = `จัดการไฟล์ · ${cur.slug}`
 
-    $('fmMeta').textContent = drive
-        ? `Google Drive · ไม่หมดอายุ · ${cur.files.length}/${cur.maxFiles} ไฟล์ · การเปลี่ยนชื่อเปลี่ยนเฉพาะชื่อที่แสดงในหน้าดาวน์โหลด และการเอาออกไม่ลบไฟล์ใน Drive ของคุณ`
-        : `${cur.files.length}/${cur.maxFiles} ไฟล์ · ${fmtSize(total)} · หมดอายุ ${dateText(cur.exp)} · ไฟล์ที่เพิ่มใหม่จะหมดอายุพร้อมลิงก์นี้`
+    if (document.activeElement !== $('fmSlug')) $('fmSlug').value = cur.slug
+    $('fmSlugSave').disabled = busy || !$('fmSlug').value.trim() || $('fmSlug').value.trim() === cur.slug
+
+    $('fmMeta').innerHTML = drive
+        ? `${icon('cloud')} ${meta(['Google Drive', 'ไม่หมดอายุ', `${cur.files.length}/${cur.maxFiles} ไฟล์`])}`
+        : `${icon('hard-drive')} ${meta([`${cur.files.length}/${cur.maxFiles} ไฟล์`, fmtSize(total), `หมดอายุ ${dateText(cur.exp)}`])}`
+    $('fmHint').textContent = drive
+        ? 'การเปลี่ยนชื่อมีผลเฉพาะชื่อในหน้าดาวน์โหลด และการเอาออกไม่ลบไฟล์ใน Google Drive ของคุณ'
+        : 'ไฟล์ที่เพิ่มใหม่จะหมดอายุพร้อมลิงก์นี้'
 
     const ul = $('fmList')
     ul.replaceChildren(...cur.files.map(f => fileRow(f, cur.files.length <= 1)))
 
     renderPicked()
     const left = room()
-    $('fmLimits').textContent = drive
-        ? `เพิ่มได้อีก ${left} ไฟล์ · อัปโหลดเข้า Google Drive ของคุณ`
-        : `เพิ่มได้อีก ${left} ไฟล์ · สูงสุด ${fmtSize(cur.perUpload)} ต่อครั้ง`
+    $('fmLimits').innerHTML = drive
+        ? meta([`เพิ่มได้อีก ${left} ไฟล์`, 'อัปโหลดเข้า Google Drive ของคุณ'])
+        : meta([`เพิ่มได้อีก ${left} ไฟล์`, `สูงสุด ${fmtSize(cur.perUpload)} ต่อครั้ง`])
     const size = picked.reduce((a, f) => a + f.size, 0)
     $('fmUploadLabel').textContent = picked.length ? `เพิ่ม ${picked.length} ไฟล์ (${fmtSize(size)})` : 'เพิ่มไฟล์'
     $('fmUpload').disabled = busy || !picked.length
     $('fmFiles').disabled = busy
+    if (!busy) idleStatus()
+}
+
+const saveSlug = async () => {
+    const newSlug = $('fmSlug').value.trim()
+    if (!newSlug || newSlug === cur.slug) return
+    if (!ctx.validSlug(newSlug)) return ctx.toast('ชื่อลิงก์ย่อไม่ถูกต้อง', false)
+    $('fmSlugSave').disabled = true
+    try {
+        const r = await post('/edit', { slug: cur.slug, newSlug })
+        if (!r.ok) throw new Error(r.msg)
+        cur.slug = newSlug
+        ctx.toast('บันทึกชื่อลิงก์แล้ว')
+        ctx.reload()
+    } catch (e) {
+        ctx.toast(e.message === 'duplicate' ? 'ชื่อนี้ถูกใช้แล้ว' : msg(e.message), false)
+    }
+    render()
 }
 
 const pick = list => {
@@ -164,9 +195,10 @@ const upload = async () => {
     if (cur.type === 'file' && total > cur.perUpload) return ctx.toast(uploadErr('too big'), false)
 
     busy = true
-    $('fmProg').hidden = false
+    $('fmProg').classList.remove('idle')
+    $('fmCancel').disabled = false
     $('fmBar').style.width = '0%'
-    $('fmText').textContent = 'กำลังเตรียมอัปโหลด...'
+    setStatus('กำลังเตรียมอัปโหลด')
     render()
 
     const slug = cur.slug
@@ -176,7 +208,7 @@ const upload = async () => {
             onProgress: (sent, all, secs) => {
                 const eta = Math.round((all - sent) / Math.max(1, sent / secs))
                 $('fmBar').style.width = Math.min(100, sent / all * 100) + '%'
-                $('fmText').textContent = `${fmtSize(sent)} / ${fmtSize(all)} · ${fmtSize(sent / secs)}/s · เหลือ ~${Math.floor(eta / 60)}:${String(eta % 60).padStart(2, '0')}`
+                setStatus(meta([`${fmtSize(sent)} / ${fmtSize(all)}`, `${fmtSize(sent / secs)}/s`, `เหลือ ~${fmtEta(eta)}`]))
             }
         })
         ctx.toast(`เพิ่ม ${picked.length} ไฟล์แล้ว`)
@@ -185,7 +217,9 @@ const upload = async () => {
         ctx.reload()
     } catch (e) { ctx.toast(msg(e.message), false) }
     busy = false
-    $('fmProg').hidden = true
+    $('fmProg').classList.add('idle')
+    $('fmCancel').disabled = true
+    $('fmBar').style.width = '0%'
     render()
 }
 
@@ -196,8 +230,10 @@ export const openFiles = async (slug, type) => {
         cur = { slug, type, exp: 0, maxFiles: 0, perUpload: 0, files: [], loaded: false }
         picked = []
         $('fmList').replaceChildren()
-        $('fmMeta').textContent = 'กำลังโหลด...'
-        $('fmLimits').textContent = ''
+        $('fmSlug').value = slug
+        $('fmSlugSave').disabled = true
+        $('fmMeta').textContent = 'กำลังโหลดข้อมูลไฟล์'
+        $('fmLimits').innerHTML = '&nbsp;'
         $('fmUpload').disabled = true
     }
     window.ModalManager.open('filesModal')
@@ -212,11 +248,15 @@ export const openFiles = async (slug, type) => {
     }
 }
 
-/** @param {{ api: string, key: () => string, toast: (m: string, ok?: boolean) => void, reload: () => any }} c */
+/** @param {{ api: string, key: () => string, validSlug: (s: string) => boolean, toast: (m: string, ok?: boolean) => void, reload: () => any }} c */
 export const initFiles = c => {
     ctx = c
     $('fmFiles').onchange = e => { pick(e.target.files); e.target.value = '' }
     $('fmUpload').onclick = upload
+    $('fmSlugSave').onclick = saveSlug
+    $('fmSlug').oninput = () => { const v = $('fmSlug').value.trim(); $('fmSlugSave').disabled = busy || !v || v === cur?.slug }
+    $('fmSlug').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); saveSlug() } }
+    $('fmCancel').disabled = true
     $('fmCancel').onclick = cancelMore
 
     const drop = $('fmDrop')

@@ -102,12 +102,13 @@
     <!-- topbar -->
     <header class="topbar">
         <a href="https://thatako.net" class="logo-dot" width="32" height="32"></a>
-        <a href="https://thatako.net" class="mobile-hidden topbar-logo" title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
+        <a href="https://thatako.net" class="mobile-hidden topbar-logo"
+            title="ศูนย์รวมข้อมูลท่าตะโกพิทยาคม">thatako.net</a>
         <span class="topbar-sep mobile-hidden">/</span>
         <a href="https://thatako.net" class="topbar-title" title="ย่อ URL พร้อมสร้าง QR CODE">go.thatako.net</a>
 
         <div class="topbar-right">
-            <a href="https://thatako.net" class="btn btn-ghost" style="height:30px; font-size:11px;">
+            <a href="https://thatako.net" class="btn btn-ghost btn-sm">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 <span class="mobile-hidden">กลับหน้าหลัก</span>
             </a>
@@ -122,7 +123,7 @@
             <h1>go.thatako.net/*</h1>
             <div class="page-meta">
                 <span>aitji</span>
-                <span class="dot">·</span>
+                <i class="fa-solid fa-circle dot sep" aria-hidden="true"></i>
                 <span>อัปเดตล่าสุด 2026</span>
             </div>
             <p>ย่อลิงก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</p>
@@ -141,8 +142,10 @@
 
                         <!-- mode -->
                         <div class="mode-tabs" role="tablist">
-                            <button type="button" id="modeLink" class="active" role="tab"><i class="fa-solid fa-link" aria-hidden="true"></i> ย่อลิงก์</button>
-                            <button type="button" id="modeFile" role="tab"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i> อัปโหลดไฟล์</button>
+                            <button type="button" id="modeLink" class="active" role="tab"><i class="fa-solid fa-link"
+                                    aria-hidden="true"></i> ย่อลิงก์</button>
+                            <button type="button" id="modeFile" role="tab"><i class="fa-solid fa-cloud-arrow-up"
+                                    aria-hidden="true"></i> อัปโหลดไฟล์</button>
                         </div>
 
                         <!-- password -->
@@ -157,14 +160,14 @@
                                 <input type="text" id="key" autocomplete="off" placeholder="รหัสลับของคุณ"
                                     title="รหัสลับสำหรับแก้ไขหรือลบ หากไม่ใส่ระบบจะสร้างให้ ควรเก็บไว้ส่วนตัว">
 
-                                <label for="show-pass" class="btn btn-ghost toggle-pass"
-                                    style="border-left:none; flex-shrink:0;" title="แสดงหรือซ่อนรหัสลับ">
+                                <label for="show-pass" class="btn btn-ghost toggle-pass attached"
+                                    title="แสดงหรือซ่อนรหัสลับ" aria-label="แสดงหรือซ่อนรหัสลับ">
                                     <i class="fa-solid fa-eye eye"></i>
                                     <i class="fa-solid fa-eye-slash eye-slash"></i>
                                 </label>
 
-                                <button type="button" class="btn btn-ghost" id="random"
-                                    style="border-left:none; flex-shrink:0;" title="สุ่มรหัสลับใหม่">
+                                <button type="button" class="btn btn-ghost attached" id="random"
+                                    title="สุ่มรหัสลับใหม่">
                                     <i class="fa-solid fa-shuffle" aria-hidden="true"></i> สุ่ม
                                 </button>
                             </div>
@@ -202,29 +205,32 @@
                                 </label>
                                 <input type="file" id="files" multiple hidden>
                                 <ul class="up-list" id="upList"></ul>
-                                <div class="muted" id="upTotal"></div>
                             </div>
                             <div class="field">
                                 <div class="field-label">ที่เก็บไฟล์</div>
                                 <select id="store" title="เลือกที่เก็บไฟล์">
-                                    <option value="server">เซิร์ฟเวอร์ thatako.net · มีวันหมดอายุ</option>
-                                    <option value="drive">Google Drive ของคุณ · ไม่หมดอายุ</option>
+                                    <option value="server">เซิร์ฟเวอร์ thatako.net (มีวันหมดอายุ)</option>
+                                    <option value="drive">Google Drive ของคุณ (ไม่หมดอายุ)</option>
                                 </select>
                             </div>
                             <div class="field" id="driveBox" hidden>
                                 <p class="muted">
-                                    ไฟล์จะถูกอัปโหลดตรงจากเบราว์เซอร์ไปยัง Google Drive ของคุณ (โฟลเดอร์ go.thatako.net) และตั้งเป็น "ทุกคนที่มีลิงก์"
-                                    ลิงก์จะไม่หมดอายุตราบใดที่ไฟล์ยังอยู่ใน Drive ·
-                                    <a href="/terms" target="_blank">Terms</a> · <a href="/privacy" target="_blank">Privacy</a>
+                                    ไฟล์จะถูกอัปโหลดตรงจากเบราว์เซอร์ไปยัง Google Drive ของคุณ (โฟลเดอร์ go.thatako.net)
+                                    และตั้งเป็น "ทุกคนที่มีลิงก์"
+                                    ลิงก์จะไม่หมดอายุตราบใดที่ไฟล์ยังอยู่ใน Drive
+                                    <span class="meta"><a href="/terms" target="_blank">Terms</a><i
+                                            class="fa-solid fa-circle sep" aria-hidden="true"></i><a href="/privacy"
+                                            target="_blank">Privacy</a></span>
                                 </p>
                                 <button type="button" class="btn btn-ghost" id="driveConnect">
-                                    <i class="fa-brands fa-google" aria-hidden="true"></i> <span id="driveBtnText">เชื่อมต่อ Google Drive</span>
+                                    <i class="fa-brands fa-google" aria-hidden="true"></i> <span
+                                        id="driveBtnText">เชื่อมต่อ Google Drive</span>
                                 </button>
                                 <button type="button" class="btn btn-ghost" id="driveLogout" hidden
                                     title="ออกจากบัญชี Google และยกเลิกสิทธิ์ที่ให้เว็บนี้">
                                     <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> ออกจากระบบ
                                 </button>
-                                <div class="muted" id="driveStatus"></div>
+                                <div class="muted status-line" id="driveStatus" aria-live="polite"></div>
                             </div>
                             <div class="field" id="ageField">
                                 <div class="field-label">อายุลิงก์</div>
@@ -238,11 +244,13 @@
                                 <div class="usage-track"><i id="usageBar"></i></div>
                                 <div class="muted" id="usageText"></div>
                             </div>
-                            <div class="up-prog" id="upProg" hidden>
+                            <div class="up-prog idle" id="upProg" aria-live="polite">
                                 <div class="usage-track"><i id="upBar"></i></div>
                                 <div class="up-prog-row">
-                                    <span class="muted" id="upText"></span>
-                                    <button type="button" class="btn btn-ghost" id="upCancel">ยกเลิก</button>
+                                    <span class="muted status-line" id="upText"></span>
+                                    <button type="button" class="btn btn-ghost btn-sm" id="upCancel" disabled>
+                                        <i class="fa-solid fa-ban" aria-hidden="true"></i> ยกเลิก
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -264,8 +272,7 @@
                         <i class="fa-solid fa-list" aria-hidden="true"></i>
                         ลิงก์ที่ถืออยู่
                     </div>
-                    <button class="btn btn-ghost" id="refresh" style="height:28px; padding:0 10px; font-size:11px;"
-                        title="รีเฟรชข้อมูลของลิงก์">
+                    <button class="btn btn-ghost btn-sm" id="refresh" title="รีเฟรชข้อมูลของลิงก์">
                         <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> รีเฟรช
                     </button>
                 </div>
@@ -274,8 +281,8 @@
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                         <input type="search" id="search" autocomplete="off" spellcheck="false"
-                            placeholder="ค้นหาลิงก์ย่อ, URL หรือชื่อไฟล์"
-                            aria-label="ค้นหาลิงก์" title="ค้นหาจากลิงก์ย่อ URL ปลายทาง และชื่อไฟล์ (กด / เพื่อค้นหา)">
+                            placeholder="ค้นหาลิงก์ย่อ, URL หรือชื่อไฟล์" aria-label="ค้นหาลิงก์"
+                            title="ค้นหาจากลิงก์ย่อ URL ปลายทาง และชื่อไฟล์ (กด / เพื่อค้นหา)">
                         <button type="button" id="searchClear" class="search-clear" hidden aria-label="ล้างคำค้นหา"
                             title="ล้างคำค้นหา">
                             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -286,35 +293,39 @@
                             ทั้งหมด <span class="chip-n" data-count="all">0</span>
                         </button>
                         <button type="button" class="chip" data-filter="url" aria-pressed="false">
-                            <i class="fa-solid fa-link" aria-hidden="true"></i> URL <span class="chip-n" data-count="url">0</span>
+                            <i class="fa-solid fa-link" aria-hidden="true"></i> URL <span class="chip-n"
+                                data-count="url">0</span>
                         </button>
                         <button type="button" class="chip" data-filter="file" aria-pressed="false">
-                            <i class="fa-solid fa-file" aria-hidden="true"></i> ไฟล์ <span class="chip-n" data-count="file">0</span>
+                            <i class="fa-solid fa-file" aria-hidden="true"></i> ไฟล์ <span class="chip-n"
+                                data-count="file">0</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="result-count" id="resultCount" hidden aria-live="polite"></div>
+                <div class="result-count" id="resultCount" aria-live="polite">&nbsp;</div>
 
-                <table class="links-table" aria-label="ตารางลิงก์">
-                    <thead>
-                        <tr>
-                            <th>ลิงก์ย่อ</th>
-                            <th>ปลายทาง</th>
-                            <th style="text-align:right;">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="list">
-                        <tr>
-                            <td colspan="3">
-                                <div class="loading-state" id="loadingState">
-                                    <span class="spinner" id="loading"></span>
-                                    <span id="loading-text">กำลังโหลดข้อมูล...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="links-wrap">
+                    <table class="links-table" aria-label="ตารางลิงก์">
+                        <thead>
+                            <tr>
+                                <th>ลิงก์ย่อ</th>
+                                <th>ปลายทาง</th>
+                                <th class="th-actions">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list">
+                            <tr>
+                                <td colspan="3">
+                                    <div class="loading-state" id="loadingState">
+                                        <span class="spinner" id="loading"></span>
+                                        <span id="loading-text">กำลังโหลดข้อมูล...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -331,14 +342,12 @@
             </div>
             <div class="modal-body">
                 <div class="field">
-                    <div class="field-label">ลิงก์ย่อใหม่ <span
-                            style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
+                    <div class="field-label">ลิงก์ย่อใหม่ <span class="opt">(ไม่จำเป็น)</span>
                     </div>
                     <input type="text" id="newSlug" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
-                <div class="field" id="newToField">
-                    <div class="field-label">ลิงก์เต็มใหม่ <span
-                            style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-muted); font-size:11px;">(ไม่จำเป็น)</span>
+                <div class="field">
+                    <div class="field-label">ลิงก์เต็มใหม่ <span class="opt">(ไม่จำเป็น)</span>
                     </div>
                     <input type="url" id="newTo" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
@@ -365,7 +374,7 @@
                 <div class="qr-side">
                     <div class="qr-preview" id="qrPreview"></div>
                     <div class="qr-info" id="qrInfo"></div>
-                    <div id="qrWarn" aria-live="polite"></div>
+                    <div class="qr-warn-list" id="qrWarn" aria-live="polite"></div>
                 </div>
 
                 <div class="qr-controls">
@@ -377,13 +386,14 @@
                     <div class="field">
                         <div class="field-label">การแก้ไขข้อผิดพลาด (ECC)</div>
                         <div class="mode-tabs seg" id="eccTabs" role="group" aria-label="ระดับ ECC">
-                            <button type="button" data-ecc="auto" title="ให้ระบบเลือกระดับที่เหมาะที่สุดให้">อัตโนมัติ</button>
-                            <button type="button" data-ecc="L" title="L · กู้คืนได้ ~7% · โค้ดเล็กที่สุด">L</button>
-                            <button type="button" data-ecc="M" title="M · กู้คืนได้ ~15%">M</button>
-                            <button type="button" data-ecc="Q" title="Q · กู้คืนได้ ~25%">Q</button>
-                            <button type="button" data-ecc="H" title="H · กู้คืนได้ ~30% · เหมาะกับใส่โลโก้">H</button>
+                            <button type="button" data-ecc="auto"
+                                title="ให้ระบบเลือกระดับที่เหมาะที่สุดให้">อัตโนมัติ</button>
+                            <button type="button" data-ecc="L" title="L: กู้คืนได้ ~7%, โค้ดเล็กที่สุด">L</button>
+                            <button type="button" data-ecc="M" title="M: กู้คืนได้ ~15%">M</button>
+                            <button type="button" data-ecc="Q" title="Q: กู้คืนได้ ~25%">Q</button>
+                            <button type="button" data-ecc="H" title="H: กู้คืนได้ ~30%, เหมาะกับใส่โลโก้">H</button>
                         </div>
-                        <p class="muted" id="eccHint"></p>
+                        <p class="muted" id="eccHint">&nbsp;</p>
                     </div>
 
                     <div class="grid2">
@@ -427,15 +437,23 @@
                         </div>
                     </div>
 
-                    <label class="opt-check">
-                        <input type="checkbox" id="qrLogo">
-                        <span>ใส่โลโก้ตรงกลาง <span class="muted">· ใช้ ECC สูงสุดให้อัตโนมัติ</span></span>
+                    <label class="switch-row" for="qrLogo">
+                        <span class="switch-text">
+                            <b>ใส่โลโก้ตรงกลาง</b>
+                            <small>ใช้ ECC สูงสุดให้อัตโนมัติ</small>
+                        </span>
+                        <input type="checkbox" id="qrLogo" class="switch-input" role="switch">
+                        <span class="switch-ico" aria-hidden="true">
+                            <i class="fa-solid fa-toggle-off sw-off"></i>
+                            <i class="fa-solid fa-toggle-on sw-on"></i>
+                        </span>
                     </label>
 
                     <div class="grid2">
                         <div class="field">
                             <div class="field-label">ขนาดไฟล์</div>
                             <select id="qrSize">
+                                <option value="256">256 px (เว็บ/เล็ก)</option>
                                 <option value="512">512 px</option>
                                 <option value="1024">1024 px</option>
                                 <option value="2048">2048 px (พิมพ์)</option>
@@ -453,7 +471,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" id="qrReset" style="margin-right:auto" title="กลับไปใช้ค่าเริ่มต้น">
+                <button class="btn btn-ghost push-left" id="qrReset" title="กลับไปใช้ค่าเริ่มต้น">
                     <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> รีเซ็ต
                 </button>
                 <button class="btn btn-ghost" id="copyQR">
@@ -466,33 +484,52 @@
         </div>
     </div>
 
-    <!-- manage files modal -->
+    <!-- edit file link modal (slug + files in one place) -->
     <div class="modal-overlay" id="filesModal" role="dialog" aria-modal="true" aria-labelledby="filesModalLabel">
         <div class="modal-box modal-wide fm-box">
             <div class="modal-header">
-                <span id="filesModalLabel">จัดการไฟล์</span>
+                <span id="filesModalLabel">แก้ไขลิงก์ไฟล์</span>
                 <button class="modal-close" id="filesModalClose" aria-label="ปิด">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="muted" id="fmMeta"></p>
-                <ul class="fm-list" id="fmList" aria-live="polite"></ul>
+                <div class="field">
+                    <div class="field-label">ลิงก์ย่อ</div>
+                    <div class="input-row">
+                        <span class="input-prefix">go.thatako.net/</span>
+                        <input type="text" id="fmSlug" maxlength="1024" autocomplete="off" spellcheck="false"
+                            aria-label="ลิงก์ย่อ">
+                        <button type="button" class="btn btn-primary attached" id="fmSlugSave" disabled
+                            title="บันทึกชื่อลิงก์">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> บันทึก
+                        </button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="field-label">ไฟล์ในลิงก์</div>
+                    <p class="muted status-line" id="fmMeta"></p>
+                    <ul class="fm-list" id="fmList" aria-live="polite"></ul>
+                    <p class="muted" id="fmHint"></p>
+                </div>
 
                 <div class="field fm-add">
                     <div class="field-label">เพิ่มไฟล์</div>
                     <label class="dropzone dz-sm" id="fmDrop" for="fmFiles">
                         <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
                         <b>ลากไฟล์มาวาง หรือกดเพื่อเลือก</b>
-                        <span class="muted" id="fmLimits"></span>
+                        <span class="muted status-line" id="fmLimits"></span>
                     </label>
                     <input type="file" id="fmFiles" multiple hidden>
                     <ul class="up-list" id="fmPicked"></ul>
-                    <div class="up-prog" id="fmProg" hidden>
+                    <div class="up-prog idle" id="fmProg" aria-live="polite">
                         <div class="usage-track"><i id="fmBar"></i></div>
                         <div class="up-prog-row">
-                            <span class="muted" id="fmText"></span>
-                            <button type="button" class="btn btn-ghost" id="fmCancel">ยกเลิก</button>
+                            <span class="muted status-line" id="fmText"></span>
+                            <button type="button" class="btn btn-ghost btn-sm" id="fmCancel" disabled>
+                                <i class="fa-solid fa-ban" aria-hidden="true"></i> ยกเลิก
+                            </button>
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary btn-full" id="fmUpload" disabled>

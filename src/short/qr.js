@@ -35,23 +35,46 @@ export const detectMode = data =>
             : MODE.B
 
 export const minVersion = (mode, ecc, len) => CAP[KEY[mode]][ecc].findIndex(c => c >= len) + 1
+export const upperUrl = text => {
+    const m = /^(https?):\/\/([^/?#]+)(.*)$/i.exec(text)
+    if (!m || /[a-z]/.test(m[3])) return null
+    const up = text.toUpperCase()
+    return detectMode(toQrData(up)) === MODE.A ? up : null
+}
+
+const versions = (data) => {
+    const mode = detectMode(data), len = data.length
+    return { mode, len, ver: Object.fromEntries(ORDER.map(e => [e, minVersion(mode, e, len)])) }
+}
+
 export const planQr = (text, { ecc = 'auto', logo = false } = {}) => {
-    const data = toQrData(text || '')
+    let data = toQrData(text || '')
     if (!data) return null
 
-    const mode = detectMode(data), len = data.length
-    const ver = Object.fromEntries(ORDER.map(e => [e, minVersion(mode, e, len)]))
+    let { mode, len, ver } = versions(data)
+    let optimized = false
+    const alt = upperUrl(text)
+    if (alt) {
+        const a = versions(toQrData(alt))
+        if (a.ver.L && (!ver.L || a.ver.L < ver.L)) { data = toQrData(alt); ({ mode, len, ver } = a); optimized = true }
+    }
     if (!ver.L) return { data, mode, len, tooLong: true }
 
     const fits = ORDER.filter(e => ver[e])
     let pick, why
     if (ecc !== 'auto' && ver[ecc]) [pick, why] = [ecc, 'manual']
-    else if (ecc !== 'auto') [pick, why] = [fits[0], 'fallback'] // chosen level cannot hold this much data
+    else if (ecc !== 'auto') [pick, why] = [fits[0], 'fallback']
     else if (logo) [pick, why] = [fits[0], 'logo']
-    else [pick, why] = [fits.find(e => ver[e] <= ver.L + 1), 'auto']
+    else [pick, why] = [fits.find(e => ver[e] === ver.L), 'auto']
 
     const version = ver[pick]
-    return { data, mode, len, ecc: pick, why, version, modules: 17 + 4 * version, recover: RECOVER[pick], smallest: ver.L }
+    return { data, mode, len, ecc: pick, why, version, modules: 17 + 4 * version, recover: RECOVER[pick], smallest: ver.L, optimized }
+}
+
+export const snapSize = (size, modules, quiet) => {
+    const cells = modules + 2 * quiet
+    const px = Math.max(1, Math.floor(size / cells))
+    return { size: px * cells, margin: px * quiet, px }
 }
 
 export const marginPx = (size, modules, quiet) => Math.round(size * quiet / (modules + 2 * quiet))

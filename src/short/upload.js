@@ -2,7 +2,9 @@ const PARALLEL = 3
 const RETRIES = 3
 const NO_RETRY = ['bad token', 'bad part', 'bad size']
 
-const $ = id => document.getElementById(id)
+import { $, esc, icon, SEP, joinHtml, meta, fmtSize, fmtEta } from './ui.js'
+export { fmtSize }
+
 const GIS = 'https://accounts.google.com/gsi/client'
 const SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const DRIVE = 'https://www.googleapis.com/drive/v3'
@@ -14,13 +16,6 @@ let ctx, mode = 'link', store = 'server', picked = [], busy = false, adding = fa
 let gisP = null, tok = null, tokExp = 0, me = null
 
 export const isFileMode = () => mode === 'file'
-
-export const fmtSize = b => {
-    const u = ['B', 'KB', 'MB', 'GB', 'TB']
-    let i = 0
-    while (b >= 1024 && i < 4) { b /= 1024; i++ }
-    return `${b >= 100 || !i ? Math.round(b) : b.toFixed(1)} ${u[i]}`
-}
 
 export const uploadErr = (m, fallback = 'อัปโหลดล้มเหลว กรุณาลองใหม่') => errText(m, fallback)
 const errText = (m, fallback = 'อัปโหลดล้มเหลว กรุณาลองใหม่') => ({
@@ -68,12 +63,12 @@ const syncStore = () => {
     $('ageField').hidden = d
     $('usageBox').hidden = d
     if (!lim) return
-    $('limits').textContent = d
-        ? `ไม่จำกัดขนาด (ตามพื้นที่ Drive ของคุณ) · สูงสุด ${lim.maxFiles} ไฟล์ · ไม่หมดอายุ`
-        : `สูงสุด ${fmtSize(lim.perUpload)} ต่อครั้ง · ${lim.maxFiles} ไฟล์ · เก็บได้ ${lim.maxDays} วัน`
+    $('limits').innerHTML = d
+        ? meta(['ตามพื้นที่ Drive ของคุณ', `สูงสุด ${lim.maxFiles} ไฟล์`, 'ไม่หมดอายุ'])
+        : meta([`สูงสุด ${fmtSize(lim.perUpload)} ต่อครั้ง`, `${lim.maxFiles} ไฟล์`, `เก็บได้ ${lim.maxDays} วัน`])
     $('driveConnect').disabled = !lim.driveClientId
     if (d && !lim.driveClientId) $('driveStatus').textContent = 'ยังไม่ได้ตั้งค่า Google Drive บนระบบนี้'
-    else if (d && !me) $('driveStatus').textContent = ''
+    else if (d && !me && !$('driveStatus').textContent) $('driveStatus').textContent = 'ยังไม่ได้เชื่อมต่อ Google Drive'
 }
 
 const setStore = v => {
@@ -83,11 +78,20 @@ const setStore = v => {
 }
 
 const bar = (el, pct) => el.style.width = Math.min(100, pct) + '%'
+const setStatus = html => { $('upText').innerHTML = html }
+const idleStatus = () => {
+    const total = picked.reduce((a, f) => a + f.size, 0)
+    setStatus(picked.length ? meta([`เลือกแล้ว ${picked.length} ไฟล์`, fmtSize(total)]) : 'ยังไม่ได้เลือกไฟล์')
+}
+const progressText = (sent, total, sp) => {
+    const eta = sp > 0 ? Math.round((total - sent) / sp) : 0
+    setStatus(meta([`${fmtSize(sent)} / ${fmtSize(total)}`, `${fmtSize(sp)}/s`, `เหลือ ~${fmtEta(eta)}`]))
+}
 
 const loadUsage = async () => {
     try {
         lim = await (await fetch(`${ctx.api}/usage?key=${encodeURIComponent(ctx.key())}`)).json()
-        $('usageText').textContent = `พื้นที่รวม ${fmtSize(lim.used)} / ${fmtSize(lim.limit)} · ของคุณ ${fmtSize(lim.mine)} / ${fmtSize(lim.perKey)}`
+        $('usageText').innerHTML = meta([`พื้นที่รวม ${fmtSize(lim.used)} / ${fmtSize(lim.limit)}`, `ของคุณ ${fmtSize(lim.mine)} / ${fmtSize(lim.perKey)}`])
         bar($('usageBar'), lim.used / lim.limit * 100)
         $('usageBar').classList.toggle('warn', lim.used / lim.limit > 0.85)
     } catch { /* usage is optional info */ }
@@ -108,13 +112,13 @@ const renderPicked = () => {
         rm.type = 'button'
         rm.className = 'up-rm'
         rm.title = 'เอาออก'
-        rm.textContent = '×'
+        rm.setAttribute('aria-label', `เอา ${f.name} ออก`)
+        rm.innerHTML = icon('xmark')
         rm.onclick = () => { if (!busy) { picked.splice(i, 1); renderPicked() } }
         li.append(name, size, rm)
         ul.appendChild(li)
     })
-    const total = picked.reduce((a, f) => a + f.size, 0)
-    $('upTotal').textContent = picked.length ? `${picked.length} ไฟล์ · ${fmtSize(total)}` : ''
+    if (!busy) idleStatus()
 }
 
 const addFiles = list => {
@@ -127,7 +131,8 @@ const addFiles = list => {
 
 const lock = v => {
     busy = v
-    $('upProg').hidden = !v
+    $('upProg').classList.toggle('idle', !v)
+    $('upCancel').disabled = !v
     $('create').disabled = v
     $('files').disabled = v
     $('modeLink').disabled = $('modeFile').disabled = v
@@ -227,15 +232,15 @@ const showDrive = () => {
     $('driveLogout').hidden = !on
     if (!on) return
     const q = me.storageQuota
-    const free = q?.limit ? ` · ว่าง ${fmtSize(q.limit - q.usage)}` : ''
-    $('driveStatus').textContent = `เชื่อมต่อแล้ว: ${me.user?.emailAddress || me.user?.displayName || 'Google'}${free}`
+    const free = q?.limit ? `ว่าง ${fmtSize(q.limit - q.usage)}` : ''
+    $('driveStatus').innerHTML = `${icon('circle-check', 'ok')} ${meta([`เชื่อมต่อแล้ว: ${me.user?.emailAddress || me.user?.displayName || 'Google'}`, free])}`
 }
 
 const connectDrive = async () => {
     const switching = !!me
     const prev = { tok, tokExp, me }
     try {
-        $('driveStatus').textContent = 'กำลังเชื่อมต่อ...'
+        $('driveStatus').textContent = 'กำลังเชื่อมต่อ'
         if (switching) tok = null
         await getToken(switching)
         const r = await gfetch(`${DRIVE}/about?fields=user(displayName,emailAddress),storageQuota(limit,usage)`)
@@ -254,7 +259,7 @@ const disconnectDrive = async () => {
     tok = null; tokExp = 0; me = null
     if (old && window.google?.accounts?.oauth2) await new Promise(res => google.accounts.oauth2.revoke(old, res))
     showDrive()
-    $('driveStatus').textContent = 'ออกจาก Google Drive แล้ว'
+    $('driveStatus').textContent = 'ยังไม่ได้เชื่อมต่อ Google Drive'
 }
 
 const ensureFolder = async () => {
@@ -334,7 +339,7 @@ const startDriveUpload = async () => {
 
     ctl = { stop: false, cancelled: false, xhrs: new Set() }
     lock(true)
-    $('upText').textContent = 'กำลังเชื่อมต่อ Google Drive...'
+    setStatus('กำลังเชื่อมต่อ Google Drive')
     bar($('upBar'), 0)
 
     try {
@@ -347,20 +352,18 @@ const startDriveUpload = async () => {
         const t0 = Date.now()
         const onBytes = d => {
             sent += d
-            const sp = sent / Math.max(1, (Date.now() - t0) / 1000)
-            const eta = sp > 0 ? Math.round((total - sent) / sp) : 0
             bar($('upBar'), sent / total * 100)
-            $('upText').textContent = `${fmtSize(sent)} / ${fmtSize(total)} · ${fmtSize(sp)}/s · เหลือ ~${Math.floor(eta / 60)}:${String(eta % 60).padStart(2, '0')}`
+            progressText(sent, total, sent / Math.max(1, (Date.now() - t0) / 1000))
         }
 
         const files = []
         for (const f of picked) files.push({ id: await uploadToDrive(f, folder, onBytes) })
 
-        $('upText').textContent = 'กำลังสร้างลิงก์...'
+        setStatus('กำลังสร้างลิงก์')
         const fin = await post('/file/drive', { key, slug, token: await getToken(), files })
         if (!fin.ok) throw new Error(fin.msg)
 
-        ctx.toast(`อัปโหลดสำเร็จ → go.thatako.net/${fin.slug}`)
+        ctx.toast(`อัปโหลดสำเร็จ: go.thatako.net/${fin.slug}`)
         picked = []
         renderPicked()
         $('slug').value = ''
@@ -385,7 +388,7 @@ export const startUpload = async () => {
 
     ctl = { stop: false, cancelled: false, xhrs: new Set() }
     lock(true)
-    $('upText').textContent = 'กำลังเตรียมอัปโหลด...'
+    setStatus('กำลังเตรียมอัปโหลด')
     bar($('upBar'), 0)
 
     let tokens = []
@@ -401,10 +404,8 @@ export const startUpload = async () => {
         const t0 = Date.now()
         const onBytes = d => {
             sent += d
-            const sp = sent / Math.max(1, (Date.now() - t0) / 1000)
-            const eta = sp > 0 ? Math.round((total - sent) / sp) : 0
             bar($('upBar'), sent / total * 100)
-            $('upText').textContent = `${fmtSize(sent)} / ${fmtSize(total)} · ${fmtSize(sp)}/s · เหลือ ~${Math.floor(eta / 60)}:${String(eta % 60).padStart(2, '0')}`
+            progressText(sent, total, sent / Math.max(1, (Date.now() - t0) / 1000))
         }
 
         const files = []
@@ -413,11 +414,11 @@ export const startUpload = async () => {
             files.push({ token: tokens[i], type: f.type, parts })
         }
 
-        $('upText').textContent = 'กำลังรวมไฟล์...'
+        setStatus('กำลังรวมไฟล์')
         const fin = await post('/file/done', { key, slug: init.slug, files })
         if (!fin.ok) throw new Error(fin.msg)
 
-        ctx.toast(`อัปโหลดสำเร็จ → go.thatako.net/${fin.slug}`)
+        ctx.toast(`อัปโหลดสำเร็จ: go.thatako.net/${fin.slug}`)
         picked = []
         renderPicked()
         $('slug').value = ''
@@ -430,12 +431,6 @@ export const startUpload = async () => {
     loadUsage()
 }
 
-/**
- * add files to a link that already exists (used by the file manager dialog)
- * server links go through the same multipart flow as a new upload and share the link's expiry;
- * drive links upload from the browser to the owner's drive and the worker then verifies the ids
- * @param {{ slug: string, type: 'file'|'drive', files: File[], onProgress: (sent: number, total: number, seconds: number) => void }} o
- */
 export const uploadMore = async ({ slug, type, files, onProgress }) => {
     if (busy || adding) throw new Error('busy')
     const key = ctx.key()
@@ -490,6 +485,8 @@ export const cancelMore = () => {
 
 export const initUpload = c => {
     ctx = c
+    idleStatus()
+    $('upCancel').disabled = true
     $('modeLink').onclick = () => setMode('link')
     $('modeFile').onclick = () => setMode('file')
     $('store').onchange = e => setStore(e.target.value)

@@ -1,9 +1,10 @@
-import { planQr, marginPx, colorIssue } from './qr.js'
+import { planQr, snapSize, colorIssue } from './qr.js'
+import { $, esc, icon, dims, SEP, joinHtml } from './ui.js'
 
 const LIB = 'https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js'
 const LOGO = '/img/icon/logo.svg'
 const STORE = 'short-qr'
-const PREVIEW = 48
+const PREVIEW = 220
 const MAX_BYTES = 2953
 
 const DEFAULTS = { ecc: 'auto', dots: 'square', corner: 'square', fg: '#000000', bg: '#ffffff', quiet: 4, size: 1024, fmt: 'png', logo: false }
@@ -13,11 +14,9 @@ const ALLOWED = {
     dots: ['square', 'rounded', 'extra-rounded', 'dots', 'classy', 'classy-rounded'],
     corner: Object.keys(CORNERS),
     quiet: [2, 4, 6],
-    size: [512, 1024, 2048],
+    size: [256, 512, 1024, 2048],
     fmt: ['png', 'svg', 'jpeg']
 }
-
-const $ = id => document.getElementById(id)
 
 let st = { ...DEFAULTS }
 let qr = null // preview
@@ -59,27 +58,31 @@ const logoOk = () => logoP ??= new Promise(res => {
 })
 
 const plan = () => planQr($('qrcodeText').value.trim(), { ecc: st.ecc, logo: st.logo })
+const options = (p, size, logo = st.logo, preview = false) => {
+    const snap = preview ? null : snapSize(size, p.modules, st.quiet)
+    const px = snap ? snap.size : size
+    const margin = snap ? snap.margin : Math.round(size * st.quiet / (p.modules + 2 * st.quiet))
+    return {
+        type: preview ? 'svg' : 'canvas',
+        width: px,
+        height: px,
+        data: p.data,
+        margin,
+        qrOptions: { typeNumber: 0, mode: p.mode, errorCorrectionLevel: p.ecc },
+        dotsOptions: { type: st.dots, color: st.fg },
+        cornersSquareOptions: { type: CORNERS[st.corner][0], color: st.fg },
+        cornersDotOptions: { type: CORNERS[st.corner][1], color: st.fg },
+        backgroundOptions: { color: st.bg },
+        image: logo ? LOGO : undefined,
+        imageOptions: { crossOrigin: 'anonymous', hideBackgroundDots: true, margin: Math.max(1, Math.round(px / 120)) }
+    }
+}
 
-/** library options for a given plan and pixel size */
-const options = (p, size, logo = st.logo) => ({
-    type: 'canvas',
-    width: size,
-    height: size,
-    data: p.data,
-    margin: marginPx(size, p.modules, st.quiet),
-    qrOptions: { typeNumber: 0, mode: p.mode, errorCorrectionLevel: p.ecc },
-    dotsOptions: { type: st.dots, color: st.fg },
-    cornersSquareOptions: { type: CORNERS[st.corner][0], color: st.fg },
-    cornersDotOptions: { type: CORNERS[st.corner][1], color: st.fg },
-    backgroundOptions: { color: st.bg },
-    image: logo ? LOGO : undefined,
-    imageOptions: { crossOrigin: 'anonymous', hideBackgroundDots: true, margin: Math.max(1, Math.round(size / 120)) }
-})
-
-const chip = (text, title) => {
+/** @param {string} html already-safe markup */
+const chip = (html, title) => {
     const s = document.createElement('span')
     s.className = 'qr-chip'
-    s.textContent = text
+    s.innerHTML = html
     if (title) s.title = title
     return s
 }
@@ -90,6 +93,13 @@ const eccText = p => ({
     manual: 'เลือกเอง',
     fallback: 'ข้อมูลยาวเกินระดับที่เลือก จึงลดให้อัตโนมัติ'
 }[p.why])
+
+const statusRow = (kind, text) => {
+    const d = document.createElement('div')
+    d.className = `qr-status ${kind}`
+    d.innerHTML = `${icon(kind === 'ok' ? 'circle-check' : kind === 'err' ? 'circle-xmark' : 'triangle-exclamation')}<span>${esc(text)}</span>`
+    return d
+}
 
 const renderInfo = p => {
     const info = $('qrInfo'), warn = $('qrWarn')
@@ -103,26 +113,35 @@ const renderInfo = p => {
     if (st.quiet < 4) issues.push('ขอบขาวน้อยกว่ามาตรฐาน (4 ช่อง) อาจสแกนยากเมื่อพิมพ์ติดกับสิ่งอื่น')
     if (p && !p.tooLong && st.logo && p.recover < 25) issues.push('โลโก้บังจุดบางส่วน แนะนำใช้ ECC ระดับ Q หรือ H')
 
+    let tooLong = false
     if (!p) info.append(chip('ใส่ URL หรือข้อความเพื่อสร้าง QR'))
-    else if (p.tooLong) issues.unshift(`ข้อมูลยาวเกินไป QR เก็บได้สูงสุด ${MAX_BYTES.toLocaleString('th-TH')} ไบต์`)
-    else {
+    else if (p.tooLong) {
+        tooLong = true
+        issues.unshift(`ข้อมูลยาวเกินไป QR เก็บได้สูงสุด ${MAX_BYTES.toLocaleString('th-TH')} ไบต์`)
+    } else {
         info.append(
-            chip(`เวอร์ชัน ${p.version} · ${p.modules}×${p.modules}`, 'จำนวนช่อง ยิ่งน้อยยิ่งสแกนง่าย'),
-            chip(`โหมด ${p.mode}`, 'เลือกรูปแบบการเข้ารหัสที่ประหยัดที่สุดให้อัตโนมัติ'),
-            chip(`ECC ${p.ecc} · กู้ได้ ~${p.recover}%`, eccText(p)),
-            chip('Mask อัตโนมัติ', 'เลือก mask pattern ที่ดีที่สุดจาก 8 แบบ')
+            chip(`${icon('grid-2')} v${p.version}${SEP}${dims(p.modules)}`, 'เวอร์ชันและจำนวนช่อง ยิ่งน้อยยิ่งสแกนง่าย'),
+            chip(`${icon('shield-check')} ECC ${p.ecc}${SEP}${p.recover}%`, `กู้คืนได้ ~${p.recover}% (${eccText(p)})`),
+            chip(`${icon('code')} ${esc(p.mode)}`, 'เลือกรูปแบบการเข้ารหัสที่ประหยัดที่สุดให้อัตโนมัติ'),
         )
+        if (p.optimized) info.append(chip(`${icon('bolt')} ย่อโหมดอัตโนมัติ`, 'ใช้ตัวพิมพ์ใหญ่ใน URL (เบราว์เซอร์ไม่สนตัวพิมพ์ใหญ่เล็กของโดเมน) เพื่อให้ QR เล็กลง'))
     }
-    $('eccHint').textContent = p && !p.tooLong
-        ? `ข้อมูล ${p.len} ${p.mode === 'Byte' ? 'ไบต์' : 'ตัวอักษร'} · ECC ${p.ecc} (${eccText(p)})`
-        : ''
 
-    for (const t of issues) {
-        const d = document.createElement('div')
-        d.className = 'qr-warn'
-        d.textContent = t
-        warn.appendChild(d)
-    }
+    $('eccHint').innerHTML = p && !p.tooLong
+        ? `ข้อมูล ${p.len} ${p.mode === 'Byte' ? 'ไบต์' : 'ตัวอักษร'}${SEP}ECC ${p.ecc} (${esc(eccText(p))})`
+        : '&nbsp;'
+
+    if (!issues.length) warn.append(statusRow('ok', 'พร้อมสแกน'))
+    for (const t of issues) warn.append(statusRow(tooLong ? 'err' : 'warn', t))
+}
+
+const fitSvg = box => {
+    const svg = box.querySelector('svg')
+    if (!svg) return
+    svg.setAttribute('viewBox', `0 0 ${PREVIEW} ${PREVIEW}`)
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+    svg.removeAttribute('width')
+    svg.removeAttribute('height')
 }
 
 const render = async () => {
@@ -132,18 +151,20 @@ const render = async () => {
     const box = $('qrPreview')
     if (!p || p.tooLong) { qr = null; box.replaceChildren(); box.classList.add('empty'); return }
     box.classList.remove('empty')
+    box.classList.toggle('crisp', st.dots === 'square' && st.corner === 'square')
 
     try {
         const Lib = await loadLib()
         const logo = st.logo && await logoOk()
         if (st.logo && !logo) notify('โหลดโลโก้ไม่สำเร็จ จึงสร้าง QR แบบไม่มีโลโก้', false)
         if (plan()?.data !== p.data) return
-        if (qr) qr.update(options(p, PREVIEW, logo))
+        if (qr) qr.update(options(p, PREVIEW, logo, true))
         else {
-            qr = new Lib(options(p, PREVIEW, logo))
+            qr = new Lib(options(p, PREVIEW, logo, true))
             box.replaceChildren()
             qr.append(box)
         }
+        fitSvg(box)
     } catch {
         notify('โหลดตัวสร้าง QR ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่', false)
     }
@@ -179,7 +200,6 @@ const fileName = () => 'qr-' + ($('qrcodeText').value.trim()
     .replace(/^_+|_+$/g, '')
     .slice(0, 40) || 'code')
 
-/** build a fresh full-size instance for export (the preview is only 480px) */
 const exporter = async () => {
     const p = plan()
     if (!p || p.tooLong) throw new Error('empty')
@@ -199,7 +219,7 @@ const copyQR = async () => {
         const q = await exporter()
         const blob = await q.getRawData('png')
         await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-        notify('คัดลอกแล้ว')
+        notify('คัดลอก QR แล้ว')
     } catch { notify('ไม่สามารถคัดลอกได้', false) }
 }
 

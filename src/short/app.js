@@ -1,7 +1,8 @@
 import "../short/boostrap.js"
-import { initUpload, isFileMode, startUpload, fmtSize } from "./upload.js"
+import { initUpload, isFileMode, startUpload } from "./upload.js"
 import { initQR, openQR } from "./qrui.js"
 import { initFiles, openFiles } from "./files.js"
+import { $, esc, icon, meta, metaLine, fmtSize } from "./ui.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
@@ -12,10 +13,6 @@ let busy = false
 let links = []
 const view = { q: "", type: "all" }
 
-const $ = id => document.getElementById(id)
-
-/** @param {any} t */
-const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]))
 const isFile = l => l.type === "file" || l.type === "drive"
 
 /** @param {string} slug */
@@ -39,19 +36,17 @@ const randomKey = (extraBytes = 16) =>
         .map(b => b.toString(16).padStart(2, "0"))
         .join("")
 
-/** @param {string} msg */
+/** @param {string} msg @param {boolean} [ok] */
 const toast = (msg, ok = true) => {
     const el = document.createElement("div")
-    el.className = `toast align-items-center text-bg-${ok ? "success" : "danger"} border-0`
+    el.className = `toast text-bg-${ok ? "success" : "danger"}`
+    el.setAttribute("role", ok ? "status" : "alert")
     el.innerHTML = `
-        <i class="fa-solid ${!ok ? 'fa-triangle-exclamation' : 'fa-check'}"
-            aria-hidden="true"
-            style="color:${!ok ? 'var(--color-text-danger)' : 'var(--color-badge-green-text)'}"></i>
-        <span>${msg || 'ไม่มีข้อความ'}</span>
-        <button class="toast-close" aria-label="ปิด" title="ปิด">
-            <i class="fa-solid fa-xmark"></i>
-        </button>`
-    el.querySelector(".toast-close").onclick = () => el.dispatchEvent(new Event('hidden.bs.toast'))
+        ${icon(ok ? "circle-check" : "triangle-exclamation", ok ? "toast-ok" : "toast-err")}
+        <span class="toast-msg"></span>
+        <button class="toast-close" type="button" aria-label="ปิด" title="ปิด">${icon("xmark")}</button>`
+    el.querySelector(".toast-msg").textContent = msg || "ไม่มีข้อความ"
+    el.querySelector(".toast-close").onclick = () => el.dispatchEvent(new Event("hidden.bs.toast"))
 
     $("toasts").appendChild(el)
     new bootstrap.Toast(el, { delay: TOAST_DELAY }).show()
@@ -68,20 +63,23 @@ const setBusy = v => {
 /** @param {any} l */
 const fileInfo = l => {
     const drive = l.type === "drive"
-    const icon = drive ? "fa-brands fa-google-drive" : "fa-solid fa-file"
-    let out = `<span class="file-sum"><i class="${icon}" aria-hidden="true"></i> ${l.count} ไฟล์ · ${fmtSize(l.total)}</span>`
+    const head = `<span class="file-sum">${icon(drive ? "cloud" : "file")} ${metaLine([`${l.count} ไฟล์`, fmtSize(l.total)])}</span>`
+    let out = head
 
     if (l.names?.length) {
         const more = l.count > 2 ? ` +${l.count - 2}` : ""
-        out += `<small class="file-names muted" title="${esc(l.names.join(", "))}">${esc(l.names.slice(0, 2).join(", "))}${more}</small>`
+        out += `<small class="file-names" title="${esc(l.names.join(", "))}">${esc(l.names.slice(0, 2).join(", "))}${more}</small>`
     }
 
-    if (drive) return out + `<small class="file-exp muted">Google Drive · ไม่หมดอายุ</small>`
-    if (!(l.exp > 0)) return out + `<small class="file-exp muted">ไม่ทราบวันหมดอายุ</small>`
+    if (drive) return out + `<small class="file-exp">${icon("infinity")} Google Drive, ไม่หมดอายุ</small>`
+    if (!(l.exp > 0)) return out + `<small class="file-exp">${icon("clock")} ไม่ทราบวันหมดอายุ</small>`
     const dead = l.exp < Date.now()
     const day = new Date(l.exp).toLocaleDateString("th-TH", { dateStyle: "medium" })
-    return out + `<small class="file-exp ${dead ? "file-dead" : "muted"}">${dead ? "หมดอายุแล้ว" : "หมดอายุ"} ${day}</small>`
+    return out + `<small class="file-exp ${dead ? "file-dead" : ""}">${icon(dead ? "clock-rotate-left" : "clock")} ${dead ? "หมดอายุแล้ว" : "หมดอายุ"} ${day}</small>`
 }
+
+const actionBtn = (cls, attrs, title, ico) =>
+    `<button type="button" class="btn ${cls} btn-icon" ${attrs} title="${title}" aria-label="${title}">${icon(ico)}</button>`
 
 /** @param {any} l */
 const rowHtml = l => {
@@ -89,37 +87,26 @@ const rowHtml = l => {
     const file = isFile(l)
     return `
         <tr>
-            <td class="link-slug">
-                <a href="https://go.thatako.net/${slug}" target="_blank" title="คัดลอกลิงก์">${slug}</a>
+            <td class="link-slug" data-label="ลิงก์ย่อ">
+                <a href="https://go.thatako.net/${slug}" target="_blank" rel="noopener" title="คัดลอกลิงก์: ${slug}"><span class="slug-text">${slug}</span>${icon("copy", "slug-copy")}</a>
             </td>
-            <td class="link-to" title="${file ? "" : esc(l.to)}">${file ? fileInfo(l) : esc(l.to)}</td>
-            <td>
+            <td class="link-to" data-label="ปลายทาง" title="${file ? "" : esc(l.to)}">${file ? fileInfo(l) : `<span class="to-text">${esc(l.to)}</span>`}</td>
+            <td class="link-actions-cell">
                 <div class="link-actions">
-                    ${file ? `<button class="btn btn-ghost" data-files="${slug}" data-type="${l.type}" title="จัดการไฟล์ (เพิ่ม ลบ เปลี่ยนชื่อ)">
-                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i> ไฟล์
-                    </button>` : ""}
-                    <button class="btn btn-ghost" data-edit="${slug}" data-to="${esc(l.to)}" data-type="${file ? l.type : "url"}" title="แก้ไขลิงก์">
-                        <i class="fa-solid fa-pen" aria-hidden="true"></i> แก้ไข
-                    </button>
-                    <button class="btn btn-ghost" data-qr="${slug}" title="สร้าง QR CODE">
-                        <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
-                    </button>
-                    <button class="btn btn-danger" data-revoke="${slug}" title="ลบลิงก์">
-                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                    </button>
+                    ${actionBtn("btn-ghost", `data-edit="${slug}" data-to="${esc(l.to)}" data-type="${file ? l.type : "url"}"`, "แก้ไขลิงก์", "pen")}
+                    ${actionBtn("btn-ghost", `data-qr="${slug}"`, "สร้าง QR CODE", "qrcode")}
+                    ${actionBtn("btn-danger", `data-revoke="${slug}"`, "ลบลิงก์", "trash")}
                 </div>
             </td>
         </tr>`
 }
 
-const emptyRow = (icon, text, extra = "") => `
+const emptyRow = (name, text, extra = "") => `
     <tr>
         <td colspan="3">
             <div class="empty-state">
-                <div style="display:flex;justify-content:center">
-                    <i class="fa-solid ${icon}" aria-hidden="true" style="font-size:24px;opacity:0.3"></i>
-                </div>
-                ${text}${extra}
+                ${icon(name, "empty-ico")}
+                <div>${text}${extra}</div>
             </div>
         </td>
     </tr>`
@@ -145,11 +132,12 @@ const applyView = () => {
     $("searchClear").hidden = !view.q
 
     const filtering = !!words.length || view.type !== "all"
-    $("resultCount").hidden = !filtering || !links.length
-    $("resultCount").textContent = `แสดง ${shown.length} จาก ${links.length} ลิงก์`
+    $("resultCount").textContent = !links.length ? "ยังไม่มีลิงก์"
+        : filtering ? `แสดง ${shown.length} จาก ${links.length} ลิงก์`
+            : `ทั้งหมด ${links.length} ลิงก์`
 
     if (!links.length) $("list").innerHTML = emptyRow("fa-link-slash", "ยังไม่มีลิงก์ - สร้างลิงก์แรกได้เลย")
-    else if (!shown.length) $("list").innerHTML = emptyRow("fa-magnifying-glass", "ไม่พบลิงก์ที่ตรงกัน", ` <button type="button" class="btn btn-ghost" data-reset-filter style="margin-left:6px;height:26px">ล้างตัวกรอง</button>`)
+    else if (!shown.length) $("list").innerHTML = emptyRow("fa-magnifying-glass", "ไม่พบลิงก์ที่ตรงกัน", `<button type="button" class="btn btn-ghost btn-sm" data-reset-filter>${icon("filter-slash")} ล้างตัวกรอง</button>`)
     else $("list").innerHTML = shown.map(rowHtml).join("")
 }
 
@@ -217,9 +205,9 @@ const copyLink = async slug => {
 
 /** @param {string} slug */
 const openEdit = dataset => {
+    if (dataset.type === "file" || dataset.type === "drive") return openFiles(dataset.edit, dataset.type)
     editing = dataset
     $("newSlug").placeholder = dataset.edit
-    $("newToField").hidden = dataset.type === "file" || dataset.type === "drive"
     $("newTo").placeholder = dataset.to
     $("newSlug").value = ''
     $("newTo").value = ''
@@ -343,7 +331,6 @@ const initEvents = () => {
         if (a) await copyLink(a.href)
         else if (b) {
             if (b.dataset.qr) openQR(`https://go.thatako.net/${b.dataset.qr}`)
-            if (b.dataset.files) openFiles(b.dataset.files, b.dataset.type)
             if (b.dataset.edit) openEdit(b.dataset)
             if (b.dataset.revoke) await revoke(b.dataset.revoke)
         }
@@ -394,7 +381,7 @@ const init = () => {
     initKey()
     initQR({ toast })
     initUpload({ api: API_URL, key: () => $("key").value.trim(), validSlug, toast, reload: loadLinks })
-    initFiles({ api: API_URL, key: () => $("key").value.trim(), toast, reload: loadLinks })
+    initFiles({ api: API_URL, key: () => $("key").value.trim(), validSlug, toast, reload: loadLinks })
     loadLinks()
 }
 
