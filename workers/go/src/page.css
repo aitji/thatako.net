@@ -1,25 +1,13 @@
 :root {
-    --bg: #f6f7fb;
-    --card: #fff;
-    --fg: #1c2033;
-    --mut: #6b7190;
-    --bd: #dfe2ee;
-    --ac: #4f5d97;
-    --acf: #fff;
-    --ph: #e9ebf4
-}
-
-@media(prefers-color-scheme:dark) {
-    :root {
-        --bg: #12141d;
-        --card: #1a1d2a;
-        --fg: #e6e8f2;
-        --mut: #8f94b3;
-        --bd: #2a2e42;
-        --ac: #7b8bd6;
-        --acf: #10121a;
-        --ph: #232739
-    }
+    /* fallback */
+    --bg: var(--color-bg-primary, #f6f7fb);
+    --card: var(--color-bg-secondary, #fff);
+    --fg: var(--color-text-primary, #1c2033);
+    --mut: var(--color-text-muted, #6b7190);
+    --bd: var(--color-border, #dfe2ee);
+    --ac: var(--color-accent, #4f5d97);
+    --acf: var(--color-button-text, #fff);
+    --ph: var(--color-active-bg, #e9ebf4)
 }
 
 * {
@@ -30,7 +18,7 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--fg);
-    font: 15px/1.5 system-ui, "Noto Sans Thai", sans-serif
+    font: 15px/1.5 var(--font-family)
 }
 
 main {

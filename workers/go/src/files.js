@@ -460,7 +460,7 @@ const PAGE_HEADERS = {
 	'content-type': 'text/html; charset=utf-8',
 	'cache-control': 'no-store',
 	'referrer-policy': 'no-referrer',
-	'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: https://thatako.net https://lh3.googleusercontent.com https://drive.google.com https://*.googleusercontent.com; media-src 'self' https://drive.usercontent.google.com https://drive.google.com https://*.googleusercontent.com; base-uri 'none'; form-action 'none'",
+	'content-security-policy': "default-src 'none'; style-src 'unsafe-inline' https://thatako.net; font-src https://thatako.net https://fonts.gstatic.com; script-src 'unsafe-inline' 'self' https://thatako.net https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: https://thatako.net https://lh3.googleusercontent.com https://drive.google.com https://*.googleusercontent.com; media-src 'self' https://drive.usercontent.google.com https://drive.google.com https://*.googleusercontent.com; base-uri 'none'; form-action 'none'",
 }
 
 async function repair(env, slug, data, m) {
@@ -480,7 +480,7 @@ async function repair(env, slug, data, m) {
 	return fixed
 }
 
-const gone = () => new Response(shell('<div class="card"><div class="hd"><h1>ลิงก์หมดอายุแล้ว</h1><p>ไฟล์ชุดนี้ถูกลบออกจากระบบแล้ว กรุณาติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</p></div></div>'), { status: 410, headers: PAGE_HEADERS })
+const gone = () => new Response(shell('<div class="card"><div class="hd"><h1>ลิงก์หมดอายุแล้ว</h1><p>ไฟล์ชุดนี้ถูกลบออกจากระบบแล้ว กรุณาติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</p></div></div>', '', { title: 'ลิงก์หมดอายุแล้ว', desc: 'ไฟล์ชุดนี้ถูกลบออกจากระบบแล้ว กรุณาติดต่อผู้ส่งเพื่อขอลิงก์ใหม่' }), { status: 410, headers: PAGE_HEADERS })
 export async function filePage(env, data, slug) {
 	let m = await env.LINKS.get('f:' + data.fid, 'json')
 	if (!m) return gone()
@@ -490,7 +490,7 @@ export async function filePage(env, data, slug) {
 	const json = JSON.stringify({ id: data.fid, ...m, drive, kinds: KIND_EXTS }).replace(/</g, '\\u003c')
 	return new Response(shell(`<div class="card" id="app"></div>
 <div class="ft"><span>ไฟล์ถูกแชร์โดยผู้ใช้ ไม่ได้ตรวจสอบโดยทางโรงเรียน</span><a href="mailto:aitji@duck.com?subject=report%20go.thatako.net">รายงานไฟล์ไม่เหมาะสม</a></div>
-<script type="application/json" id="m">${json}</script><script>${CLIENT}</script>`, drive ? PRECONNECT : ''), { headers: PAGE_HEADERS })
+<script type="application/json" id="m">${json}</script><script>${CLIENT}</script>`, drive ? PRECONNECT : '', fileMeta(m, drive, slug)), { headers: PAGE_HEADERS })
 }
 
 // google drive link
@@ -533,4 +533,31 @@ async function driveLink(req, env, h) {
 }
 
 const PRECONNECT = '<link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin><link rel="dns-prefetch" href="https://drive.usercontent.google.com">'
-const shell = (body, head = '') => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><title>ดาวน์โหลดไฟล์ · go.thatako.net</title><link rel="icon" href="https://thatako.net/img/icon/favicon.ico"><link rel="stylesheet" href="https://thatako.net/zStyles/webfonts/font-awesome.css">${head}<style>${CSS}</style></head><body><main><div class="top"><b>thatako.net</b> / go.thatako.net</div>${body}</main></body></html>`
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const fmtBytes = n => { n = +n || 0; const u = ['B', 'KB', 'MB', 'GB']; let i = 0; while (n >= 1024 && i < 3) { n /= 1024; i++ } return (i ? n.toFixed(n < 10 ? 1 : 0) : n) + ' ' + u[i] }
+const fmtDate = ms => new Date(ms).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: 'numeric' })
+
+const SITE = 'https://thatako.net'
+const DEFAULT_META = { title: 'ดาวน์โหลดไฟล์', desc: 'ดาวน์โหลดไฟล์ที่แชร์ผ่าน go.thatako.net', url: 'https://go.thatako.net' }
+const metaTags = (m = {}) => {
+	const { title, desc, url } = { ...DEFAULT_META, ...m }
+	const t = esc(title + ' · go.thatako.net'), d = esc(desc), u = esc(url)
+	const alt = esc('go.thatako.net บริการแชร์ไฟล์และย่อลิงก์ โรงเรียนท่าตะโกพิทยาคม')
+	return `<title>${t}</title><meta name="description" content="${d}"><link rel="canonical" href="${u}"><meta property="og:site_name" content="go.thatako.net"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${d}"><meta property="og:url" content="${u}"><meta property="og:type" content="website"><meta property="og:locale" content="th_TH"><meta property="og:image" content="${SITE}/img/banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${alt}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${d}"><meta name="twitter:image" content="${SITE}/img/banner.png"><meta name="twitter:image:alt" content="${alt}">`
+}
+
+const fileMeta = (m, drive, slug) => {
+	const files = m.files || [], n = files.length
+	const first = files[0]?.name || 'ไฟล์'
+	const total = m.total ?? files.reduce((a, f) => a + (+f.size || 0), 0)
+	const parts = [`${n} ไฟล์`, fmtBytes(total)]
+	parts.push(drive ? 'แชร์จาก Google Drive' : m.exp ? `หมดอายุ ${fmtDate(m.exp)}` : '')
+	return {
+		title: n > 1 ? `${first} และอีก ${n - 1} ไฟล์` : first,
+		desc: parts.filter(Boolean).join(' · '),
+		url: `https://go.thatako.net/${slug}`,
+	}
+}
+
+const ICON = `${SITE}/img/icon`
+const shell = (body, head = '', meta) => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><meta name="darkreader-lock">${metaTags(meta)}<link rel="icon" href="${ICON}/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="${ICON}/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="${ICON}/apple-icon-180x180.png"><script src="${SITE}/theme.js"></script><link rel="stylesheet" href="${SITE}/zStyles/root.css">${head}<style>${CSS}</style></head><body><main><div class="top"><b>thatako.net</b> / go.thatako.net</div>${body}</main></body></html>`
