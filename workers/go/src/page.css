@@ -79,6 +79,19 @@ main {
     cursor: pointer
 }
 
+.note {
+    margin: 0;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--bd);
+    color: var(--mut);
+    font-size: 13px
+}
+
+.note a {
+    color: var(--ac);
+    font-weight: 600
+}
+
 .btn {
     display: inline-flex;
     align-items: center;

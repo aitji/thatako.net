@@ -141,6 +141,7 @@ export async function handleFile(req, env, path, h) {
 	try {
 		if (path === 'api/usage') return await getUsage(req, env, h)
 		if (path.startsWith('api/dl/')) return await download(req, env, path)
+		if (path.startsWith('api/gd/')) return await driveProxy(req, env, path)
 		if (req.method === 'POST' && path === 'api/file/init') return await init(req, env, h)
 		if (req.method === 'PUT' && path === 'api/file/chunk') return await chunk(req, env, h)
 		if (req.method === 'POST' && path === 'api/file/done') return await done(req, env, h)
@@ -455,6 +456,27 @@ async function download(req, env, path) {
 	return new Response(req.method === 'HEAD' ? null : o.body, { status, headers: hd })
 }
 
+async function driveProxy(req, env, path) {
+	const [, , fid, i] = path.split('/')
+	if (!/^[a-z0-9]{12}$/.test(fid || '') || !/^\d+$/.test(i || '')) return new Response('not found', { status: 404 })
+
+	const m = await getMeta(env, fid)
+	const entry = m?.files?.find((f, n) => (f?.i ?? n) === +i)
+	if (!entry?.id || !/^[\w-]{10,200}$/.test(entry.id)) return new Response('gone', { status: 410 })
+
+	let up
+	try { up = await fetch(`https://drive.usercontent.google.com/download?id=${encodeURIComponent(entry.id)}&export=download&confirm=t`, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; go.thatako.net)' } }) }
+	catch { return new Response('unavailable', { status: 502 }) }
+
+	const type = up.headers.get('content-type') || ''
+	if (!up.ok || !up.body || /text\/html/i.test(type)) { up.body?.cancel().catch(() => { }); return new Response('unavailable', { status: 502 }) }
+
+	const hd = new Headers({ 'content-type': 'application/octet-stream', 'x-content-type-options': 'nosniff', 'cache-control': 'private, no-store' })
+	const len = up.headers.get('content-length')
+	if (len) hd.set('content-length', len)
+	return new Response(req.method === 'HEAD' ? null : up.body, { status: 200, headers: hd })
+}
+
 // download page, hard code
 const PAGE_HEADERS = {
 	'content-type': 'text/html; charset=utf-8',
@@ -560,4 +582,4 @@ const fileMeta = (m, drive, slug) => {
 }
 
 const ICON = `${SITE}/img/icon`
-const shell = (body, head = '', meta) => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><meta name="darkreader-lock">${metaTags(meta)}<link rel="icon" href="${ICON}/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="${ICON}/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="${ICON}/apple-icon-180x180.png"><script src="${SITE}/theme.js"></script><link rel="stylesheet" href="${SITE}/zStyles/index.css"><link rel="stylesheet" href="${SITE}/zStyles/no-sidebar.css">${head}<style>${CSS}</style></head><body><header class="topbar"><a href="https://go.thatako.net" class="logo-dot" width="32" height="32"></a><a href="https://go.thatako.net" class="mobile-hidden topbar-logo">go.thatako.net</a><div class="topbar-right"><a href="https://go.thatako.net" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a></div></header><main><div class="top"><a href="https://go.thatako.net" target="_blank"><b>go.thatako.net</b></a> / ย่อลิงก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</div>${body}</main><script src="${SITE}/instructions.js" type="module"></script></body></html>`
+const shell = (body, head = '', meta) => `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#4f5d97"><meta name="darkreader-lock">${metaTags(meta)}<link rel="icon" href="${ICON}/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="${ICON}/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="${ICON}/apple-icon-180x180.png"><script src="${SITE}/theme.js"></script><link rel="stylesheet" href="${SITE}/zStyles/index.css"><link rel="stylesheet" href="${SITE}/zStyles/no-sidebar.css">${head}<style>${CSS}</style></head><body><header class="topbar"><a href="https://go.thatako.net" class="logo-dot" width="32" height="32"></a><a href="https://go.thatako.net" class="mobile-hidden topbar-logo">go.thatako.net</a><div class="topbar-right"><a href="https://go.thatako.net" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a></div></header><main class="page-wrap"><div class="top"><a href="https://go.thatako.net" target="_blank"><b>go.thatako.net</b></a> / ย่อลิงก์ยาว สร้าง QR code สำหรับนักเรียนและครูใช้งานง่าย</div>${body}</main><script src="${SITE}/instructions.js" type="module"></script></body></html>`

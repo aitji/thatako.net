@@ -104,7 +104,7 @@ const setUserList = (kv, key, list) => kv.put('u:' + key, JSON.stringify(list))
 const fileHelpers = { j, norm, validSlug, getUserList, setUserList }
 
 async function api(req, env, path, ctx) {
-	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/'))
+	if (path === 'api/usage' || path.startsWith('api/file/') || path.startsWith('api/dl/') || path.startsWith('api/gd/'))
 		return handleFile(req, env, path, fileHelpers)
 
 	// create

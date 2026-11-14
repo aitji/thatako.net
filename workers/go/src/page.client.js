@@ -52,7 +52,7 @@
 	const days = Math.max(1, Math.ceil((M.exp - Date.now()) / 864e5))
 	const life = M.drive ? 'ไม่หมดอายุ|เก็บใน Google Drive ของผู้ส่ง' : (M.exp > 0 ? 'หมดอายุใน ' + days + ' วัน' : 'ไม่ทราบวันหมดอายุ')
 	const hd = h('div', 'hd')
-	const sub = h('p'); [('ขนาดรวม ' + fmt(M.total || 0)), ...life.split('|')].forEach((t, i) => { if (i) sub.append(sep()); sub.append(t) })
+	const sub = h('p');[('ขนาดรวม ' + fmt(M.total || 0)), ...life.split('|')].forEach((t, i) => { if (i) sub.append(sep()); sub.append(t) })
 	hd.append(h('h1', 0, files.length + ' ไฟล์ พร้อมดาวน์โหลด'), sub)
 	app.append(hd)
 
@@ -99,23 +99,159 @@
 	})
 	app.append(grid)
 
+	const ZIP_MEM = 256 * 1024 * 1024
+	const ZIP_MAX = 0xF0000000
+	const canDisk = typeof showSaveFilePicker === 'function'
+	let busy = false, queue = null, qi = 0, qkey = '', blobUrl = ''
+
+	const note = h('p', 'note'); note.hidden = true; note.setAttribute('role', 'status')
+	bar.after(note)
+	const say = (...x) => { note.replaceChildren(...x); note.hidden = !x.length }
+
+	const picked = () => [...sel].sort((a, b) => a - b).map(i => files[i])
+	const sum = l => l.reduce((s, f) => s + f.size, 0)
+	const skey = () => picked().map(f => f.i).join()
+	const zipUrl = f => M.drive ? '/api/gd/' + M.id + '/' + f.k : dlUrl(f)
+	const zippable = l => l.length > 1 && (!M.drive || l.every(f => f.size > 0)) && sum(l) < ZIP_MAX && (sum(l) <= ZIP_MEM || canDisk)
+
 	const upd = () => {
-		let s = 0; sel.forEach(i => s += files[i].size)
+		const l = picked(), s = sum(l)
+		if (queue && qkey !== skey()) queue = null
 		all.checked = sel.size === files.length
 		cnt.textContent = 'เลือก ' + sel.size + ' / ' + files.length + ' ไฟล์'
-		dlAll.disabled = !sel.size
-		dlAll.textContent = 'ดาวน์โหลด ' + sel.size + ' ไฟล์ (' + fmt(s) + ')'
+		dlAll.disabled = busy || !sel.size
+		if (busy) return
+		dlAll.textContent = queue
+			? 'ดาวน์โหลดไฟล์ถัดไป (' + (qi + 1) + '/' + queue.length + ')'
+			: 'ดาวน์โหลด ' + sel.size + ' ไฟล์ (' + fmt(s) + ')' + (zippable(l) ? ' เป็น ZIP' : '')
 	}
 	all.onchange = () => { sel.clear(); cbs.forEach((c, i) => { c.checked = all.checked; if (all.checked) sel.add(i) }); upd() }
-	dlAll.onclick = async () => {
-		dlAll.disabled = true
-		for (const i of [...sel].sort((a, b) => a - b)) {
-			const a = h('a'); a.href = dlUrl(files[i])
-			if (M.drive) { a.target = '_blank'; a.rel = 'noopener' } else a.download = ''
-			document.body.append(a); a.click(); a.remove()
-			await new Promise(r => setTimeout(r, 800))
-		}
+
+	const grab = f => {
+		const a = h('a'); a.href = dlUrl(f)
+		if (M.drive) { a.target = '_blank'; a.rel = 'noopener' } else a.download = ''
+		document.body.append(a); a.click(); a.remove()
+	}
+	const step = () => {
+		grab(queue[qi++])
+		if (qi >= queue.length) { queue = null; say('สั่งดาวน์โหลดครบทุกไฟล์แล้ว') }
 		upd()
+	}
+
+	const CRC = new Uint32Array(256).map((_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xEDB88320 ^ (n >>> 1) : n >>> 1; return n })
+	const crc32 = (c, b) => { for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return c }
+	const zipName = (n, used) => {
+		n = String(n).replace(/[\u0000-\u001f\u007f\\/:*?"<>|]+/g, '_').replace(/^\.+$/, '_').trim() || 'file'
+		const dot = n.lastIndexOf('.'), stem = dot > 0 ? n.slice(0, dot) : n, ext = dot > 0 ? n.slice(dot) : ''
+		let o = n, k = 1
+		while (used.has(o.toLowerCase())) o = stem + ' (' + ++k + ')' + ext
+		used.add(o.toLowerCase())
+		return o
+	}
+	async function* zipStream(list, onBytes) {
+		const te = new TextEncoder(), d = new Date(), used = new Set(), cd = []
+		const tm = d.getHours() << 11 | d.getMinutes() << 5 | d.getSeconds() >> 1
+		const dt = (d.getFullYear() - 1980) << 9 | (d.getMonth() + 1) << 5 | d.getDate()
+		let off = 0
+		for (const f of list) {
+			const nm = te.encode(zipName(f.name, used))
+			const res = await fetch(zipUrl(f))
+			if (!res.ok || !res.body) throw Object.assign(new Error('bad'), { bad: f.name })
+
+			const lh = new Uint8Array(30 + nm.length), v = new DataView(lh.buffer)
+			v.setUint32(0, 0x04034b50, true); v.setUint16(4, 20, true); v.setUint16(6, 0x0800, true)
+			v.setUint16(10, tm, true); v.setUint16(12, dt, true); v.setUint16(26, nm.length, true)
+			lh.set(nm, 30)
+			const start = off; off += lh.length
+			yield lh
+
+			let crc = -1, size = 0
+			const rd = res.body.getReader()
+			for (; ;) {
+				const { done, value } = await rd.read()
+				if (done) break
+				crc = crc32(crc, value); size += value.length; off += value.length; onBytes(value.length)
+				yield value
+			}
+			crc = (crc ^ -1) >>> 0
+
+			const bytes = new Uint8Array(12), w = new DataView(bytes.buffer)
+			w.setUint32(0, crc, true); w.setUint32(4, size, true); w.setUint32(8, size, true)
+			yield { hdr: lh, pos: start, bytes }
+			cd.push({ nm, crc, size, start })
+		}
+		const cdStart = off
+		for (const e of cd) {
+			const b = new Uint8Array(46 + e.nm.length), v = new DataView(b.buffer)
+			v.setUint32(0, 0x02014b50, true); v.setUint16(4, 20, true); v.setUint16(6, 20, true); v.setUint16(8, 0x0800, true)
+			v.setUint16(12, tm, true); v.setUint16(14, dt, true)
+			v.setUint32(16, e.crc, true); v.setUint32(20, e.size, true); v.setUint32(24, e.size, true)
+			v.setUint16(28, e.nm.length, true); v.setUint32(42, e.start, true)
+			b.set(e.nm, 46); off += b.length
+			yield b
+		}
+		const end = new Uint8Array(22), ev = new DataView(end.buffer)
+		ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, cd.length, true); ev.setUint16(10, cd.length, true)
+		ev.setUint32(12, off - cdStart, true); ev.setUint32(16, cdStart, true)
+		yield end
+	}
+
+	const zip = async list => {
+		busy = true; queue = null; say(); upd()
+		const total = sum(list), zname = 'thatako-' + M.id + '.zip'
+		let done = 0, t = 0
+		const tick = n => {
+			done += n
+			const now = performance.now()
+			if (now - t > 150) { t = now; dlAll.textContent = 'กำลังรวมไฟล์ ' + Math.min(99, Math.floor(done * 100 / (total || 1))) + '%' }
+		}
+		try {
+			if (total > ZIP_MEM) {
+				const fh = await showSaveFilePicker({ suggestedName: zname, types: [{ description: 'ZIP', accept: { 'application/zip': ['.zip'] } }] })
+				const w = await fh.createWritable()
+				try {
+					let pos = 0
+					for await (const c of zipStream(list, tick)) {
+						if (c.hdr) { await w.write({ type: 'seek', position: c.pos + 14 }); await w.write(c.bytes); await w.write({ type: 'seek', position: pos }) }
+						else { await w.write(c); pos += c.length }
+					}
+					await w.close()
+				} catch (e) { await w.abort().catch(() => { }); throw e }
+				say('บันทึกไฟล์ ZIP เรียบร้อยแล้ว')
+			} else {
+				const parts = []
+				for await (const c of zipStream(list, tick)) c.hdr ? c.hdr.set(c.bytes, 14) : parts.push(c)
+				if (blobUrl) URL.revokeObjectURL(blobUrl)
+				blobUrl = URL.createObjectURL(new Blob(parts, { type: 'application/zip' }))
+				parts.length = 0
+				const a = h('a'); a.href = blobUrl; a.download = zname
+				document.body.append(a); a.click(); a.remove()
+				const again = h('a', 0, 'กดที่นี่'); again.href = blobUrl; again.download = zname
+				say('สร้างไฟล์ ZIP แล้ว หากไม่เริ่มดาวน์โหลดเอง ', again)
+			}
+		} catch (e) {
+			if (e?.name === 'AbortError') say()
+			else if (M.drive) {
+				queue = list; qi = 0; qkey = skey()
+				say('รวมเป็น ZIP ไม่สำเร็จ (Google อาจจำกัดการดาวน์โหลดไฟล์นี้) กดปุ่มเพื่อโหลดทีละไฟล์แทน')
+			}
+			else say(e?.bad ? 'ดาวน์โหลด "' + e.bad + '" ไม่ได้ (ไฟล์อาจหมดอายุหรือถูกลบ)' : 'ดาวน์โหลดไม่สำเร็จ ลองใหม่อีกครั้ง')
+		}
+		busy = false; upd()
+	}
+
+	dlAll.onclick = () => {
+		if (busy) return
+		if (queue) return step()
+		const l = picked()
+		if (!l.length) return
+		if (l.length === 1) return grab(l[0])
+		if (zippable(l)) return zip(l)
+		queue = l; qi = 0; qkey = skey()
+		say(M.drive
+			? 'เบราว์เซอร์ไม่ให้เปิดหลายไฟล์พร้อมกัน กดปุ่มซ้ำเพื่อโหลดไฟล์ถัดไปทีละไฟล์'
+			: 'ไฟล์รวมใหญ่เกินกว่าจะรวมเป็น ZIP บนเบราว์เซอร์นี้ กดปุ่มซ้ำเพื่อโหลดไฟล์ถัดไปทีละไฟล์')
+		step()
 	}
 	upd()
 
