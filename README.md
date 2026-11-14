@@ -190,7 +190,7 @@ npm run dev:https_live
 ```
 ©2026 thatako.net™ Licensed under the Mozilla Public License 2.0 (MPL-2.0).
 
-Infra version : v0.6-alpha
+Infra version : v0.7-alpha
 Last updated  : Jan 2026
 Author        : aitji
 ```

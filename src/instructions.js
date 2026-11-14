@@ -204,7 +204,7 @@ async function initThemeSwitcher(containerId = 'theme-switcher') {
   container.appendChild(switcher)
 }
 
-const version = "v0.6-alpha"
+const version = "v0.7-alpha"
 const _opts = {
   footer: true,
   search: true,
