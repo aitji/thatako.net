@@ -1,0 +1,370 @@
+.links-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.links-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.search-box {
+  position: relative;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.search-box>i.fa-magnifying-glass {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.search-box input {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.search-clear:hover {
+  color: var(--color-text-primary);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
+}
+
+.chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-button-text);
+}
+
+.chip-n {
+  min-width: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-muted);
+}
+
+.chip.active .chip-n {
+  background: rgba(255, 255, 255, .2);
+  color: var(--color-button-text);
+}
+
+.result-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  min-height: 1.5em;
+  margin: -4px 0 8px;
+}
+
+.links-wrap {
+  container: links / inline-size;
+  width: 100%;
+}
+
+.links-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+
+.links-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.links-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-top: none;
+  color: var(--color-text-muted);
+  vertical-align: middle;
+}
+
+.links-table tr:hover td {
+  background: var(--color-active-bg);
+}
+
+.links-table tbody {
+  overflow-anchor: none;
+  transition: opacity .15s;
+}
+
+.links-table tbody.is-loading {
+  opacity: .55;
+  pointer-events: none;
+}
+
+@media (min-width: 971px) {
+  .links-table th:nth-child(1) {
+    width: 22%;
+  }
+}
+
+.links-table th:nth-child(3),
+.links-table td.link-actions-cell {
+  width: 124px;
+}
+
+.link-slug,
+.link-to {
+  overflow: hidden;
+}
+
+.link-slug a {
+  color: var(--color-text-link);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.link-slug a:hover {
+  text-decoration: underline;
+}
+
+.slug-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slug-copy {
+  width: auto;
+  font-size: 10px;
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.link-slug a:hover .slug-copy {
+  opacity: 1;
+}
+
+.link-to {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  min-width: 0;
+}
+
+.to-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-to .file-sum,
+.link-to .file-names,
+.link-to .file-exp {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-to .file-sum {
+  color: var(--color-text-primary);
+}
+
+.link-to .file-names {
+  font-size: 11px;
+  opacity: .8;
+}
+
+.link-to .file-names,
+.link-to .file-exp {
+  color: var(--color-text-muted);
+}
+
+.link-to .file-sum i,
+.link-to .file-exp i {
+  width: auto;
+  margin-right: 4px;
+}
+
+.link-to .file-exp.file-dead {
+  color: var(--color-text-danger);
+}
+
+.link-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.link-actions .btn {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.link-actions .btn-icon {
+  width: 30px;
+  padding: 0;
+}
+
+.links-table tr.vs-spacer,
+.links-table tr.vs-spacer:hover td {
+  background: none;
+}
+
+.links-table tr.vs-spacer td {
+  padding: 0;
+  border: 0;
+}
+
+.empty-state {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.empty-state .empty-ico {
+  font-size: 24px;
+  display: block;
+  width: auto;
+  margin: 0 auto 12px;
+  opacity: 0.3;
+}
+
+.empty-state .btn {
+  margin-top: 12px;
+}
+
+@container links (max-width: 600px) {
+
+  .links-table,
+  .links-table tbody {
+    display: block;
+  }
+
+  .links-table thead {
+    display: none;
+  }
+
+  .links-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "slug act" "to to";
+    gap: 6px 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-top: none;
+  }
+
+  .links-table tr:first-child {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .links-table td {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .links-table tr:hover td {
+    background: none;
+  }
+
+  .links-table td[colspan] {
+    grid-column: 1 / -1;
+  }
+
+  .links-table td.link-slug {
+    grid-area: slug;
+  }
+
+  .links-table td.link-actions-cell {
+    grid-area: act;
+    width: auto;
+  }
+
+  .links-table td.link-to {
+    grid-area: to;
+  }
+
+  .links-table tr.vs-spacer {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+}

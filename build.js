@@ -120,6 +120,9 @@ const minifyJSFile = async (src, out) => {
     } catch (error) { console.error(`[HTML] error processing ${file}: ${error.message}`) }
 }
 
+const isPartial = p => path.basename(p).startsWith('_')
+const PARTIAL_IMPORT = /@import\s+(?:url\(\s*)?["']\.\/(?:[^"']*\/)?_[^"']+["']/
+
 const esbuildContexts = new Map() // esbuild context cache for CSS watch mode
 const processFile = async (src, out) => {
     ensure(path.dirname(out))
@@ -142,6 +145,7 @@ const processFile = async (src, out) => {
     // }
 
     if (src.endsWith('.css')) {
+        const bundle = PARTIAL_IMPORT.test(fs.readFileSync(src, 'utf8'))
         if (WATCH) {
             // dispose old context if re-processing
             if (esbuildContexts.has(src)) {
@@ -151,6 +155,7 @@ const processFile = async (src, out) => {
             const ctx = await build({
                 entryPoints: [src],
                 outfile: out,
+                bundle,
                 minify: true,
                 banner: { css: banner.css }
             })
@@ -162,6 +167,7 @@ const processFile = async (src, out) => {
             await build({
                 entryPoints: [src],
                 outfile: out,
+                bundle,
                 minify: true,
                 legalComments: "none",
                 banner: { css: banner.css }
@@ -179,11 +185,11 @@ const walk = async dir => {
         const src = path.join(dir, e.name)
         const rel = path.relative(SRC, src).replace(/\\/g, '/')
         if (ig.ignores(rel)) continue
+        if (!e.isDirectory() && isPartial(src)) continue
 
         const out = srcToOut(src)
 
         if (e.isDirectory()) {
-            ensure(out)
             await walk(src)
             continue
         }
@@ -225,6 +231,21 @@ const startWatch = () => {
                     console.error(`[watch] failed to delete ${out}:`, e.message)
                 }
             }
+            return
+        }
+
+        if (isPartial(src)) {
+            const entries = []
+            const find = d => {
+                for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+                    const f = path.join(d, e.name)
+                    if (e.isDirectory()) find(f)
+                    else if (f.endsWith('.css') && !isPartial(f) && PARTIAL_IMPORT.test(fs.readFileSync(f, 'utf8'))) entries.push(f)
+                }
+            }
+            find(SRC)
+            for (const f of entries) await processFile(f, srcToOut(f))
+            console.log(`[watch] Updated partial ${src}: rebuilt ${entries.length} css entr${entries.length === 1 ? 'y' : 'ies'}`)
             return
         }
 

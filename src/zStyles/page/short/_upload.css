@@ -1,0 +1,139 @@
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  padding: 22px 12px;
+  border: 2px dashed var(--color-border-input);
+  cursor: pointer;
+  background: var(--color-input-bg);
+  font-size: 13px;
+}
+
+.dropzone>i {
+  font-size: 22px;
+  color: var(--color-accent);
+}
+
+.dropzone:hover,
+.dropzone.over {
+  border-color: var(--color-accent);
+  background: var(--color-active-bg);
+}
+
+.dropzone.dz-sm {
+  padding: 14px 12px;
+}
+
+.up-list {
+  list-style: none;
+  margin: 8px 0 4px;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.up-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+}
+
+.up-list small {
+  color: var(--color-text-muted);
+}
+
+.up-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.up-rm {
+  border: 0;
+  background: none;
+  color: var(--color-text-danger);
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.up-rm:hover {
+  background: var(--color-danger-overlay-bg);
+}
+
+.up-rm i {
+  width: auto;
+}
+
+.usage {
+  margin: 4px 0 16px;
+}
+
+.usage-track {
+  height: 6px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  margin-bottom: 6px;
+}
+
+.usage-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--color-accent);
+  transition: width .2s;
+}
+
+.usage-track i.warn {
+  background: var(--color-text-danger);
+}
+
+.up-prog {
+  margin: 8px 0 12px;
+}
+
+.up-prog .usage-track {
+  transition: opacity 0.15s;
+}
+
+.up-prog.idle .usage-track {
+  opacity: 0.35;
+}
+
+.up-prog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.up-prog-row .muted {
+  margin: 0;
+  min-width: 0;
+}
+
+.file-dead {
+  color: var(--color-text-danger);
+}
+
+#driveLogout {
+  margin-left: 6px;
+}
+
+#driveStatus {
+  margin-top: 8px;
+  min-height: 1.6em;
+}

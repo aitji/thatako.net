@@ -1,0 +1,30 @@
+.toast i {
+  width: auto;
+}
+
+.toast .toast-msg {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast .toast-ok {
+  color: var(--color-badge-green-text);
+}
+
+.toast .toast-err {
+  color: var(--color-text-danger);
+}
+
+@media (max-width: 600px) {
+  .toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .toast {
+    max-width: none;
+    min-width: 0;
+  }
+}

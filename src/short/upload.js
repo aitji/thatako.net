@@ -2,14 +2,14 @@ const PARALLEL = 3
 const RETRIES = 3
 const NO_RETRY = ['bad token', 'bad part', 'bad size']
 
-import { $, esc, icon, SEP, joinHtml, meta, fmtSize, fmtEta } from './ui.js'
+import { $, esc, icon, SEP, joinHtml, meta, fmtSize, fmtEta, skLine } from './ui.js'
 export { fmtSize }
 
 const GIS = 'https://accounts.google.com/gsi/client'
 const SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const DRIVE = 'https://www.googleapis.com/drive/v3'
 const DRIVE_UP = 'https://www.googleapis.com/upload/drive/v3/files'
-const DRIVE_CHUNK = 16 * 1024 * 1024 // must be a multiple of 256 KiB
+const DRIVE_CHUNK = 16 * 1024 * 1024
 const FOLDER = 'go.thatako.net'
 
 let ctx, mode = 'link', store = 'server', picked = [], busy = false, adding = false, ctl = null, lim = null
@@ -54,7 +54,10 @@ const setMode = m => {
     $('fileField').hidden = m !== 'file'
     $('slug').placeholder = m === 'file' ? 'เว้นว่างเพื่อสุ่มชื่อ' : 'openhouse2026'
     $('createLabel').textContent = m === 'file' ? 'อัปโหลดและสร้างลิงก์' : 'สร้างลิงก์ย่อ'
-    if (m === 'file') loadUsage().then(syncStore)
+    if (m === 'file') {
+        if (!lim) $('limits').innerHTML = skLine('60%', 'sm')
+        loadUsage().then(syncStore)
+    }
 }
 
 const syncStore = () => {
@@ -89,12 +92,18 @@ const progressText = (sent, total, sp) => {
 }
 
 const loadUsage = async () => {
+    if (!lim) {
+        $('usageBox').classList.add('loading')
+        $('usageText').innerHTML = skLine('72%', 'sm')
+    }
+
     try {
         lim = await (await fetch(`${ctx.api}/usage?key=${encodeURIComponent(ctx.key())}`)).json()
         $('usageText').innerHTML = meta([`พื้นที่รวม ${fmtSize(lim.used)} / ${fmtSize(lim.limit)}`, `ของคุณ ${fmtSize(lim.mine)} / ${fmtSize(lim.perKey)}`])
         bar($('usageBar'), lim.used / lim.limit * 100)
         $('usageBar').classList.toggle('warn', lim.used / lim.limit > 0.85)
-    } catch { /* usage is optional info */ }
+    } catch { if (!lim) $('usageText').textContent = 'โหลดข้อมูลพื้นที่ไม่สำเร็จ' }
+    $('usageBox').classList.remove('loading')
 }
 
 const renderPicked = () => {
@@ -240,7 +249,7 @@ const connectDrive = async () => {
     const switching = !!me
     const prev = { tok, tokExp, me }
     try {
-        $('driveStatus').textContent = 'กำลังเชื่อมต่อ'
+        $('driveStatus').innerHTML = `<span class="spinner" aria-hidden="true"></span>กำลังเชื่อมต่อ`
         if (switching) tok = null
         await getToken(switching)
         const r = await gfetch(`${DRIVE}/about?fields=user(displayName,emailAddress),storageQuota(limit,usage)`)

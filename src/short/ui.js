@@ -14,3 +14,15 @@ export const fmtSize = b => {
 }
 
 export const fmtEta = secs => `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`
+export const skLine = (w = "100%", cls = "") => `<span class="sk sk-line${cls ? " " + cls : ""}" style="width:${w}"></span>`
+export const skInline = (w = "6em") => `<span class="sk sk-line sk-inline" style="width:${w}" aria-hidden="true"></span>`
+const SK_W = [["58%", "82%"], ["42%", "68%"], ["66%", "76%"], ["50%", "88%"], ["72%", "60%"]]
+export const skRow = i => `
+    <tr class="sk-row" aria-hidden="true">
+        <td class="link-slug">${skLine(SK_W[i % 5][0])}</td>
+        <td class="link-to">${skLine(SK_W[i % 5][1])}${i % 4 === 3 ? skLine("38%", "sm") : ""}</td>
+        <td class="link-actions-cell"><div class="link-actions"><span class="sk sk-btn"></span><span class="sk sk-btn"></span><span class="sk sk-btn"></span></div></td>
+    </tr>`
+export const skRows = (n = 6) => Array.from({ length: n }, (_, i) => skRow(i)).join("")
+export const skFileRows = (n = 3) => Array.from({ length: n }, (_, i) =>
+    `<li class="sk-li" aria-hidden="true">${skLine(SK_W[i % 5][1])}${skLine("46px", "sm")}<span class="sk sk-btn"></span><span class="sk sk-btn"></span></li>`).join("")

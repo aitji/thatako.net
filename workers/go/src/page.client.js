@@ -8,6 +8,8 @@
 	// helpers
 	const fmt = b => { const u = ['B', 'KB', 'MB', 'GB', 'TB']; let i = 0; while (b >= 1024 && i < 4) { b /= 1024; i++ } return (b >= 100 || !i ? Math.round(b) : b.toFixed(1)) + ' ' + u[i] }
 	const h = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e }
+	const fa = (name, cls) => { const i = document.createElement('i'); i.className = 'fa-solid fa-' + name + (cls ? ' ' + cls : ''); i.setAttribute('aria-hidden', 'true'); return i }
+	const sep = () => fa('circle', 'sep')
 	const extOf = n => { const p = n.split('.'); return p.length > 1 ? p.pop().toLowerCase() : '' }
 	const enc = encodeURIComponent
 
@@ -48,9 +50,10 @@
 
 	// header/toolbar
 	const days = Math.max(1, Math.ceil((M.exp - Date.now()) / 864e5))
-	const life = M.drive ? 'ไม่หมดอายุ · เก็บใน Google Drive ของผู้ส่ง' : (M.exp > 0 ? 'หมดอายุใน ' + days + ' วัน' : 'ไม่ทราบวันหมดอายุ')
+	const life = M.drive ? 'ไม่หมดอายุ|เก็บใน Google Drive ของผู้ส่ง' : (M.exp > 0 ? 'หมดอายุใน ' + days + ' วัน' : 'ไม่ทราบวันหมดอายุ')
 	const hd = h('div', 'hd')
-	hd.append(h('h1', 0, files.length + ' ไฟล์ พร้อมดาวน์โหลด'), h('p', 0, 'ขนาดรวม ' + fmt(M.total || 0) + ' · ' + life))
+	const sub = h('p'); [('ขนาดรวม ' + fmt(M.total || 0)), ...life.split('|')].forEach((t, i) => { if (i) sub.append(sep()); sub.append(t) })
+	hd.append(h('h1', 0, files.length + ' ไฟล์ พร้อมดาวน์โหลด'), sub)
 	app.append(hd)
 
 	const bar = h('div', 'bar'), lab = h('label'), all = h('input'), cnt = h('span')
@@ -78,7 +81,7 @@
 			load(im, srcs, () => { f.thumb = im.currentSrc || im.src; th.classList.add('has') }, () => { im.remove(); th.classList.add('no') })
 			th.append(im)
 		}
-		if (f.kind === 'video') th.append(h('span', 'play', '▶'))
+		if (f.kind === 'video') { const pl = h('span', 'play'); pl.append(fa('play')); th.append(pl) }
 		th.onclick = () => open(f.i)
 
 		const sl = h('label', 'sel'), cb = h('input'); cb.type = 'checkbox'; cb.checked = true
@@ -88,7 +91,7 @@
 
 		const nm = h('div', 'nm'), b = h('b', 0, f.name); b.title = f.name
 		nm.append(b, h('small', 0, fmt(f.size)))
-		const a = h('a', 'btn ic', '↓'); a.href = dlUrl(f); a.title = 'ดาวน์โหลด ' + f.name; a.setAttribute('aria-label', a.title)
+		const a = h('a', 'btn ic'); a.append(fa('arrow-down-to-line')); a.href = dlUrl(f); a.title = 'ดาวน์โหลด ' + f.name; a.setAttribute('aria-label', a.title)
 		if (M.drive) { a.target = '_blank'; a.rel = 'noopener' } else a.setAttribute('download', '')
 		const meta = h('div', 'meta'); meta.append(nm, a)
 		li.append(th, sl, meta)
@@ -127,7 +130,7 @@
 	const none = (f, msg) => {
 		clear()
 		const m = h('div', 'lb-msg')
-		const a = h('a', 'lb-btn', '↓ ดาวน์โหลด'); a.href = dlUrl(f)
+		const a = h('a', 'lb-btn'); a.append(fa('arrow-down-to-line'), ' ดาวน์โหลด'); a.href = dlUrl(f)
 		if (M.drive) { a.target = '_blank'; a.rel = 'noopener' } else a.setAttribute('download', '')
 		m.append(h('div', 'ext', (extOf(f.name) || 'file').slice(0, 4)), h('p', 0, msg || 'ไม่มีตัวอย่างสำหรับไฟล์นี้'), a)
 		stage.append(m)
@@ -163,7 +166,7 @@
 		const m = h('div', 'lb-msg'), a = h('audio'); a.controls = true; a.preload = 'metadata'
 		mediaFail(f, my, a)
 		a.src = rawUrl(f)
-		m.append(h('div', 'ext', '♪'), h('p', 0, f.name), a)
+		const note = h('div', 'ext'); note.append(fa('music')); m.append(note, h('p', 0, f.name), a)
 		stage.append(m)
 	}
 
@@ -214,16 +217,16 @@
 		lb = h('div', 'lb'); lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', 'ตัวอย่างไฟล์')
 		const top = h('div', 'lb-top')
 		ttl = h('div', 't'); num = h('div', 'n')
-		dlA = h('a', 'lb-btn'); dlA.append('↓', Object.assign(h('span', 'dlt'), { textContent: ' ดาวน์โหลด' }))
-		closeB = h('button', 'lb-btn', '✕'); closeB.type = 'button'; closeB.setAttribute('aria-label', 'ปิด'); closeB.onclick = close
+		dlA = h('a', 'lb-btn'); dlA.append(fa('arrow-down-to-line'), Object.assign(h('span', 'dlt'), { textContent: ' ดาวน์โหลด' }))
+		closeB = h('button', 'lb-btn'); closeB.append(fa('xmark')); closeB.type = 'button'; closeB.setAttribute('aria-label', 'ปิด'); closeB.onclick = close
 		top.append(ttl, num, dlA, closeB)
 		stage = h('div', 'lb-stage')
-		prevB = h('button', 'lb-nav l', '‹'); prevB.type = 'button'; prevB.setAttribute('aria-label', 'ก่อนหน้า'); prevB.onclick = () => go(-1)
-		nextB = h('button', 'lb-nav r', '›'); nextB.type = 'button'; nextB.setAttribute('aria-label', 'ถัดไป'); nextB.onclick = () => go(1)
+		prevB = h('button', 'lb-nav l'); prevB.append(fa('chevron-left')); prevB.type = 'button'; prevB.setAttribute('aria-label', 'ก่อนหน้า'); prevB.onclick = () => go(-1)
+		nextB = h('button', 'lb-nav r'); nextB.append(fa('chevron-right')); nextB.type = 'button'; nextB.setAttribute('aria-label', 'ถัดไป'); nextB.onclick = () => go(1)
 		lb.append(top, stage, prevB, nextB)
 		document.body.append(lb)
 
-		// mouse drag-to-pan while zoomed
+		// mouse
 		stage.addEventListener('pointerdown', e => {
 			if (!zoomed || e.pointerType !== 'mouse' || e.button) return
 			drag = { x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop, moved: false }
@@ -238,7 +241,6 @@
 		const endDrag = () => { if (drag) setTimeout(() => drag = null) }
 		stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag)
 
-		// swipe to change file (not while zoomed, not on media controls / scrolling text)
 		let tx = null
 		stage.addEventListener('touchstart', e => {
 			tx = !zoomed && e.touches.length === 1 && !e.target.closest('video,audio,pre') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null
@@ -290,7 +292,6 @@
 		if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true })
 	}
 
-	// Back button closes the preview instead of leaving the page
 	function close() {
 		if (pushed && history.state === 1) history.back()
 		else { hide(); history.replaceState(null, '', location.pathname + location.search) }

@@ -310,6 +310,11 @@ pre code {
   color: var(--color-code-block);
 }
 
+pre code i {
+  width: auto;
+  margin: 0 .25em;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

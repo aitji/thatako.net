@@ -1,51 +1,82 @@
-window.ModalManager = { // modal manager
-    open(id) {
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]):not([hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+const stack = []
+const opener = new Map()
+
+const focusables = el => [...el.querySelectorAll(FOCUSABLE)].filter(n => n.offsetParent !== null || n === document.activeElement)
+const ModalManager = {
+    isOpen: id => stack.includes(id),
+    top: () => stack[stack.length - 1],
+
+    open(id, opts = {}) {
         const el = document.getElementById(id)
-        if (el) el.classList.add('open')
+        if (!el || stack.includes(id)) return
+        opener.set(id, document.activeElement)
+        el.classList.add("open")
+        stack.push(id)
+        document.documentElement.classList.add("modal-open")
+        const box = el.querySelector(".modal-box") || el
+        if (!box.hasAttribute("tabindex")) box.tabIndex = -1
+        requestAnimationFrame(() => {
+            if (!el.classList.contains("open")) return
+            const target = (opts.focus && el.querySelector(opts.focus)) ||
+                el.querySelector("[data-autofocus]") || box
+            target.focus({ preventScroll: true })
+        })
     },
     close(id) {
         const el = document.getElementById(id)
-        if (el) el.classList.remove('open')
+        const at = stack.indexOf(id)
+        if (!el || at < 0) return
+        el.classList.remove("open")
+        stack.splice(at, 1)
+        if (!stack.length) document.documentElement.classList.remove("modal-open")
+
+        const back = opener.get(id)
+        opener.delete(id)
+        if (!stack.length || stack[stack.length - 1] === id) back?.isConnected && back.focus?.({ preventScroll: true })
+        el.dispatchEvent(new CustomEvent("modal:close"))
     }
 }
 
-;['editModal', 'qrModal', 'filesModal'].forEach(id => { // overlay
-    const overlay = document.getElementById(id)
-    if (!overlay) return
-    overlay.addEventListener('click', e => {
-        if (e.target === overlay) ModalManager.close(id)
-    })
+let downOn = null
+window.ModalManager = ModalManager
+document.addEventListener("mousedown", e => { downOn = e.target })
+document.addEventListener("click", e => {
+    const t = e.target
+    if (t.classList?.contains("modal-overlay") && downOn === t) ModalManager.close(t.id)
+    downOn = null
 })
 
-
-
-// x buttons
 const bindClose = (btnId, modalId) => {
     const btn = document.getElementById(btnId)
     if (btn) btn.onclick = () => ModalManager.close(modalId)
 }
+bindClose("editModalClose", "editModal")
+bindClose("editModalCancel", "editModal")
+bindClose("qrModalClose", "qrModal")
+bindClose("filesModalClose", "filesModal")
+bindClose("filesModalDone", "filesModal")
 
-bindClose('editModalClose', 'editModal')
-bindClose('editModalCancel', 'editModal')
-bindClose('qrModalClose', 'qrModal')
-bindClose('filesModalClose', 'filesModal')
-bindClose('filesModalDone', 'filesModal')
+document.addEventListener("keydown", e => {
+    const id = ModalManager.top()
+    if (!id) return
 
-document.addEventListener('keydown', e => { // esc
-    if (e.key === 'Escape') {
-        ModalManager.close('editModal')
-        ModalManager.close('qrModal')
-        ModalManager.close('filesModal')
+    if (e.key === "Escape") {
+        e.preventDefault()
+        return ModalManager.close(id)
+    }
+
+    if (e.key === "Tab") {
+        const el = document.getElementById(id)
+        const list = focusables(el.querySelector(".modal-box") || el)
+        if (!list.length) return e.preventDefault()
+        const first = list[0], last = list[list.length - 1]
+        if (!el.contains(document.activeElement)) { e.preventDefault(); first.focus() }
+        else if (e.shiftKey && (document.activeElement === first || document.activeElement.classList.contains("modal-box"))) { e.preventDefault(); last.focus() }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
     }
 })
 
-/**
- * (boostrap shim)
-
- * what happened?
- * in prototype i use boostrap, but in new design i want to remove boostrap dependency (it too big),
- * so i create this shim to avoid rewrite all js code in prototype
- */
 window.bootstrap = {
     Modal: class {
         constructor(el) { this._id = el?.id }
@@ -64,23 +95,21 @@ window.bootstrap = {
         show() {
             if (!this._el) return
 
-            this._el.style.opacity = '0'
-            this._el.style.transform = 'translateY(8px)'
+            this._el.style.opacity = "0"
+            this._el.style.transform = "translateY(8px)"
 
             requestAnimationFrame(() => {
-                this._el.style.transition = 'opacity 0.12s, transform 0.12s'
-                this._el.style.opacity = '1'
-                this._el.style.transform = 'translateY(0)'
+                this._el.style.transition = "opacity 0.12s, transform 0.12s"
+                this._el.style.opacity = "1"
+                this._el.style.transform = "translateY(0)"
             })
 
             setTimeout(() => {
-                this._el.style.opacity = '0'
+                this._el.style.opacity = "0"
                 setTimeout(() => {
-                    this._el.dispatchEvent(new Event('hidden.bs.toast'))
+                    this._el.dispatchEvent(new Event("hidden.bs.toast"))
                 }, 150)
             }, this._delay)
         }
-    },
-
-    Tooltip: class { constructor() {} }
+    }
 }

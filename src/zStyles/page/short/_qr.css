@@ -1,0 +1,129 @@
+.qr-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 20px;
+}
+
+.qr-side {
+  min-width: 0;
+}
+
+.qr-preview {
+  background: radial-gradient(circle at top, var(--color-bg-tertiary), var(--color-bg-primary) 60%);
+  border: 1px solid var(--color-border);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 190px;
+  margin-bottom: 12px;
+}
+
+.qr-preview svg,
+.qr-preview canvas {
+  width: 168px;
+  height: 168px;
+  max-width: 100%;
+  display: block;
+}
+
+.qr-preview.crisp svg {
+  shape-rendering: crispEdges;
+}
+
+.qr-preview.empty {
+  opacity: 0.5;
+}
+
+.qr-info {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  min-height: 28px;
+}
+
+.qr-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 4px 4px 0;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.qr-chip i:not(.sep):not(.dim) {
+  width: auto;
+  margin-right: 2px;
+  font-size: 10px;
+}
+
+.qr-controls .field {
+  margin-bottom: 14px;
+}
+
+.qr-controls .muted {
+  margin: 6px 0 0;
+}
+
+.qr-warn-list {
+  min-height: 70px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.qr-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-tertiary);
+  border-left: 3px solid var(--color-badge-orange-text);
+}
+
+.qr-status i {
+  width: auto;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.qr-status.ok {
+  border-left-color: var(--color-badge-green-text);
+}
+
+.qr-status.ok i {
+  color: var(--color-badge-green-text);
+}
+
+.qr-status.warn i {
+  color: var(--color-badge-orange-text);
+}
+
+.qr-status.err {
+  border-left-color: var(--color-text-danger);
+}
+
+.qr-status.err i {
+  color: var(--color-text-danger);
+}
+
+@media (max-width: 720px) {
+  .qr-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-preview {
+    padding: 12px;
+  }
+
+  .qr-layout .qr-preview {
+    max-width: 220px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

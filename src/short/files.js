@@ -1,6 +1,6 @@
 import { uploadMore, cancelMore, uploadErr } from './upload.js'
-import { $, esc, icon, meta, fmtSize, fmtEta } from './ui.js'
-const FAIL = 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่'
+import { $, esc, icon, meta, fmtSize, fmtEta, skLine, skFileRows } from './ui.js'
+import { confirmDialog } from './dialog.js'
 
 /** @type {{ slug: string, type: 'file'|'drive', exp: number, maxFiles: number, perUpload: number, files: { k: number, name: string, size: number, isNew?: boolean }[] } | null} */
 let cur = null
@@ -28,7 +28,7 @@ const post = async (path, body) => (await fetch(ctx.api + path, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: ctx.key(), ...body })
 })).json()
 
-const msg = m => m === 'duplicate' ? 'ไฟล์นี้อยู่ในลิงก์แล้ว' : uploadErr(m, FAIL)
+const msg = m => m === 'duplicate' ? 'ไฟล์นี้อยู่ในลิงก์แล้ว' : uploadErr(m, 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่')
 
 const dateText = exp => new Date(exp).toLocaleDateString('th-TH', { dateStyle: 'medium' })
 const room = () => Math.max(0, cur.maxFiles - cur.files.length - picked.length)
@@ -79,7 +79,15 @@ const renameRow = (li, f) => {
 
 const removeFile = async f => {
     const note = cur.type === 'drive' ? 'ไฟล์ยังอยู่ใน Google Drive ของคุณ' : 'ไฟล์จะถูกลบถาวร'
-    if (!confirm(`เอา "${f.name}" ออกจากลิงก์นี้หรือไม่?\n(${note})`)) return
+    const ok = await confirmDialog({
+        tone: 'danger',
+        title: 'เอาไฟล์ออกจากลิงก์นี้หรือไม่?',
+        html: `<b>${esc(f.name)}</b> จะไม่แสดงในหน้าดาวน์โหลดอีก`,
+        detail: note,
+        confirmText: 'เอาออก',
+        confirmIcon: 'trash'
+    })
+    if (!ok || !cur) return
     try {
         const r = await post('/file/remove', { slug: cur.slug, k: f.k })
         if (!r.ok) throw new Error(r.msg)
@@ -229,17 +237,21 @@ export const openFiles = async (slug, type) => {
     if (!busy) {
         cur = { slug, type, exp: 0, maxFiles: 0, perUpload: 0, files: [], loaded: false }
         picked = []
-        $('fmList').replaceChildren()
+        $('fmList').innerHTML = skFileRows(3)
+        $('fmList').setAttribute('aria-busy', 'true')
         $('fmSlug').value = slug
         $('fmSlugSave').disabled = true
-        $('fmMeta').textContent = 'กำลังโหลดข้อมูลไฟล์'
-        $('fmLimits').innerHTML = '&nbsp;'
+        $('fmMeta').innerHTML = `${skLine('58%')}<span class="sr-only">กำลังโหลดข้อมูลไฟล์</span>`
+        $('fmHint').innerHTML = skLine('80%', 'sm')
+        $('fmLimits').innerHTML = skLine('50%', 'sm')
+        $('fmUploadLabel').textContent = 'เพิ่มไฟล์'
         $('fmUpload').disabled = true
     }
     window.ModalManager.open('filesModal')
     if (busy) return
     try {
         await refresh()
+        $('fmList').removeAttribute('aria-busy')
         render()
     } catch (e) {
         window.ModalManager.close('filesModal')

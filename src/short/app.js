@@ -2,7 +2,9 @@ import "../short/boostrap.js"
 import { initUpload, isFileMode, startUpload } from "./upload.js"
 import { initQR, openQR } from "./qrui.js"
 import { initFiles, openFiles } from "./files.js"
-import { $, esc, icon, meta, metaLine, fmtSize } from "./ui.js"
+import { $, esc, icon, meta, metaLine, fmtSize, skRows, skInline } from "./ui.js"
+import { confirmDialog } from "./dialog.js"
+import { createVirtualRows } from "./vlist.js"
 const API_URL = "https://go.thatako.net/api"
 const STORAGE_KEY = "short-key"
 const MAX_SLUG_LENGTH = 1024
@@ -11,6 +13,7 @@ const TOAST_DELAY = 8000
 let editing = null
 let busy = false
 let links = []
+let loadedOnce = false
 const view = { q: "", type: "all" }
 
 const isFile = l => l.type === "file" || l.type === "drive"
@@ -57,6 +60,7 @@ const setBusy = v => {
     busy = v
     $("create").disabled = v
     $("refresh").disabled = v
+    $("refresh").classList.toggle("is-loading", v)
     $("saveEdit").disabled = v
 }
 
@@ -113,6 +117,12 @@ const emptyRow = (name, text, extra = "") => `
         </td>
     </tr>`
 
+const rows = createVirtualRows({
+    tbody: $("list"),
+    render: rowHtml,
+    key: l => `${l.type}:${l.slug}`
+})
+
 const matches = (l, words) => {
     if (!words.length) return true
     const hay = `${l.slug} ${isFile(l) ? "" : l.to} ${(l.names || []).join(" ")}`.toLowerCase()
@@ -138,9 +148,11 @@ const applyView = () => {
         : filtering ? `แสดง ${shown.length} จาก ${links.length} ลิงก์`
             : `ทั้งหมด ${links.length} ลิงก์`
 
-    if (!links.length) $("list").innerHTML = emptyRow("fa-link-slash", "ยังไม่มีลิงก์ - สร้างลิงก์แรกได้เลย")
-    else if (!shown.length) $("list").innerHTML = emptyRow("fa-magnifying-glass", "ไม่พบลิงก์ที่ตรงกัน", `<button type="button" class="btn btn-ghost btn-sm" data-reset-filter>${icon("filter-slash")} ล้างตัวกรอง</button>`)
-    else $("list").innerHTML = shown.map(rowHtml).join("")
+    $("list").removeAttribute("aria-busy")
+    $("list").classList.remove("is-loading")
+    if (!links.length) rows.setHtml(emptyRow("link-slash", "ยังไม่มีลิงก์ - สร้างลิงก์แรกได้เลย"))
+    else if (!shown.length) rows.setHtml(emptyRow("magnifying-glass", "ไม่พบลิงก์ที่ตรงกัน", `<br><button type="button" class="btn btn-ghost btn-sm" data-reset-filter>${icon("filter-slash")} ล้างตัวกรอง</button>`))
+    else rows.setItems(shown)
 }
 
 /** @param {any[]} data */
@@ -163,12 +175,25 @@ const loadLinks = async () => {
     if (!key) return
 
     setBusy(true)
+    if (!loadedOnce) {
+        rows.setHtml(skRows(6))
+        $("list").setAttribute("aria-busy", "true")
+        $("resultCount").innerHTML = `${skInline("110px")}<span class="sr-only">กำลังโหลดข้อมูล</span>`
+    } else {
+        $("list").classList.add("is-loading")
+        $("list").setAttribute("aria-busy", "true")
+    }
     try {
-        const links = await api(`/list?key=${encodeURIComponent(key)}`)
-        renderList(links)
+        const data = await api(`/list?key=${encodeURIComponent(key)}`)
+        loadedOnce = true
+        renderList(data)
     } catch {
-        if ($("loading")) $("loading").style.display = "none"
-        if ($("loading-text")) $("loading-text").innerHTML = 'ไม่สามารถโหลดข้อมูลได้ <span class="importance">กรุณาลองใหม่</span>'
+        $("list").removeAttribute("aria-busy")
+        $("list").classList.remove("is-loading")
+        if (!loadedOnce || !links.length) {
+            $("resultCount").textContent = "โหลดข้อมูลไม่สำเร็จ"
+            rows.setHtml(emptyRow("cloud-xmark", "ไม่สามารถโหลดข้อมูลได้", `<br><button type="button" class="btn btn-ghost btn-sm" data-retry>${icon("rotate-right")} ลองใหม่</button>`))
+        }
         toast("ไม่สามารถโหลดข้อมูลได้", false)
     }
     setBusy(false)
@@ -254,15 +279,24 @@ const saveEdit = async () => {
         toast("บันทึกสำเร็จแล้ว")
         bootstrap.Modal.getInstance($("editModal")).hide()
         await loadLinks()
-    } catch (e) {
-        toast(`การบันทึกล้มเหลว`, false)
-    }
+    } catch { toast(`การบันทึกล้มเหลว`, false) }
     setBusy(false)
 }
 
 /** @param {string} slug */
 const revoke = async slug => {
-    if (!confirm(`ต้องการลบลิงก์ "${slug}" หรือไม่?`)) return
+    const l = links.find(x => x.slug === slug)
+    const ok = await confirmDialog({
+        tone: "danger",
+        title: "ลบลิงก์นี้หรือไม่?",
+        html: `ลิงก์ <b>go.thatako.net/${esc(slug)}</b> จะใช้งานไม่ได้อีก และกู้คืนไม่ได้`,
+        detail: l?.type === "file" ? "ไฟล์ที่อัปโหลดไว้บนเซิร์ฟเวอร์จะถูกลบถาวรด้วย"
+            : l?.type === "drive" ? "ไฟล์ยังอยู่ใน Google Drive ของคุณ"
+                : "",
+        confirmText: "ลบลิงก์",
+        confirmIcon: "trash"
+    })
+    if (!ok) return
 
     setBusy(true)
     try {
@@ -323,6 +357,7 @@ const initEvents = () => {
         const b = e.target.closest("button")
         const a = e.target.closest("a")
 
+        if (b?.hasAttribute("data-retry")) return loadLinks()
         if (b?.hasAttribute("data-reset-filter")) {
             view.q = ""
             view.type = "all"
@@ -387,7 +422,6 @@ const initEvents = () => {
 }
 
 const init = () => {
-    new bootstrap.Tooltip(document.body, { selector: '[data-bs-toggle="tooltip"]' })
     initEvents()
     syncToReset()
     initKey()

@@ -1,0 +1,141 @@
+.modal-overlay.open {
+  animation: modal-fade .14s ease-out;
+}
+
+.modal-overlay.open .modal-box {
+  animation: modal-pop .16s ease-out;
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .modal-overlay.open,
+  .modal-overlay.open .modal-box {
+    animation: none;
+  }
+}
+
+.modal-box.modal-wide {
+  max-width: 760px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-wide .modal-body {
+  overflow-y: auto;
+}
+
+.modal-wide .modal-footer {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.modal-box.fm-box {
+  max-width: 560px;
+}
+
+.modal-overlay.confirm-overlay {
+  z-index: 260;
+}
+
+.modal-box.confirm-box {
+  max-width: 400px;
+}
+
+.confirm-body {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.confirm-ico {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 15px;
+  background: var(--color-active-bg);
+  color: var(--color-accent);
+}
+
+.confirm-ico i {
+  width: auto;
+}
+
+.confirm-box.danger .confirm-ico {
+  background: var(--color-danger-overlay-bg);
+  color: var(--color-text-danger);
+}
+
+.confirm-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.confirm-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+.confirm-msg {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.confirm-msg b {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.confirm-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
+  border-left: 3px solid var(--color-border-input);
+}
+
+.confirm-detail i {
+  width: auto;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.confirm-box.danger .confirm-detail {
+  border-left-color: var(--color-text-danger);
+}
+
+.confirm-box .modal-footer {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .confirm-box .modal-footer .btn {
+    flex: 1;
+  }
+}

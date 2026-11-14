@@ -1,0 +1,61 @@
+.fm-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+}
+
+.fm-list:empty {
+  display: none;
+}
+
+.fm-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13px;
+  min-height: 44px;
+}
+
+.fm-list li:last-child {
+  border-bottom: 0;
+}
+
+.fm-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.fm-list li small {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.fm-list li input {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+}
+
+.fm-list .btn {
+  height: 28px;
+  padding: 0 9px;
+  font-size: 11px;
+}
+
+.fm-add,
+.fm-add .muted {
+  margin-bottom: 0;
+}
+
+.fm-add .btn-full {
+  margin-top: 12px;
+}

@@ -8,13 +8,15 @@
         {
             "src": "/img/(.*)",
             "headers": {
-                "cache-control": "public, max-age=2592000, immutable"
+                "cache-control": "public, max-age=2592000, immutable",
+                "access-control-allow-origin": "https://go.thatako.net"
             }
         },
         {
             "src": "/zStyles/webfonts/(.*)",
             "headers": {
-                "cache-control": "public, max-age=2592000, immutable"
+                "cache-control": "public, max-age=2592000, immutable",
+                "access-control-allow-origin": "https://go.thatako.net"
             }
         },
         {

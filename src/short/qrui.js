@@ -74,7 +74,7 @@ const options = (p, size, preview = false) => {
     }
 }
 
-/** @param {string} html already-safe markup */
+/** @param {string} html */
 const chip = (html, title) => {
     const s = document.createElement('span')
     s.className = 'qr-chip'
@@ -148,9 +148,14 @@ const render = async () => {
     renderInfo(p)
 
     const box = $('qrPreview')
-    if (!p || p.tooLong) { qr = null; box.replaceChildren(); box.classList.add('empty'); return }
+    if (!p || p.tooLong) { qr = null; box.replaceChildren(); box.classList.remove('loading'); box.classList.add('empty'); return }
     box.classList.remove('empty')
     box.classList.toggle('crisp', st.dots === 'square' && st.corner === 'square')
+
+    if (!qr) {
+        box.classList.add('loading')
+        box.replaceChildren(Object.assign(document.createElement('span'), { className: 'sk sk-qr' }))
+    }
 
     try {
         const Lib = await loadLib()
@@ -161,8 +166,12 @@ const render = async () => {
             box.replaceChildren()
             qr.append(box)
         }
+
+        box.classList.remove('loading')
         fitSvg(box)
     } catch {
+        box.classList.remove('loading')
+        box.replaceChildren()
         notify('โหลดตัวสร้าง QR ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่', false)
     }
 }

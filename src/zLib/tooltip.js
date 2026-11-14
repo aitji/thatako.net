@@ -1,137 +1,169 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const tooltip = document.createElement("div")
-    tooltip.className = "aitji-tooltip top"
-    const textDiv = document.createElement("div")
-    textDiv.className = "aitji-text"
-    const arrow = document.createElement("div")
-    arrow.className = "aitji-arrow"
-    tooltip.appendChild(textDiv)
-    tooltip.appendChild(arrow)
-    document.body.appendChild(tooltip)
+const GAP = 10
+const EDGE = 8
+const ARROW = 5
+const HOVER_DELAY = 120
+const TOUCH_SHOW = 380
+const TOUCH_HIDE = 2200
+const SELECTOR = "[data-tooltip],[title],[data-tip-title]"
 
-    let currentEl = null
-    let showTimeout = null
-    let hideTimeout = null
-    let isHoveringTooltip = false
-    let animFrame = null
-    let state = { opacity: 0, y: -4 }
-    let touchTimer = null
+const init = () => {
+    if (window.aitjiTooltip) return
 
-    function getTooltipText(el) { return el.dataset.tooltip || el.getAttribute("title") || el.dataset._title }
-    function calculatePosition(el) {
-        const rect = el.getBoundingClientRect()
-        const tooltipRect = tooltip.getBoundingClientRect()
-        const padding = 12, arrowOffset = 7
-        let top, left, direction = "top"
-        const spaceAbove = rect.top
-        const spaceBelow = window.innerHeight - rect.bottom
-        const tooltipHeight = tooltipRect.height || 50
-        if (spaceAbove > tooltipHeight + padding || spaceBelow < tooltipHeight + padding) { top = rect.top - tooltipHeight - padding; direction = "top" }
-        else { top = rect.bottom + padding; direction = "bottom" }
-        left = rect.left + rect.width / 2 - tooltipRect.width / 2
-        const rightEdge = window.innerWidth - padding
-        if (left < padding) left = padding
-        else if (left + tooltipRect.width > rightEdge) left = rightEdge - tooltipRect.width
-        const arrowLeft = Math.max(arrowOffset, Math.min(tooltipRect.width - arrowOffset * 2, rect.left + rect.width / 2 - left))
-        return { top: top + window.scrollY, left: left + window.scrollX, direction, arrowLeft: arrowLeft - arrowOffset }
+    const tip = document.createElement("div")
+    tip.className = "aitji-tooltip"
+    tip.setAttribute("role", "tooltip")
+    tip.id = "aitji-tooltip"
+    const text = document.createElement("div")
+    text.className = "aitji-text"
+    tip.append(text, Object.assign(document.createElement("div"), { className: "aitji-arrow" }))
+    document.body.appendChild(tip)
+
+    let cur = null
+    let via = ""
+    let showT = 0, touchT = 0, hideT = 0, raf = 0
+
+    const find = n => n?.closest?.(SELECTOR) || null
+    const textOf = el => el.dataset.tooltip || el.getAttribute("title") || el.dataset.tipTitle || ""
+
+    const park = el => {
+        const t = el.getAttribute("title")
+        if (t == null) return
+        el.dataset.tipTitle = t
+        el.removeAttribute("title")
+    }
+    const unpark = el => {
+        if (!el?.isConnected || el.dataset.tipTitle == null) return
+        if (!el.hasAttribute("title")) el.setAttribute("title", el.dataset.tipTitle)
+        delete el.dataset.tipTitle
     }
 
-    function updateTooltipPosition(el) {
-        const text = getTooltipText(el)
-        if (!text) return
-        textDiv.textContent = text
-        const pos = calculatePosition(el)
-        tooltip.style.left = pos.left + "px"
-        tooltip.style.top = pos.top + "px"
-        tooltip.className = "aitji-tooltip " + pos.direction
-        arrow.style.left = pos.arrowLeft + "px"
+    const place = () => {
+        if (!cur) return
+        if (!cur.isConnected) return hide(true)
+        const r = cur.getBoundingClientRect()
+        const vw = document.documentElement.clientWidth, vh = window.innerHeight
+        if (!r.width && !r.height) return hide(true)
+        if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) return hide(true)
+
+        const t = tip.getBoundingClientRect()
+        const roomAbove = r.top - GAP - EDGE, roomBelow = vh - r.bottom - GAP - EDGE
+        const dir = roomAbove >= t.height || roomAbove >= roomBelow ? "top" : "bottom"
+        const y = dir === "top" ? r.top - GAP - t.height : r.bottom + GAP
+        const mid = r.left + r.width / 2
+        const x = Math.max(EDGE, Math.min(vw - EDGE - t.width, mid - t.width / 2))
+        const ax = Math.max(ARROW + 4, Math.min(t.width - ARROW - 4, mid - x))
+
+        tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(Math.max(EDGE, y))}px)`
+        tip.style.setProperty("--arrow-x", Math.round(ax) + "px")
+        tip.dataset.dir = dir
     }
 
-    function animateTo(targetOpacity, targetY, duration = 120, callback) {
-        const start = performance.now()
-        const initial = { opacity: parseFloat(state.opacity), y: state.y }
-        function step(now) {
-            const t = Math.min(1, (now - start) / duration)
-            state.opacity = initial.opacity + (targetOpacity - initial.opacity) * t
-            state.y = initial.y + (targetY - initial.y) * t
-            tooltip.style.opacity = state.opacity
-            tooltip.style.transform = `translateY(${state.y}px)`
-            tooltip.style.visibility = state.opacity > 0 ? "visible" : "hidden"
-            if (t < 1) animFrame = requestAnimationFrame(step)
-            else if (callback) callback()
+    const loop = () => {
+        raf = 0
+        if (!cur) return
+        place()
+        if (via === "hover" && cur && !cur.matches(":hover") && !cur.matches(":focus-visible")) return hide(true)
+        raf = requestAnimationFrame(loop)
+    }
+
+    const show = (el, how, delay = 0) => {
+        clearTimeout(showT)
+        clearTimeout(hideT)
+        const t = textOf(el)
+        if (!t) return
+        if (cur && cur !== el) { unpark(cur); cur = null }
+        const go = () => {
+            if (!el.isConnected) return
+            park(el)
+            cur = el
+            via = how
+            text.textContent = t
+            tip.classList.remove("show", "instant")
+            place()
+            tip.classList.add("show")
+            el.setAttribute("aria-describedby", tip.id)
+            if (!raf) raf = requestAnimationFrame(loop)
         }
-        cancelAnimationFrame(animFrame)
-        animFrame = requestAnimationFrame(step)
+        if (delay) showT = setTimeout(go, delay)
+        else go()
     }
 
-    function showTooltip(el, delay = 100) {
-        clearTimeout(showTimeout)
-        clearTimeout(hideTimeout)
-        const text = el.getAttribute("title")
-        if (text && !el.dataset._title) { el.dataset._title = text; el.removeAttribute("title") }
-        if (!getTooltipText(el)) return
-        currentEl = el
-        showTimeout = setTimeout(() => {
-            updateTooltipPosition(el)
-            animateTo(1, 0)
-        }, delay)
+    function hide(now = false) {
+        clearTimeout(showT)
+        clearTimeout(touchT)
+        clearTimeout(hideT)
+        if (!cur) return tip.classList.remove("show")
+        const el = cur
+        cur = null
+        via = ""
+        cancelAnimationFrame(raf)
+        raf = 0
+        tip.classList.remove("show")
+        if (now) tip.classList.add("instant")
+        else tip.classList.remove("instant")
+        el.removeAttribute("aria-describedby")
+        unpark(el)
     }
 
-    function hideTooltip(immediate = false) {
-        clearTimeout(showTimeout)
-        if (!currentEl) return
-        const fade = () => { state.opacity = 0; state.y = -4; tooltip.style.visibility = "hidden"; currentEl = null }
-        if (immediate || !isHoveringTooltip) animateTo(0, -4, 80, fade)
-    }
+    document.addEventListener("pointerover", e => {
+        if (e.pointerType === "touch") return
+        const el = find(e.target)
+        if (!el) return cur && via === "hover" && hide()
+        if (el === cur) return clearTimeout(hideT)
+        show(el, "hover", cur ? 0 : HOVER_DELAY)
+    }, true)
 
-    function attachTooltip(el) {
-        if (el.dataset.tooltipAttached) return
-        el.dataset.tooltipAttached = true
-        el.classList.add("aitji-tooltip-trigger")
-        el.addEventListener("mouseenter", () => showTooltip(el))
-        el.addEventListener("mouseleave", () => hideTooltip())
-        el.addEventListener("focus", () => showTooltip(el, 0))
-        el.addEventListener("blur", () => hideTooltip(true))
+    document.addEventListener("pointerout", e => {
+        if (e.pointerType === "touch") return
+        const el = find(e.target)
+        if (!el) return
+        if (e.relatedTarget && el.contains(e.relatedTarget)) return
+        clearTimeout(showT)
+        if (el === cur && via === "hover") hideT = setTimeout(() => hide(), 40)
+    }, true)
 
-        el.addEventListener("touchstart", (e) => {
-            clearTimeout(touchTimer)
-            touchTimer = setTimeout(() => {
-                showTooltip(el, 0)
-                setTimeout(() => hideTooltip(true), 2000)
-            }, 150)
-        }, { passive: true })
-
-        el.addEventListener("touchend", () => { clearTimeout(touchTimer) }, { passive: true })
-        el.addEventListener("touchmove", () => { clearTimeout(touchTimer) }, { passive: true })
-    }
-
-    tooltip.addEventListener("mouseenter", () => { isHoveringTooltip = true })
-    tooltip.addEventListener("mouseleave", () => { isHoveringTooltip = false; hideTooltip(true) })
-
-    const observer = new MutationObserver(muts => {
-        muts.forEach(m => {
-            m.addedNodes.forEach(n => {
-                if (n.nodeType === 1) {
-                    if (n.hasAttribute("title") || n.hasAttribute("data-tooltip")) attachTooltip(n)
-                    n.querySelectorAll("[title],[data-tooltip]").forEach(attachTooltip)
-                }
-            })
-        })
-    })
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["title", "data-tooltip"] })
-    document.querySelectorAll("[title],[data-tooltip]").forEach(attachTooltip)
-
-    let scrollTimer = null
-    window.addEventListener("scroll", () => {
-        if (!currentEl) return
-        clearTimeout(scrollTimer)
-        const rect = currentEl.getBoundingClientRect()
-        if (rect.bottom < -10 || rect.top > window.innerHeight + 10) hideTooltip(true)
-        else updateTooltipPosition(currentEl)
-        scrollTimer = setTimeout(() => { if (currentEl) updateTooltipPosition(currentEl) }, 50)
+    document.addEventListener("pointermove", e => {
+        if (!cur || via !== "hover" || e.pointerType === "touch") return
+        if (!find(e.target) || find(e.target) !== cur) { if (!cur.matches(":hover")) hide() }
     }, { passive: true })
 
-    window.addEventListener("resize", () => { if (currentEl) setTimeout(() => updateTooltipPosition(currentEl), 100) }, { passive: true })
-    document.addEventListener("click", (e) => { if (currentEl && !currentEl.contains(e.target)) hideTooltip(true) }, { passive: true })
-    window.aitjiTooltip = { show: (el) => showTooltip(el, 0), hide: (el) => hideTooltip(true), update: (el) => { if (currentEl === el) updateTooltipPosition(el) } }
-})
+    document.addEventListener("focusin", e => {
+        const el = find(e.target)
+        if (!el) return
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && el.type !== "checkbox") return
+        if (!el.matches(":focus-visible")) return
+        show(el, "focus")
+    })
+
+    document.addEventListener("focusout", e => { if (cur && cur === find(e.target) && via === "focus") hide(true) })
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && cur) hide(true) }, true)
+    document.addEventListener("pointerdown", e => {
+        if (e.pointerType === "touch") return
+        if (cur && via === "hover") hide(true)
+    }, true)
+
+    document.addEventListener("touchstart", e => {
+        const el = find(e.target)
+        if (!el) return hide()
+        clearTimeout(touchT)
+        touchT = setTimeout(() => {
+            show(el, "touch")
+            hideT = setTimeout(() => hide(), TOUCH_HIDE)
+        }, TOUCH_SHOW)
+    }, { passive: true })
+    for (const ev of ["touchend", "touchmove", "touchcancel"]) document.addEventListener(ev, () => clearTimeout(touchT), { passive: true })
+    document.addEventListener("scroll", () => { if (cur && via === "touch") hide(true) }, { passive: true, capture: true })
+
+    window.addEventListener("resize", () => cur && place(), { passive: true })
+    window.addEventListener("blur", () => hide(true))
+    document.addEventListener("visibilitychange", () => document.hidden && hide(true))
+    window.addEventListener("pagehide", () => hide(true))
+
+    window.aitjiTooltip = {
+        show: el => el && show(el, "api"),
+        hide: () => hide(true),
+        update: el => { if (el && el === cur) { text.textContent = textOf(el) || text.textContent; place() } }
+    }
+}
+
+document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init()

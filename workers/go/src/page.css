@@ -517,6 +517,39 @@ input[type=checkbox] {
     display: none
 }
 
+.btn i,
+.lb-btn i,
+.lb-nav i,
+.play i,
+.ext i,
+.hd .sep {
+    width: auto
+}
+
+.lb-nav {
+    display: grid;
+    place-items: center
+}
+
+.lb-nav i {
+    font-size: .6em
+}
+
+.lb-btn i+.dlt {
+    margin-left: 6px
+}
+
+.hd .sep {
+    font-size: 4px;
+    margin: 0 8px;
+    vertical-align: middle;
+    opacity: .55
+}
+
+.play i {
+    margin-left: 2px
+}
+
 @keyframes sp {
     to {
         transform: rotate(360deg)

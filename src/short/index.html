@@ -309,7 +309,8 @@
                     </div>
                 </div>
 
-                <div class="result-count" id="resultCount" aria-live="polite">&nbsp;</div>
+                <div class="result-count" id="resultCount" aria-live="polite"><span class="sk sk-line sk-inline"
+                        style="width:110px" aria-hidden="true"></span><span class="sr-only">กำลังโหลดข้อมูล</span></div>
 
                 <div class="links-wrap">
                     <table class="links-table" aria-label="ตารางลิงก์">
@@ -320,13 +321,54 @@
                                 <th class="th-actions">จัดการ</th>
                             </tr>
                         </thead>
-                        <tbody id="list">
-                            <tr>
-                                <td colspan="3">
-                                    <div class="loading-state" id="loadingState">
-                                        <span class="spinner" id="loading"></span>
-                                        <span id="loading-text">กำลังโหลดข้อมูล...</span>
-                                    </div>
+                        <tbody id="list" aria-busy="true">
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:58%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:82%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
+                                </td>
+                            </tr>
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:42%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:68%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
+                                </td>
+                            </tr>
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:66%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:76%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
+                                </td>
+                            </tr>
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:50%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:88%"></span><span
+                                        class="sk sk-line sm" style="width:38%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
+                                </td>
+                            </tr>
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:72%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:60%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
+                                </td>
+                            </tr>
+                            <tr class="sk-row" aria-hidden="true">
+                                <td class="link-slug"><span class="sk sk-line" style="width:58%"></span></td>
+                                <td class="link-to"><span class="sk sk-line" style="width:82%"></span></td>
+                                <td class="link-actions-cell">
+                                    <div class="link-actions"><span class="sk sk-btn"></span><span
+                                            class="sk sk-btn"></span><span class="sk sk-btn"></span></div>
                                 </td>
                             </tr>
                         </tbody>
@@ -350,7 +392,7 @@
                 <div class="field">
                     <div class="field-label">ลิงก์ย่อใหม่ <span class="opt">(ไม่จำเป็น)</span>
                     </div>
-                    <input type="text" id="newSlug" placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
+                    <input type="text" id="newSlug" data-autofocus placeholder="เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน">
                 </div>
                 <div class="field">
                     <div class="field-label">ลิงก์เต็มใหม่ <span class="opt">(ไม่จำเป็น)</span>
@@ -397,7 +439,8 @@
                             <button type="button" data-ecc="L" title="L: กู้คืนได้ ~7%, โค้ดเล็กที่สุด">L</button>
                             <button type="button" data-ecc="M" title="M: กู้คืนได้ ~15%">M</button>
                             <button type="button" data-ecc="Q" title="Q: กู้คืนได้ ~25%">Q</button>
-                            <button type="button" data-ecc="H" title="H: กู้คืนได้ ~30%, ทนต่อรอยเปื้อนหรือความเสียหายได้มากที่สุด">H</button>
+                            <button type="button" data-ecc="H"
+                                title="H: กู้คืนได้ ~30%, ทนต่อรอยเปื้อนหรือความเสียหายได้มากที่สุด">H</button>
                         </div>
                         <p class="muted" id="eccHint">&nbsp;</p>
                     </div>
@@ -405,10 +448,12 @@
                     <div class="field">
                         <div class="field-label">สไตล์สำเร็จรูป</div>
                         <div class="mode-tabs seg" id="qrPresets" role="group" aria-label="สไตล์สำเร็จรูป">
-                            <button type="button" data-preset="classic" title="สี่เหลี่ยมดำบนขาว สแกนง่ายที่สุด">ดั้งเดิม</button>
+                            <button type="button" data-preset="classic"
+                                title="สี่เหลี่ยมดำบนขาว สแกนง่ายที่สุด">ดั้งเดิม</button>
                             <button type="button" data-preset="soft" title="จุดมนนุ่มนวล">นุ่มนวล</button>
                             <button type="button" data-preset="dots" title="จุดกลมและมุมกลม">จุดกลม</button>
-                            <button type="button" data-preset="school" title="โทนสีม่วงน้ำเงินของท่าตะโกพิทยาคม">โรงเรียน</button>
+                            <button type="button" data-preset="school"
+                                title="โทนสีม่วงน้ำเงินของท่าตะโกพิทยาคม">โรงเรียน</button>
                         </div>
                     </div>
 
@@ -448,7 +493,8 @@
                     <div class="grid2">
                         <div class="field">
                             <div class="field-label">สีมุมสแกน</div>
-                            <input type="color" id="qrEye" value="#000000" title="ปกติใช้สีเดียวกับสีจุด กดรีเซ็ตเพื่อกลับไปใช้สีเดียวกัน">
+                            <input type="color" id="qrEye" value="#000000"
+                                title="ปกติใช้สีเดียวกับสีจุด กดรีเซ็ตเพื่อกลับไปใช้สีเดียวกัน">
                         </div>
                         <div class="field">
                             <div class="field-label">ขอบ</div>
