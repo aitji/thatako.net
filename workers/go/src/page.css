@@ -302,7 +302,7 @@ input[type=checkbox] {
     position: fixed;
     inset: 0;
     z-index: 50;
-    background: #05070c;
+    background: #05070cea;
     color: #fff;
     opacity: 0;
     visibility: hidden;
@@ -318,7 +318,7 @@ input[type=checkbox] {
 
 .lb-top {
     position: absolute;
-    top: 0;
+    top: var(--topbar-height);
     left: 0;
     right: 0;
     z-index: 3;
@@ -740,8 +740,30 @@ body {
     text-decoration: none;
 }
 
+img.main {
+    margin-left: 0px !important;
+}
+
 .site-footer .footer-dot {
     opacity: 0.3;
+}
+
+html[data-theme="light"]:has(.lb.on) .topbar {
+    background: #12141a;
+    border-color: #232734;
+
+    .logo-dot {
+        background-color: #0f1115;
+    }
+
+    .topbar-logo {
+        color: #e6e6e6;
+    }
+
+    .topbar-right .btn {
+        border-color: #232734;
+        color: #e6e6e6;
+    }
 }
 
 @media (max-width: 970px) {
