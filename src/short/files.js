@@ -1,4 +1,4 @@
-import { uploadMore, cancelMore, uploadErr } from './upload.js'
+import { uploadMore, cancelMore, uploadErr, chooseFromDrive } from './upload.js'
 import { $, esc, icon, meta, fmtSize, fmtEta, skLine, skFileRows } from './ui.js'
 import { confirmDialog } from './dialog.js'
 
@@ -128,6 +128,12 @@ const renderPicked = () => {
         rm.onclick = () => { if (!busy) { picked.splice(i, 1); render() } }
         const n = h('span', 'up-name', f.name)
         n.title = f.name
+        if (f.driveId) {
+            const c = h('i', 'fa-solid fa-cloud up-cloud')
+            c.setAttribute('aria-hidden', 'true')
+            c.title = f.needShare ? 'ไฟล์ที่มีอยู่ใน Google Drive (จะถูกตั้งเป็น "ทุกคนที่มีลิงก์")' : 'ไฟล์ที่มีอยู่ใน Google Drive'
+            li.append(c)
+        }
         li.append(n, h('small', 0, fmtSize(f.size)), rm)
         ul.append(li)
     })
@@ -160,12 +166,14 @@ const render = () => {
     renderPicked()
     const left = room()
     $('fmLimits').innerHTML = drive
-        ? meta([`เพิ่มได้อีก ${left} ไฟล์`, 'อัปโหลดเข้า Google Drive ของคุณ'])
+        ? meta([`เพิ่มได้อีก ${left} ไฟล์`, 'อัปโหลดเข้า Drive หรือเลือกไฟล์ที่มีอยู่แล้ว'])
         : meta([`เพิ่มได้อีก ${left} ไฟล์`, `สูงสุด ${fmtSize(cur.perUpload)} ต่อครั้ง`])
     const size = picked.reduce((a, f) => a + f.size, 0)
     $('fmUploadLabel').textContent = picked.length ? `เพิ่ม ${picked.length} ไฟล์ (${fmtSize(size)})` : 'เพิ่มไฟล์'
     $('fmUpload').disabled = busy || !picked.length
     $('fmFiles').disabled = busy
+    $('fmDrivePick').hidden = !drive
+    $('fmDrivePick').disabled = busy || !left
     if (!busy) idleStatus()
 }
 
@@ -190,10 +198,18 @@ const pick = list => {
     if (!cur || busy) return
     for (const f of list) {
         if (!f.size) { ctx.toast(`ข้ามไฟล์ว่าง: ${f.name}`, false); continue }
-        if (picked.some(p => p.name === f.name && p.size === f.size && p.lastModified === f.lastModified)) continue
+        if (picked.some(p => f.driveId ? p.driveId === f.driveId : !p.driveId && p.name === f.name && p.size === f.size && p.lastModified === f.lastModified)) continue
         if (!room()) { ctx.toast(`ลิงก์นี้มีได้สูงสุด ${cur.maxFiles} ไฟล์`, false); break }
         picked.push(f)
     }
+    render()
+}
+
+const pickFromDrive = async () => {
+    if (!cur || busy || cur.type !== 'drive') return
+    $('fmDrivePick').disabled = true
+    try { pick(await chooseFromDrive(room())) }
+    catch (e) { ctx.toast(msg(e.message), false) }
     render()
 }
 
@@ -265,6 +281,7 @@ export const initFiles = c => {
     ctx = c
     $('fmFiles').onchange = e => { pick(e.target.files); e.target.value = '' }
     $('fmUpload').onclick = upload
+    $('fmDrivePick').onclick = pickFromDrive
     $('fmSlugSave').onclick = saveSlug
     $('fmSlug').oninput = () => { const v = $('fmSlug').value.trim(); $('fmSlugSave').disabled = busy || !v || v === cur?.slug }
     $('fmSlug').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); saveSlug() } }

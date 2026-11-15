@@ -173,8 +173,8 @@
       <p>
         Our own code does not keep request logs or apply per-IP rate limits. However, Cloudflare and Vercel
         process standard request data, such as IP address, browser type and timestamps, for security, abuse
-        prevention, caching and aggregate statistics. This includes Cloudflare Web Analytics/RUM and Vercel’s
-        observability tools. Retention follows each provider’s policies. We do not use this data for advertising.
+        prevention, caching and aggregate statistics. This includes Cloudflare Web Analytics/RUM and Vercel's
+        observability tools. Retention follows each provider's policies. We do not use this data for advertising.
       </p>
     </div>
   </div>
@@ -189,7 +189,7 @@
     </div>
     <div lang="en">
       <p>
-        Your secret key and theme preference are stored in your browser’s local storage.
+        Your secret key and theme preference are stored in your browser's local storage.
         We do not use advertising cookies.
       </p>
     </div>
@@ -218,7 +218,11 @@
       <ul>
         <li>สร้างหรือใช้โฟลเดอร์ชื่อ <code>go.thatako.net</code> ที่มีอยู่แล้วใน Drive ของคุณ</li>
         <li>อัปโหลดไฟล์ที่คุณเลือกไปยังโฟลเดอร์นั้น</li>
-        <li>ตั้งค่าไฟล์เป็น “ทุกคนที่มีลิงก์สามารถดูได้” เพื่อให้ผู้ที่คุณแชร์ลิงก์ด้วยดาวน์โหลดไฟล์ได้</li>
+        <li>
+          แสดงหน้าเลือกไฟล์ของ Google เพื่อให้คุณเลือกไฟล์ที่มีอยู่แล้วใน Drive มาใช้ เฉพาะไฟล์ที่คุณเลือกในหน้านั้นเท่านั้นที่แอปเข้าถึงได้
+          และจะตั้งเป็น "ทุกคนที่มีลิงก์" ก็ต่อเมื่อคุณยืนยันและกดสร้างลิงก์
+        </li>
+        <li>ตั้งค่าไฟล์เป็น "ทุกคนที่มีลิงก์สามารถดูได้" เพื่อให้ผู้ที่คุณแชร์ลิงก์ด้วยดาวน์โหลดไฟล์ได้</li>
         <li>อ่านชื่อ ขนาด ประเภท และข้อมูลเจ้าของไฟล์ เพื่อตรวจสอบไฟล์และแสดงหน้าดาวน์โหลด</li>
         <li>
           อ่านอีเมลและโควตาพื้นที่จัดเก็บ แล้วแสดงข้อมูลให้คุณเห็นในเบราว์เซอร์ของคุณเท่านั้น
@@ -255,8 +259,13 @@
       <ul>
         <li>Create or reuse a folder named <code>go.thatako.net</code> in your Drive.</li>
         <li>Upload the files you select into that folder.</li>
-        <li>Set files to “Anyone with the link can view” so people you share the link with can download them.</li>
-        <li>Read each file’s name, size, type and ownership to verify it and show the download page.</li>
+        <li>
+          Show Google's file picker so you can choose files that already exist in your Drive.
+          The app can access only the files you select there, and sets them to "Anyone with the link" only after
+          you confirm and create the link.
+        </li>
+        <li>Set files to "Anyone with the link can view" so people you share the link with can download them.</li>
+        <li>Read each file's name, size, type and ownership to verify it and show the download page.</li>
         <li>
           Read your email address and storage quota, displaying them only in your browser so you can see
           which account is connected and whether you have enough space.
@@ -265,7 +274,7 @@
 
       <h3>Access tokens</h3>
       <p>
-        The token stays in your browser’s memory and expires after about one hour. When an upload finishes,
+        The token stays in your browser's memory and expires after about one hour. When an upload finishes,
         it is sent once over HTTPS to our server (<code>go.thatako.net</code>) so we can confirm with Google
         that the listed files exist, are not in the trash and belong to you. The server uses the token for
         that single check and then discards it.
@@ -414,7 +423,7 @@
           removed, but GitHub commit history may still contain the previous username and records.
         </li>
         <li>
-          Revoke the app’s access to your Google account at
+          Revoke the app's access to your Google account at
           <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>.
         </li>
         <li>
@@ -466,13 +475,13 @@
     </div>
     <div lang="en">
       <p>
-        The service is open to everyone, and most users are secondary-school students. We do not verify users’
+        The service is open to everyone, and most users are secondary-school students. We do not verify users'
         ages and do not knowingly collect personal information beyond what is described in this policy.
         The service is not intended for children under 13. If you are a minor, please make sure a parent,
         guardian or teacher knows you are using the service. If you believe a child has submitted personal
         information inappropriately, contact us at
         <a href="mailto:privacy@thatako.net">privacy@thatako.net</a> and we will delete it.
-        Google accounts remain subject to Google’s minimum-age requirements.
+        Google accounts remain subject to Google's minimum-age requirements.
       </p>
     </div>
   </div>
@@ -494,13 +503,13 @@
     </div>
     <div lang="en">
       <p>
-        Under Thailand’s Personal Data Protection Act (PDPA), you may request access to, correction, deletion
+        Under Thailand's Personal Data Protection Act (PDPA), you may request access to, correction, deletion
         or restriction of personal data we hold about you; object to processing; request a copy; and withdraw
         consent at any time. Contact us at
         <a href="mailto:privacy@thatako.net">privacy@thatako.net</a>.
         Because we do not collect names or email addresses, we may ask you to prove that you control the
         relevant key or link, or own the GitHub account for a subdomain, before acting on your request.
-        If you are not satisfied, you may complain to Thailand’s Personal Data Protection Committee (PDPC).
+        If you are not satisfied, you may complain to Thailand's Personal Data Protection Committee (PDPC).
       </p>
     </div>
   </div>

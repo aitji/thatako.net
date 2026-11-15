@@ -223,18 +223,26 @@
                                     ไฟล์จะถูกอัปโหลดตรงจากเบราว์เซอร์ไปยัง Google Drive ของคุณ (โฟลเดอร์ go.thatako.net)
                                     และตั้งเป็น "ทุกคนที่มีลิงก์"
                                     ลิงก์จะไม่หมดอายุตราบใดที่ไฟล์ยังอยู่ใน Drive
+                                    หรือกด "เลือกไฟล์จาก Drive" เพื่อใช้ไฟล์ที่มีอยู่แล้วโดยไม่ต้องอัปโหลดซ้ำ
+                                    (ไฟล์ที่ยังเป็นส่วนตัวจะถูกตั้งเป็น "ทุกคนที่มีลิงก์" เมื่อสร้างลิงก์)
                                     <span class="meta"><a href="/terms" target="_blank">Terms</a><i
                                             class="fa-solid fa-circle sep" aria-hidden="true"></i><a href="/privacy"
                                             target="_blank">Privacy</a></span>
                                 </p>
-                                <button type="button" class="btn btn-ghost" id="driveConnect">
-                                    <i class="fa-brands fa-google" aria-hidden="true"></i> <span
-                                        id="driveBtnText">เชื่อมต่อ Google Drive</span>
-                                </button>
-                                <button type="button" class="btn btn-ghost" id="driveLogout" hidden
-                                    title="ออกจากบัญชี Google และยกเลิกสิทธิ์ที่ให้เว็บนี้">
-                                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> ออกจากระบบ
-                                </button>
+                                <div class="drive-actions">
+                                    <button type="button" class="btn btn-ghost" id="driveConnect">
+                                        <i class="fa-brands fa-google" aria-hidden="true"></i> <span
+                                            id="driveBtnText">เชื่อมต่อ Google Drive</span>
+                                    </button>
+                                    <button type="button" class="btn btn-ghost" id="drivePick"
+                                        title="เลือกไฟล์ที่อยู่ใน Google Drive ของคุณอยู่แล้ว">
+                                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i> เลือกไฟล์จาก Drive
+                                    </button>
+                                    <button type="button" class="btn btn-ghost" id="driveLogout" hidden
+                                        title="ออกจากบัญชี Google และยกเลิกสิทธิ์ที่ให้เว็บนี้">
+                                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> ออกจากระบบ
+                                    </button>
+                                </div>
                                 <div class="muted status-line" id="driveStatus" aria-live="polite"></div>
                             </div>
                             <div class="field" id="ageField">
@@ -581,6 +589,10 @@
                         <span class="muted status-line" id="fmLimits"></span>
                     </label>
                     <input type="file" id="fmFiles" multiple hidden>
+                    <button type="button" class="btn btn-ghost btn-full" id="fmDrivePick" hidden
+                        title="เลือกไฟล์ที่อยู่ใน Google Drive ของคุณอยู่แล้ว">
+                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i> เลือกไฟล์ที่มีอยู่แล้วจาก Google Drive
+                    </button>
                     <ul class="up-list" id="fmPicked"></ul>
                     <div class="up-prog idle" id="fmProg" aria-live="polite">
                         <div class="usage-track"><i id="fmBar"></i></div>

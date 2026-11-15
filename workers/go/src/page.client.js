@@ -256,12 +256,57 @@
 	upd()
 
 	// lightbox
-	let lb, stage, ttl, num, dlA, closeB, prevB, nextB
-	let cur = -1, token = 0, zoomed = false, pushed = false, lastFocus = null, drag = null
+	const Z_MIN = 0.5, Z_MAX = 4, Z_STEP = 0.25
+	let lb, stage, ttl, num, dlA, closeB, prevB, nextB, zBar, zOut, zIn, zReset, zLbl
+	let cur = -1, token = 0, pushed = false, lastFocus = null
+	let sc = 1, tx = 0, ty = 0, imgEl = null
+	let pan = null, pinch = null, down = null, moved = false, pinched = false, lastTap = null
+	const ptrs = new Map()
 
 	const isOn = () => !!lb && lb.classList.contains('on')
+	const lim = (v, a, b) => Math.min(Math.max(v, a), b)
 	const stopMedia = () => stage && stage.querySelectorAll('video,audio').forEach(m => { m.pause(); m.removeAttribute('src'); m.load() })
-	const clear = () => { stopMedia(); stage.replaceChildren(); stage.classList.remove('zoom'); zoomed = false; stage.scrollTo(0, 0) }
+	const zoomable = () => !!imgEl && !imgEl.classList.contains('lo')
+
+	const fit = () => {
+		if (!imgEl) return
+		const mx = Math.max((imgEl.offsetWidth * sc - stage.clientWidth) / 2, 0)
+		const my = Math.max((imgEl.offsetHeight * sc - stage.clientHeight) / 2, 0)
+		tx = lim(tx, -mx, mx); ty = lim(ty, -my, my)
+	}
+
+	const paint = anim => {
+		if (!imgEl) return
+		imgEl.style.transition = anim ? 'transform .18s ease-out' : 'none'
+		imgEl.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) scale(' + sc + ')'
+		const ok = zoomable()
+		stage.classList.toggle('pan', ok && sc > 1.001)
+		zLbl.textContent = ok ? Math.round(sc * 100) + '%' : '…'
+		zOut.disabled = !ok || sc <= Z_MIN + 1e-3
+		zIn.disabled = !ok || sc >= Z_MAX - 1e-3
+		zReset.disabled = !ok || (Math.abs(sc - 1) < 1e-3 && !tx && !ty)
+	}
+
+	const zoomAt = (next, px, py, anim) => {
+		if (!zoomable()) return
+		next = lim(next, Z_MIN, Z_MAX)
+		const r = stage.getBoundingClientRect()
+		const rx = (px ?? r.left + r.width / 2) - (r.left + r.width / 2)
+		const ry = (py ?? r.top + r.height / 2) - (r.top + r.height / 2)
+		const k = next / sc
+		tx = rx - (rx - tx) * k; ty = ry - (ry - ty) * k
+		sc = next
+		fit(); paint(anim)
+	}
+	const zoomIn = () => zoomAt((Math.floor(sc / Z_STEP + 1e-6) + 1) * Z_STEP, undefined, undefined, true)
+	const zoomOut = () => zoomAt((Math.ceil(sc / Z_STEP - 1e-6) - 1) * Z_STEP, undefined, undefined, true)
+	const zoomReset = () => { if (!zoomable()) return; sc = 1; tx = ty = 0; paint(true) }
+
+	const clear = () => {
+		stopMedia(); stage.replaceChildren(); stage.classList.remove('pan', 'drag', 'is-img')
+		imgEl = null; ptrs.clear(); pan = pinch = down = lastTap = null
+		sc = 1; tx = ty = 0; zBar.hidden = true
+	}
 
 	const none = (f, msg) => {
 		clear()
@@ -277,15 +322,17 @@
 		const sp = h('div', 'sp'); sp.hidden = true
 		const t = setTimeout(() => sp.hidden = false, 200)
 		stage.append(img, sp)
-		if (M.drive && f.thumb) { img.src = f.thumb; img.classList.add('lo') }
+		imgEl = img; zBar.hidden = false; stage.classList.add('is-img')
+		if (M.drive && f.thumb && files.length === 1) { img.src = f.thumb; img.classList.add('lo') }
+		paint()
 		const big = new Image(); big.decoding = 'async'; big.referrerPolicy = 'no-referrer'
 		load(big, M.drive ? pic(f, fullW()) : [rawUrl(f)], () => {
 			if (my !== token) return
 			clearTimeout(t); sp.remove()
 			img.src = big.currentSrc || big.src; img.classList.remove('lo')
+			paint()
 			preload(cur + 1); preload(cur - 1)
 		}, () => { if (my === token) { clearTimeout(t); none(f, 'โหลดตัวอย่างไม่สำเร็จ') } })
-		img.onclick = () => { if (!drag?.moved) zoom() }
 		if (f.kind === 'doc') stage.append(h('div', 'lb-cap', 'แสดงตัวอย่างหน้าแรก'))
 	}
 
@@ -335,67 +382,128 @@
 		fn ? fn(f, my) : none(f)
 	}
 
-	const zoom = on => {
-		const img = stage.querySelector('img.main')
-		if (!img || img.classList.contains('lo')) return
-		zoomed = on ?? !zoomed
-		stage.classList.toggle('zoom', zoomed)
-		if (zoomed) requestAnimationFrame(() => {
-			stage.scrollLeft = (stage.scrollWidth - stage.clientWidth) / 2
-			stage.scrollTop = (stage.scrollHeight - stage.clientHeight) / 2
-		})
+	const go = d => { if (files.length > 1) open((cur + d + files.length) % files.length) }
+
+	const rbtn = (icon, label, cls) => {
+		const b = h('button', 'lb-round' + (cls ? ' ' + cls : '')); b.type = 'button'
+		b.append(fa(icon)); b.title = label; b.setAttribute('aria-label', label)
+		return b
 	}
 
-	const go = d => { if (files.length > 1) open((cur + d + files.length) % files.length) }
+	const inImg = (x, y) => { const r = imgEl.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom }
+	const pinchStart = () => {
+		const [a, b] = [...ptrs.values()]
+		pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, sc, tx, ty, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }
+		pan = null
+	}
+	const gestureStart = () => {
+		if (ptrs.size >= 2) { pinched = true; moved = true; pinchStart() }
+		else { const p = [...ptrs.values()][0]; pan = { x: p.x, y: p.y, tx, ty }; pinch = null }
+	}
 
 	const build = () => {
 		if (lb) return
 		lb = h('div', 'lb'); lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', 'ตัวอย่างไฟล์')
+		stage = h('div', 'lb-stage')
+
 		const top = h('div', 'lb-top')
 		ttl = h('div', 't'); num = h('div', 'n')
-		dlA = h('a', 'lb-btn'); dlA.append(fa('arrow-down-to-line'), Object.assign(h('span', 'dlt'), { textContent: ' ดาวน์โหลด' }))
-		closeB = h('button', 'lb-btn'); closeB.append(fa('xmark')); closeB.type = 'button'; closeB.setAttribute('aria-label', 'ปิด'); closeB.onclick = close
-		top.append(ttl, num, dlA, closeB)
-		stage = h('div', 'lb-stage')
+		const ctl = h('div', 'lb-ctl')
+		dlA = h('a', 'lb-round'); dlA.append(fa('arrow-down-to-line')); dlA.title = 'ดาวน์โหลด (Ctrl+S)'; dlA.setAttribute('aria-label', 'ดาวน์โหลด')
+		closeB = rbtn('xmark', 'ปิด (Esc)'); closeB.onclick = close
+		ctl.append(dlA, closeB)
+		top.append(ttl, num, ctl)
+
 		prevB = h('button', 'lb-nav l'); prevB.append(fa('chevron-left')); prevB.type = 'button'; prevB.setAttribute('aria-label', 'ก่อนหน้า'); prevB.onclick = () => go(-1)
 		nextB = h('button', 'lb-nav r'); nextB.append(fa('chevron-right')); nextB.type = 'button'; nextB.setAttribute('aria-label', 'ถัดไป'); nextB.onclick = () => go(1)
-		lb.append(top, stage, prevB, nextB)
+
+		zBar = h('div', 'lb-zoom'); zBar.hidden = true; zBar.setAttribute('role', 'group'); zBar.setAttribute('aria-label', 'ซูมรูปภาพ')
+		zOut = rbtn('magnifying-glass-minus', 'ซูมออก (-)'); zOut.onclick = zoomOut
+		zLbl = h('span', 'z', '100%'); zLbl.setAttribute('aria-live', 'polite')
+		zIn = rbtn('magnifying-glass-plus', 'ซูมเข้า (+)'); zIn.onclick = zoomIn
+		zReset = rbtn('rotate-left', 'รีเซ็ตการซูม (0)'); zReset.onclick = zoomReset
+		zBar.append(zOut, zLbl, zIn, zReset)
+
+		lb.append(stage, top, prevB, nextB, zBar)
 		document.body.append(lb)
 
-		// mouse
 		stage.addEventListener('pointerdown', e => {
-			if (!zoomed || e.pointerType !== 'mouse' || e.button) return
-			drag = { x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop, moved: false }
-			stage.setPointerCapture(e.pointerId)
+			if (!imgEl || (e.pointerType === 'mouse' && e.button)) return
+			if (!ptrs.size) { down = { x: e.clientX, y: e.clientY }; moved = pinched = false }
+			ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
+			try { stage.setPointerCapture(e.pointerId) } catch { }
+			gestureStart()
 		})
 		stage.addEventListener('pointermove', e => {
-			if (!drag) return
-			const dx = e.clientX - drag.x, dy = e.clientY - drag.y
-			if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true
-			stage.scrollLeft = drag.l - dx; stage.scrollTop = drag.t - dy
+			const p = ptrs.get(e.pointerId)
+			if (!p) return
+			p.x = e.clientX; p.y = e.clientY
+			if (pinch && ptrs.size >= 2) {
+				const [a, b] = [...ptrs.values()]
+				const r = stage.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2
+				const next = lim(pinch.sc * (Math.hypot(a.x - b.x, a.y - b.y) / pinch.d), Z_MIN, Z_MAX), k = next / pinch.sc
+				tx = ((a.x + b.x) / 2 - cx) - (pinch.mx - cx - pinch.tx) * k
+				ty = ((a.y + b.y) / 2 - cy) - (pinch.my - cy - pinch.ty) * k
+				sc = next
+				if (zoomable()) { fit(); paint() }
+			} else if (pan && ptrs.size === 1) {
+				const dx = e.clientX - pan.x, dy = e.clientY - pan.y
+				if (Math.abs(dx) + Math.abs(dy) > 4) moved = true
+				if (zoomable() && sc > 1.001) { tx = pan.tx + dx; ty = pan.ty + dy; fit(); paint(); stage.classList.add('drag') }
+			}
 		})
-		const endDrag = () => { if (drag) setTimeout(() => drag = null) }
-		stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag)
+		const release = e => {
+			if (!ptrs.delete(e.pointerId)) return
+			stage.classList.remove('drag')
+			if (ptrs.size) return gestureStart()
+			pan = pinch = null
+			if (e.type !== 'pointerup' || !imgEl) return
+			const dx = e.clientX - down.x, dy = e.clientY - down.y
+			if (e.pointerType === 'touch' && !pinched && sc <= 1.001 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) return go(dx < 0 ? 1 : -1)
+			if (moved) return
+			if (!inImg(e.clientX, e.clientY)) return close()
+			const now = Date.now()
+			if (lastTap && now - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30) {
+				lastTap = null
+				if (Math.abs(sc - 1) > 1e-3) zoomReset(); else zoomAt(2, e.clientX, e.clientY, true)
+			} else lastTap = { t: now, x: e.clientX, y: e.clientY }
+		}
+		stage.addEventListener('pointerup', release); stage.addEventListener('pointercancel', release)
+		stage.addEventListener('click', e => { if (e.target === stage && !imgEl) close() })
 
-		let tx = null
+		stage.addEventListener('wheel', e => {
+			if (!zoomable() || e.target.closest('pre,video,audio')) return
+			e.preventDefault()
+			const dy = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaY
+			zoomAt(sc * Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX, e.clientY)
+		}, { passive: false })
+
+		addEventListener('resize', () => { if (isOn()) { fit(); paint() } })
+
+		let sw = null
 		stage.addEventListener('touchstart', e => {
-			tx = !zoomed && e.touches.length === 1 && !e.target.closest('video,audio,pre') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null
+			sw = !imgEl && e.touches.length === 1 && !e.target.closest('video,audio,pre') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null
 		}, { passive: true })
 		stage.addEventListener('touchend', e => {
-			if (!tx) return
-			const t = e.changedTouches[0], dx = t.clientX - tx.x, dy = t.clientY - tx.y
-			tx = null
+			if (!sw) return
+			const t = e.changedTouches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y
+			sw = null
 			if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
 		}, { passive: true })
 
 		document.addEventListener('keydown', e => {
 			if (!isOn()) return
 			const inMedia = /^(VIDEO|AUDIO)$/.test(e.target.tagName)
+			const plain = !e.ctrlKey && !e.metaKey && !e.altKey
 			if (e.key === 'Escape') { e.preventDefault(); close() }
 			else if (e.key === 'ArrowLeft' && !inMedia) { e.preventDefault(); go(-1) }
 			else if (e.key === 'ArrowRight' && !inMedia) { e.preventDefault(); go(1) }
-			else if (e.key === 'Tab') { // keep focus inside the dialog
-				const els = [...lb.querySelectorAll('a[href],button:not([hidden]),video,audio,pre')].filter(x => !x.hidden && x.offsetParent !== null)
+			else if (plain && (e.key === '+' || e.key === '=')) { e.preventDefault(); zoomIn() }
+			else if (plain && (e.key === '-' || e.key === '_')) { e.preventDefault(); zoomOut() }
+			else if (plain && e.key === '0') { e.preventDefault(); zoomReset() }
+			else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); dlA.click() }
+			else if (e.key === 'Tab') {
+				const els = [...lb.querySelectorAll('a[href],button:not([hidden]):not(:disabled),video,audio,pre')].filter(x => !x.hidden && x.offsetParent !== null)
 				if (!els.length) return
 				const first = els[0], last = els[els.length - 1]
 				if (!lb.contains(document.activeElement)) { e.preventDefault(); first.focus() }

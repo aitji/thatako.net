@@ -3,9 +3,11 @@ const RETRIES = 3
 const NO_RETRY = ['bad token', 'bad part', 'bad size']
 
 import { $, esc, icon, SEP, joinHtml, meta, fmtSize, fmtEta, skLine } from './ui.js'
+import { confirmDialog } from './dialog.js'
 export { fmtSize }
 
 const GIS = 'https://accounts.google.com/gsi/client'
+const GAPI = 'https://apis.google.com/js/api.js'
 const SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const DRIVE = 'https://www.googleapis.com/drive/v3'
 const DRIVE_UP = 'https://www.googleapis.com/upload/drive/v3/files'
@@ -13,7 +15,7 @@ const DRIVE_CHUNK = 16 * 1024 * 1024
 const FOLDER = 'go.thatako.net'
 
 let ctx, mode = 'link', store = 'server', picked = [], busy = false, adding = false, ctl = null, lim = null
-let gisP = null, tok = null, tokExp = 0, me = null
+let gisP = null, pickP = null, tok = null, tokExp = 0, me = null
 
 export const isFileMode = () => mode === 'file'
 
@@ -30,6 +32,10 @@ const errText = (m, fallback = 'อัปโหลดล้มเหลว ก�
     'drive denied': 'ตรวจสอบไฟล์ใน Google Drive ไม่ผ่าน กรุณาลองใหม่',
     'drive quota': 'พื้นที่ Google Drive ของคุณเต็ม',
     'drive failed': 'อัปโหลดไป Google Drive ล้มเหลว กรุณาลองใหม่',
+    'drive picker': 'เปิดหน้าเลือกไฟล์ของ Google ไม่สำเร็จ กรุณาลองใหม่',
+    'drive share': 'ตั้งค่าแชร์ไฟล์ไม่สำเร็จ บัญชีโรงเรียนอาจปิดการแชร์ลิงก์ให้ผู้ใช้ภายนอก',
+    'drive private': 'ไฟล์ใน Drive ยังไม่ได้แชร์แบบ "ทุกคนที่มีลิงก์" ลองเลือกไฟล์อีกครั้งแล้วยืนยันการแชร์',
+    'drive native': 'ยังไม่รองรับ Google Docs/Sheets/Slides และโฟลเดอร์ ให้ดาวน์โหลดเป็นไฟล์ก่อน',
     'expired': 'ลิงก์นี้หมดอายุแล้ว แก้ไขไม่ได้',
     'too many files': 'จำนวนไฟล์ในลิงก์เกินกำหนด',
     'last file': 'ต้องเหลืออย่างน้อย 1 ไฟล์ ถ้าไม่ต้องการแล้วให้ลบทั้งลิงก์',
@@ -69,7 +75,7 @@ const syncStore = () => {
     $('limits').innerHTML = d
         ? meta(['ตามพื้นที่ Drive ของคุณ', `สูงสุด ${lim.maxFiles} ไฟล์`, 'ไม่หมดอายุ'])
         : meta([`สูงสุด ${fmtSize(lim.perUpload)} ต่อครั้ง`, `${lim.maxFiles} ไฟล์`, `เก็บได้ ${lim.maxDays} วัน`])
-    $('driveConnect').disabled = !lim.driveClientId
+    $('driveConnect').disabled = $('drivePick').disabled = !lim.driveClientId
     if (d && !lim.driveClientId) $('driveStatus').textContent = 'ยังไม่ได้ตั้งค่า Google Drive บนระบบนี้'
     else if (d && !me && !$('driveStatus').textContent) $('driveStatus').textContent = 'ยังไม่ได้เชื่อมต่อ Google Drive'
 }
@@ -77,6 +83,7 @@ const syncStore = () => {
 const setStore = v => {
     if (busy) return
     store = v
+    if (v === 'server') dropDrivePicks('เอาไฟล์ที่เลือกจาก Google Drive ออกแล้ว เพราะที่เก็บแบบเซิร์ฟเวอร์ใช้ได้เฉพาะไฟล์ที่อัปโหลดใหม่')
     syncStore()
 }
 
@@ -117,6 +124,13 @@ const renderPicked = () => {
         name.title = f.name
         const size = document.createElement('small')
         size.textContent = fmtSize(f.size)
+        if (f.driveId) {
+            const c = document.createElement('i')
+            c.className = 'fa-solid fa-cloud up-cloud'
+            c.setAttribute('aria-hidden', 'true')
+            c.title = f.needShare ? 'ไฟล์ที่มีอยู่ใน Google Drive (จะถูกตั้งเป็น "ทุกคนที่มีลิงก์" เมื่อสร้างลิงก์)' : 'ไฟล์ที่มีอยู่ใน Google Drive'
+            li.append(c)
+        }
         const rm = document.createElement('button')
         rm.type = 'button'
         rm.className = 'up-rm'
@@ -133,7 +147,8 @@ const renderPicked = () => {
 const addFiles = list => {
     for (const f of list) {
         if (!f.size) { ctx.toast(`ข้ามไฟล์ว่าง: ${f.name}`, false); continue }
-        if (!picked.some(p => p.name === f.name && p.size === f.size && p.lastModified === f.lastModified)) picked.push(f)
+        const dup = picked.some(p => f.driveId ? p.driveId === f.driveId : !p.driveId && p.name === f.name && p.size === f.size && p.lastModified === f.lastModified)
+        if (!dup) picked.push(f)
     }
     renderPicked()
 }
@@ -145,7 +160,7 @@ const lock = v => {
     $('create').disabled = v
     $('files').disabled = v
     $('modeLink').disabled = $('modeFile').disabled = v
-    $('store').disabled = $('driveConnect').disabled = $('driveLogout').disabled = v
+    $('store').disabled = $('driveConnect').disabled = $('driveLogout').disabled = $('drivePick').disabled = v
 }
 
 // upload engine
@@ -255,6 +270,7 @@ const connectDrive = async () => {
         const r = await gfetch(`${DRIVE}/about?fields=user(displayName,emailAddress),storageQuota(limit,usage)`)
         if (!r.ok) throw await driveErr(r)
         me = await r.json()
+        if (switching && prev.me?.user?.emailAddress !== me.user?.emailAddress) dropDrivePicks('เปลี่ยนบัญชีแล้ว จึงเอาไฟล์ที่เลือกจาก Drive ของบัญชีเดิมออก')
         showDrive()
     } catch (e) {
         if (switching) ({ tok, tokExp, me } = prev)
@@ -266,9 +282,107 @@ const connectDrive = async () => {
 const disconnectDrive = async () => {
     const old = tok
     tok = null; tokExp = 0; me = null
+    dropDrivePicks('ออกจากระบบแล้ว จึงเอาไฟล์ที่เลือกจาก Drive ออก')
     if (old && window.google?.accounts?.oauth2) await new Promise(res => google.accounts.oauth2.revoke(old, res))
     showDrive()
     $('driveStatus').textContent = 'ยังไม่ได้เชื่อมต่อ Google Drive'
+}
+
+const dropDrivePicks = why => {
+    if (!picked.some(f => f.driveId)) return
+    picked = picked.filter(f => !f.driveId)
+    renderPicked()
+    ctx.toast(why, false)
+}
+
+const makePublic = async id => {
+    const p = await gfetch(`${DRIVE}/files/${id}/permissions`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ role: 'reader', type: 'anyone', allowFileDiscovery: false })
+    })
+    if (p.ok) return
+    const e = await driveErr(p)
+    throw e.message === 'drive failed' ? new Error('drive share') : e
+}
+
+const loadPicker = () => pickP ??= new Promise((res, rej) => {
+    const fail = () => { pickP = null; rej(new Error('drive picker')) }
+    const ready = () => gapi.load('picker', { callback: res, onerror: fail, ontimeout: fail, timeout: 15000 })
+    if (window.gapi) return ready()
+    const s = document.createElement('script')
+    s.src = GAPI
+    s.async = true
+    s.onload = ready
+    s.onerror = fail
+    document.head.appendChild(s)
+})
+
+const isNative = t => /^application\/vnd\.google-apps\./.test(t || '')
+export const chooseFromDrive = async max => {
+    if (max < 1) throw new Error('too many files')
+    if (!lim) await loadUsage()
+    if (!lim?.driveClientId) throw new Error('drive off')
+    const [t] = await Promise.all([getToken(), loadPicker()])
+
+    const ids = await new Promise(res => {
+        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+            .setIncludeFolders(true).setSelectFolderEnabled(false).setOwnedByMe(true)
+        const b = new google.picker.PickerBuilder()
+            .setAppId(lim.driveAppId)
+            .setOAuthToken(t)
+            .setLocale('th')
+            .setOrigin(location.protocol + '//' + location.host)
+            .setMaxItems(max)
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            .addView(view)
+            .setCallback(d => {
+                const act = d[google.picker.Response.ACTION]
+                if (act === google.picker.Action.PICKED) res((d[google.picker.Response.DOCUMENTS] || []).map(x => x[google.picker.Document.ID]))
+                else if (act === google.picker.Action.CANCEL) res([])
+            })
+        if (lim.driveApiKey) b.setDeveloperKey(lim.driveApiKey)
+        b.build().setVisible(true)
+    })
+    if (!ids.length) return []
+
+    const metas = await Promise.all(ids.map(async id => {
+        const r = await gfetch(`${DRIVE}/files/${encodeURIComponent(id)}?fields=id,name,size,mimeType,ownedByMe,trashed,permissions(type,role)&supportsAllDrives=true`)
+        if (!r.ok) throw new Error(r.status === 401 ? 'drive auth' : 'drive denied')
+        return r.json()
+    }))
+
+    const out = [], skipped = []
+    for (const d of metas) {
+        if (d.trashed || !d.ownedByMe) skipped.push(`${d.name} (ไม่ใช่ไฟล์ของคุณ)`)
+        else if (isNative(d.mimeType)) skipped.push(`${d.name} (Google Docs/Sheets/Slides หรือโฟลเดอร์ ให้ดาวน์โหลดเป็นไฟล์ก่อน)`)
+        else if (!(+d.size > 0)) skipped.push(`${d.name} (ไฟล์ว่าง)`)
+        else out.push({ driveId: d.id, name: d.name, size: +d.size, type: d.mimeType || '', needShare: !(d.permissions || []).some(p => p.type === 'anyone') })
+    }
+    if (skipped.length) ctx.toast('ข้ามไฟล์: ' + skipped.join(', '), false)
+
+    const priv = out.filter(f => f.needShare)
+    if (priv.length) {
+        const names = priv.slice(0, 5).map(f => `<b>${esc(f.name)}</b>`).join(', ') + (priv.length > 5 ? ` และอีก ${priv.length - 5} ไฟล์` : '')
+        const yes = await confirmDialog({
+            icon: 'link',
+            title: 'เปิดการแชร์ไฟล์เหล่านี้หรือไม่?',
+            html: `${names} ยังเป็นไฟล์ส่วนตัว เมื่อสร้างลิงก์ ระบบจะตั้งเป็น "ทุกคนที่มีลิงก์" เพื่อให้ผู้รับเปิดได้ และใครที่ได้ลิงก์ Drive ของไฟล์ก็เปิดได้เช่นกัน`,
+            detail: 'การเอาไฟล์ออกจากลิงก์ หรือลบลิงก์ ไม่ได้ยกเลิกการแชร์ หากต้องการปิดการแชร์ให้ไปตั้งค่าใน Google Drive',
+            confirmText: 'ตกลง ใช้ไฟล์เหล่านี้',
+            confirmIcon: 'check',
+            cancelText: 'ไม่ใช้ไฟล์เหล่านี้'
+        })
+        if (!yes) return out.filter(f => !f.needShare)
+    }
+    return out
+}
+
+const pickFromDrive = async () => {
+    if (busy || adding) return
+    try {
+        if (!lim) await loadUsage()
+        addFiles(await chooseFromDrive((lim?.maxFiles ?? 1) - picked.length))
+    } catch (e) { ctx.toast(errText(e.message), false) }
 }
 
 const ensureFolder = async () => {
@@ -328,17 +442,13 @@ const uploadToDrive = async (file, folder, onBytes) => {
     if (ctl.stop) throw new Error('stopped')
     if (!id) throw new Error('drive failed')
 
-    const p = await gfetch(`${DRIVE}/files/${id}/permissions`, {
-        method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ role: 'reader', type: 'anyone', allowFileDiscovery: false })
-    })
-    if (!p.ok) throw await driveErr(p)
+    await makePublic(id)
     return id
 }
 
 const startDriveUpload = async () => {
     const key = ctx.key(), slug = $('slug').value.trim()
-    const total = picked.reduce((a, f) => a + f.size, 0)
+    const total = picked.reduce((a, f) => a + (f.driveId ? 0 : f.size), 0)
 
     if (!key) return ctx.toast('กรุณาใส่รหัสลับ', false)
     if (!picked.length) return ctx.toast('กรุณาเลือกไฟล์ก่อน', false)
@@ -356,7 +466,7 @@ const startDriveUpload = async () => {
         const q = me?.storageQuota
         if (q?.limit && +q.usage + total > +q.limit) throw new Error('drive quota')
 
-        const folder = await ensureFolder()
+        const folder = total ? await ensureFolder() : null
         let sent = 0
         const t0 = Date.now()
         const onBytes = d => {
@@ -366,7 +476,11 @@ const startDriveUpload = async () => {
         }
 
         const files = []
-        for (const f of picked) files.push({ id: await uploadToDrive(f, folder, onBytes) })
+        for (const f of picked) {
+            if (!f.driveId) { files.push({ id: await uploadToDrive(f, folder, onBytes) }); continue }
+            if (f.needShare) { setStatus('กำลังตั้งค่าการแชร์'); await makePublic(f.driveId) }
+            files.push({ id: f.driveId })
+        }
 
         setStatus('กำลังสร้างลิงก์')
         const fin = await post('/file/drive', { key, slug, token: await getToken(), files })
@@ -387,6 +501,7 @@ export const startUpload = async () => {
     if (busy) return
     if (adding) return ctx.toast(errText('busy'), false)
     if (store === 'drive') return startDriveUpload()
+    if (picked.some(f => f.driveId)) return ctx.toast(errText('bad files'), false)
     const key = ctx.key(), slug = $('slug').value.trim()
     const total = picked.reduce((a, f) => a + f.size, 0)
 
@@ -443,7 +558,8 @@ export const startUpload = async () => {
 export const uploadMore = async ({ slug, type, files, onProgress }) => {
     if (busy || adding) throw new Error('busy')
     const key = ctx.key()
-    const total = files.reduce((a, f) => a + f.size, 0)
+    if (type !== 'drive' && files.some(f => f.driveId)) throw new Error('bad files')
+    const total = files.reduce((a, f) => a + (f.driveId ? 0 : f.size), 0)
 
     ctl = { stop: false, cancelled: false, xhrs: new Set() }
     adding = true
@@ -457,9 +573,13 @@ export const uploadMore = async ({ slug, type, files, onProgress }) => {
             if (!lim) await loadUsage()
             if (!lim?.driveClientId) throw new Error('drive off')
             await getToken()
-            const folder = await ensureFolder()
+            const folder = total ? await ensureFolder() : null
             const ids = []
-            for (const f of files) ids.push({ id: await uploadToDrive(f, folder, onBytes) })
+            for (const f of files) {
+                if (!f.driveId) { ids.push({ id: await uploadToDrive(f, folder, onBytes) }); continue }
+                if (f.needShare) await makePublic(f.driveId)
+                ids.push({ id: f.driveId })
+            }
             const fin = await post('/file/drive-add', { key, slug, token: await getToken(), files: ids })
             if (!fin.ok) throw new Error(fin.msg)
             return fin
@@ -501,6 +621,7 @@ export const initUpload = c => {
     $('store').onchange = e => setStore(e.target.value)
     $('driveConnect').onclick = connectDrive
     $('driveLogout').onclick = disconnectDrive
+    $('drivePick').onclick = pickFromDrive
     $('files').onchange = e => { addFiles(e.target.files); e.target.value = '' }
     $('upCancel').onclick = () => { ctl.cancelled = ctl.stop = true; ctl.xhrs.forEach(x => x.abort()) }
 

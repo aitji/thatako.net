@@ -129,8 +129,17 @@
   color: var(--color-text-danger);
 }
 
-#driveLogout {
-  margin-left: 6px;
+.drive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.up-list li .up-cloud {
+  flex: none;
+  width: auto;
+  font-size: 12px;
+  color: var(--color-accent);
 }
 
 #driveStatus {

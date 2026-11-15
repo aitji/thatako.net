@@ -298,15 +298,16 @@ input[type=checkbox] {
 }
 
 .lb {
+    --lb-pad: calc(68px + max(env(safe-area-inset-top, 0px), env(safe-area-inset-bottom, 0px)));
     position: fixed;
     inset: 0;
     z-index: 50;
-    display: flex;
-    flex-direction: column;
-    background: #0a0c12;
+    background: #05070c;
     color: #fff;
     opacity: 0;
     visibility: hidden;
+    overflow: hidden;
+    overscroll-behavior: contain;
     transition: opacity .15s, visibility .15s
 }
 
@@ -316,11 +317,22 @@ input[type=checkbox] {
 }
 
 .lb-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 10px 12px;
-    padding-top: max(10px, env(safe-area-inset-top))
+    padding-top: max(10px, env(safe-area-inset-top));
+    background: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, 0));
+    pointer-events: none
+}
+
+.lb-top>* {
+    pointer-events: auto
 }
 
 .lb-top .t {
@@ -329,13 +341,49 @@ input[type=checkbox] {
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap
+    white-space: nowrap;
+    pointer-events: none
 }
 
 .lb-top .n {
     font-size: 12px;
-    opacity: .7;
-    white-space: nowrap
+    opacity: .75;
+    white-space: nowrap;
+    pointer-events: none
+}
+
+.lb-ctl {
+    display: flex;
+    gap: 10px
+}
+
+.lb-round {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .22);
+    background: rgba(0, 0, 0, .55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .2s
+}
+
+.lb-round:hover:not(:disabled) {
+    background: rgba(255, 255, 255, .28)
+}
+
+.lb-round:disabled {
+    opacity: .35;
+    cursor: default
 }
 
 .lb-btn {
@@ -361,55 +409,63 @@ input[type=checkbox] {
 }
 
 .lb-btn:focus-visible,
+.lb-round:focus-visible,
 .lb-nav:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 2px
 }
 
 .lb-stage {
-    position: relative;
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--lb-pad) 0;
+    overflow: hidden
+}
+
+.lb-stage.is-img {
+    touch-action: none
 }
 
 .lb-stage>img.main {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
     display: block;
-    cursor: zoom-in;
-    transition: filter .3s;
+    flex: none;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    transform-origin: 50% 50%;
+    will-change: transform;
     user-select: none;
-    -webkit-user-drag: none
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    transition: filter .3s
 }
 
 .lb-stage>img.main.lo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     filter: blur(10px)
 }
 
-.lb-stage.zoom {
+.lb-stage.pan,
+.lb-stage.pan>img.main {
     cursor: grab
 }
 
-.lb-stage.zoom>img.main {
-    position: static;
-    width: auto;
-    height: auto;
-    max-width: none;
-    margin: 0 auto;
-    object-fit: initial;
-    cursor: zoom-out
+.lb-stage.drag,
+.lb-stage.drag>img.main {
+    cursor: grabbing
 }
 
 .lb-stage>video {
     position: absolute;
-    inset: 0;
+    inset: 56px 0 0;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 56px);
     background: #000
 }
 
@@ -417,7 +473,7 @@ input[type=checkbox] {
     position: absolute;
     inset: 0;
     margin: 0;
-    padding: 16px;
+    padding: calc(64px + env(safe-area-inset-top, 0px)) 16px 16px;
     overflow: auto;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -458,7 +514,7 @@ input[type=checkbox] {
 .lb-cap {
     position: absolute;
     left: 50%;
-    bottom: 14px;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     transform: translateX(-50%);
     padding: 4px 12px;
     border-radius: 99px;
@@ -466,6 +522,44 @@ input[type=checkbox] {
     font-size: 12px;
     pointer-events: none;
     white-space: nowrap
+}
+
+.lb-zoom {
+    position: absolute;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border-radius: 99px;
+    background: rgba(0, 0, 0, .55);
+    border: 1px solid rgba(255, 255, 255, .22);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px)
+}
+
+.lb-zoom .lb-round {
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none
+}
+
+.lb-zoom .lb-round:hover:not(:disabled) {
+    background: rgba(255, 255, 255, .2)
+}
+
+.lb-zoom .z {
+    min-width: 54px;
+    text-align: center;
+    font: 600 13px/1 var(--font-family, system-ui, sans-serif);
+    font-variant-numeric: tabular-nums;
+    user-select: none
 }
 
 .lb-nav {
@@ -520,6 +614,7 @@ input[type=checkbox] {
 
 .btn i,
 .lb-btn i,
+.lb-round i,
 .lb-nav i,
 .play i,
 .ext i,
@@ -534,10 +629,6 @@ input[type=checkbox] {
 
 .lb-nav i {
     font-size: .6em
-}
-
-.lb-btn i+.dlt {
-    margin-left: 6px
 }
 
 .hd .sep {
@@ -702,10 +793,6 @@ body {
         height: 56px;
         margin-top: -28px;
         font-size: 24px
-    }
-
-    .lb-top .dlt {
-        display: none
     }
 }
 

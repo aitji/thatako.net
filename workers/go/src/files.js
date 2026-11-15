@@ -163,7 +163,7 @@ export async function handleFile(req, env, path, h) {
 async function getUsage(req, env, h) {
 	const c = cfg(env), key = new URL(req.url).searchParams.get('key')
 	const [u, mine] = await Promise.all([usage(env), key ? keyUsage(env, key, h) : 0])
-	return h.j({ used: u.bytes, files: u.count, mine, limit: c.total, perUpload: c.perUpload, perKey: c.perKey, maxFiles: c.maxFiles, maxDays: c.maxDays, chunk: CHUNK, driveClientId: env.GOOGLE_CLIENT_ID || '' })
+	return h.j({ used: u.bytes, files: u.count, mine, limit: c.total, perUpload: c.perUpload, perKey: c.perKey, maxFiles: c.maxFiles, maxDays: c.maxDays, chunk: CHUNK, driveClientId: env.GOOGLE_CLIENT_ID || '', driveAppId: env.GOOGLE_APP_ID || String(env.GOOGLE_CLIENT_ID || '').split('-')[0], driveApiKey: env.GOOGLE_API_KEY || '' })
 }
 
 async function init(req, env, h) {
@@ -389,9 +389,9 @@ async function driveAdd(req, env, h) {
 	if (m.files.length + ids.length > c.maxFiles) return h.j({ ok: false, msg: 'too many files' })
 	if (ids.some(id => m.files.some(f => f.id === id))) return h.j({ ok: false, msg: 'duplicate' })
 
-	const list = await driveVerify(ids, token)
-	if (!list) return h.j({ ok: false, msg: 'drive denied' })
-	for (const f of list) m.files.push({ i: m.next++, ...f })
+	const v = await driveVerify(ids, token)
+	if (!v.list) return h.j({ ok: false, msg: v.msg })
+	for (const f of v.list) m.files.push({ i: m.next++, ...f })
 	await saveLink(env, o.slug, o.data, m)
 	return h.j({ ok: true, count: m.files.length })
 }
@@ -519,13 +519,15 @@ export async function filePage(env, data, slug) {
 async function driveVerify(ids, token) {
 	const list = []
 	for (const id of ids) {
-		const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=id,name,size,mimeType,ownedByMe,trashed`, { headers: { authorization: 'Bearer ' + token } })
-		if (!r.ok) return null
+		const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=id,name,size,mimeType,ownedByMe,trashed,permissions(type,role)&supportsAllDrives=true`, { headers: { authorization: 'Bearer ' + token } })
+		if (!r.ok) return { msg: 'drive denied' }
 		const d = await r.json()
-		if (!d.ownedByMe || d.trashed) return null
+		if (!d.ownedByMe || d.trashed) return { msg: 'drive denied' }
+		if (/^application\/vnd\.google-apps\./.test(d.mimeType || '')) return { msg: 'drive native' }
+		if (Array.isArray(d.permissions) && !d.permissions.some(p => p.type === 'anyone')) return { msg: 'drive private' }
 		list.push({ id: d.id, name: cleanName(d.name), size: +d.size || 0, type: String(d.mimeType || '').slice(0, 100) })
 	}
-	return list
+	return { list }
 }
 
 async function driveLink(req, env, h) {
@@ -540,8 +542,9 @@ async function driveLink(req, env, h) {
 	if (!h.validSlug(slug)) return h.j({ ok: false, msg: 'bad slug' })
 	if (await env.LINKS.get('l:' + slug)) return h.j({ ok: false, msg: 'duplicate' })
 
-	const list = await driveVerify(ids, token)
-	if (!list) return h.j({ ok: false, msg: 'drive denied' })
+	const v = await driveVerify(ids, token)
+	if (!v.list) return h.j({ ok: false, msg: v.msg })
+	const list = v.list
 	list.forEach((f, i) => f.i = i)
 
 	const fid = rand(12), total = list.reduce((a, f) => a + f.size, 0)
